@@ -1,5 +1,5 @@
 // ===================================
-// supabase.js - Elite Capital (نسخة محدثة بالكامل مع جميع الميزات)
+// supabase.js - Elite Capital (نسخة محدثة مع سجل النشاطات)
 // ===================================
 
 const SUPABASE_URL = 'https://aiorcrtfvhjpwjdsebzp.supabase.co';
@@ -119,12 +119,12 @@ async function registerUser(userData) {
         
         console.log('✅ تم إنشاء المستخدم بنجاح:', newUser.id);
         
-        // إنشاء إشعار ترحيبي
-        await createNotification({
+        // إنشاء نشاط ترحيبي
+        await addActivity({
             userId: newUser.id,
             type: 'welcome',
-            title: '👋 مرحباً بك في Elite Capital',
-            message: 'نرحب بك في منصة الاستثمار الذكي، نتمنى لك تجربة مميزة'
+            title: '👋 مرحباً بك',
+            description: 'نرحب بك في Elite Capital'
         });
         
         return { success: true, data: newUser };
@@ -166,6 +166,9 @@ async function loginUser(usernameOrEmail, password) {
             .from('users')
             .update({ last_login: new Date().toISOString() })
             .eq('id', user.id);
+        
+        // إضافة نشاط تسجيل دخول
+        await addLoginActivity(user.id);
         
         console.log('✅ تم تسجيل الدخول بنجاح:', user.email);
         return { success: true, data: user };
@@ -237,14 +240,6 @@ async function updateUserStatus(id, status) {
             .eq('id', id);
         
         if (error) throw error;
-        
-        // إنشاء إشعار للمستخدم بتغيير الحالة
-        await createNotification({
-            userId: id,
-            type: 'status',
-            title: '🔄 تحديث حالة الحساب',
-            message: `تم تغيير حالة حسابك إلى ${status === 'active' ? 'نشط' : status === 'suspended' ? 'معلق' : 'محظور'}`
-        });
         
         return { success: true };
     } catch (error) {
@@ -402,16 +397,8 @@ async function createPendingPackage(pendingData) {
         
         console.log('✅ تم حفظ الطلب بنجاح:', data);
         
-        // إنشاء إشعار للمستخدم
-        await createSubscriptionNotification(user.id, pkg.name, pendingData.amount, 'pending');
-        
-        // إنشاء إشعار للمسؤولين
-        await createAdminNotification(
-            'new_subscription',
-            '📦 طلب اشتراك جديد',
-            `طلب اشتراك جديد من ${user.name} في باقة ${pkg.name} بقيمة ${pendingData.amount}$`,
-            { userId: user.id, packageId: pkg.id, amount: pendingData.amount }
-        );
+        // إضافة نشاط اشتراك (قيد المراجعة)
+        await addSubscriptionActivity(user.id, pendingData.amount, pkg.name, 'pending');
         
         return { success: true, data };
     } catch (error) {
@@ -514,8 +501,8 @@ async function approvePendingPackage(id, adminId) {
             await processReferralRewards(pending.user_id, pending.referred_by);
         }
         
-        // 6. إنشاء إشعار للمستخدم
-        await createSubscriptionNotification(pending.user_id, pending.package_name, pending.amount, 'approved');
+        // 6. إضافة نشاط اشتراك (تمت الموافقة)
+        await addSubscriptionActivity(pending.user_id, pending.amount, pending.package_name, 'approved');
         
         return { success: true, data: subscription };
     } catch (error) {
@@ -544,9 +531,9 @@ async function rejectPendingPackage(id, reason, adminId) {
         
         if (error) throw error;
         
-        // إنشاء إشعار للمستخدم
+        // إضافة نشاط اشتراك (مرفوض)
         if (pending) {
-            await createSubscriptionNotification(pending.user_id, pending.package_name, pending.amount, 'rejected');
+            await addSubscriptionActivity(pending.user_id, pending.amount, pending.package_name, 'rejected');
         }
         
         return { success: true };
@@ -632,10 +619,6 @@ async function processReferralRewards(newUserId, referralCode) {
         ];
         
         await supabaseClient.from('transactions').insert(transactions);
-        
-        // إنشاء إشعارات
-        await createReferralNotification(newUserId, referrer.name, REFEREE_REWARD);
-        await createReferralNotification(referrer.id, newUser.name, REFERRER_REWARD);
         
         console.log('✅ تم صرف مكافآت الإحالة بنجاح');
         return { success: true };
@@ -760,16 +743,8 @@ async function createWithdrawal(withdrawalData) {
                 created_at: new Date().toISOString()
             }]);
         
-        // إنشاء إشعار للمستخدم
-        await createWithdrawalNotification(withdrawalData.userId, withdrawalData.amount, 'pending');
-        
-        // إنشاء إشعار للمسؤولين
-        await createAdminNotification(
-            'new_withdrawal',
-            '💰 طلب سحب جديد',
-            `طلب سحب جديد بقيمة ${withdrawalData.amount}$ من المستخدم`,
-            { userId: withdrawalData.userId, amount: withdrawalData.amount, withdrawalId: data.id }
-        );
+        // إضافة نشاط سحب (قيد المراجعة)
+        await addWithdrawalActivity(withdrawalData.userId, withdrawalData.amount, 'pending');
         
         return { success: true, data };
     } catch (error) {
@@ -845,8 +820,8 @@ async function updateWithdrawalStatus(id, status, adminId, txHash = null) {
             });
         }
         
-        // إنشاء إشعار للمستخدم
-        await createWithdrawalNotification(data.user_id, data.amount, status);
+        // إضافة نشاط سحب (تحديث الحالة)
+        await addWithdrawalActivity(data.user_id, data.amount, status);
         
         return { success: true, data };
     } catch (error) {
@@ -897,15 +872,13 @@ async function getDashboardStats() {
             packagesRes,
             pendingPackagesRes,
             subscriptionsRes,
-            withdrawalsRes,
-            notificationsRes
+            withdrawalsRes
         ] = await Promise.all([
             supabaseClient.from('users').select('*', { count: 'exact', head: false }),
             supabaseClient.from('packages').select('*').eq('status', 'active'),
             supabaseClient.from('pending_packages').select('*').eq('status', 'pending'),
             supabaseClient.from('subscriptions').select('*').eq('status', 'active'),
-            supabaseClient.from('withdrawals').select('*'),
-            supabaseClient.from('notifications').select('*', { count: 'exact', head: false })
+            supabaseClient.from('withdrawals').select('*')
         ]);
         
         const users = usersRes.data || [];
@@ -913,7 +886,6 @@ async function getDashboardStats() {
         const pendingPackages = pendingPackagesRes.data || [];
         const subscriptions = subscriptionsRes.data || [];
         const withdrawals = withdrawalsRes.data || [];
-        const notifications = notificationsRes.data || [];
         
         const totalDeposits = users.reduce((sum, u) => sum + (u.total_earned || 0), 0);
         const totalWithdrawals = withdrawals
@@ -936,9 +908,7 @@ async function getDashboardStats() {
                 activeSubscriptions: subscriptions.length,
                 pendingPackages: pendingPackages.length,
                 pendingWithdrawals: withdrawals.filter(w => w.status === 'pending').length,
-                packagesCount: packages.length,
-                totalNotifications: notifications.length,
-                unreadNotifications: notifications.filter(n => !n.is_read).length
+                packagesCount: packages.length
             }
         };
     } catch (error) {
@@ -1003,8 +973,8 @@ async function processDailyProfits() {
                     created_at: new Date().toISOString()
                 }]);
             
-            // إنشاء إشعار أرباح يومية
-            await createProfitNotification(sub.user_id, profitAmount, sub.package_name);
+            // إضافة نشاط ربح يومي
+            await addProfitActivity(sub.user_id, profitAmount, sub.package_name);
             
             profits.push(profit);
         }
@@ -1048,14 +1018,6 @@ async function startLiveChat(userId) {
         if (createError) throw createError;
         
         console.log('✅ تم إنشاء محادثة جديدة:', newChat.id);
-        
-        // إنشاء إشعار للمسؤولين
-        await createAdminNotification(
-            'new_chat',
-            '💬 محادثة جديدة',
-            'مستخدم يريد الدردشة المباشرة',
-            { userId, chatId: newChat.id }
-        );
         
         return { success: true, data: newChat, isNew: true };
     } catch (error) {
@@ -1244,259 +1206,159 @@ async function getUserActiveChat(userId) {
     }
 }
 
-// ========== نظام الإشعارات المتقدم ==========
-async function createNotification(notificationData) {
+// ========== نظام سجل النشاطات ==========
+
+/**
+ * إضافة نشاط جديد
+ */
+async function addActivity(activityData) {
     try {
         const { data, error } = await supabaseClient
-            .from('notifications')
+            .from('activity_log')
             .insert([{
-                user_id: notificationData.userId,
-                type: notificationData.type,
-                title: notificationData.title,
-                message: notificationData.message,
-                data: notificationData.data || {},
-                is_admin_notification: notificationData.isAdmin || false,
-                created_at: new Date().toISOString(),
-                expires_at: notificationData.expiresAt || null
+                user_id: activityData.userId,
+                type: activityData.type,
+                title: activityData.title,
+                description: activityData.description,
+                amount: activityData.amount || null,
+                status: activityData.status || null,
+                package_name: activityData.packageName || null,
+                created_at: new Date().toISOString()
             }])
             .select()
             .single();
         
         if (error) throw error;
         
-        // تحديث عداد الإشعارات إذا كان المستخدم متصل
-        if (window.notificationListeners && window.notificationListeners[notificationData.userId]) {
-            window.notificationListeners[notificationData.userId].forEach(callback => {
-                callback(data);
-            });
-        }
-        
         return { success: true, data };
     } catch (error) {
-        console.error('خطأ في إنشاء الإشعار:', error);
+        console.error('خطأ في إضافة النشاط:', error);
         return { success: false, error: error.message };
     }
 }
 
-async function createProfitNotification(userId, amount, packageName) {
-    return createNotification({
+/**
+ * إضافة نشاط ربح يومي
+ */
+async function addProfitActivity(userId, amount, packageName) {
+    return addActivity({
         userId: userId,
         type: 'profit',
-        title: '💰 أرباح يومية',
-        message: `تم إضافة ${amount}$ أرباح يومية من باقة ${packageName}`,
-        data: { amount, packageName }
+        title: '💰 ربح يومي',
+        description: `تم إضافة ${amount}$ أرباح يومية من ${packageName}`,
+        amount: amount,
+        status: 'completed',
+        packageName: packageName
     });
 }
 
-async function createWithdrawalNotification(userId, amount, status) {
-    let title, message;
+/**
+ * إضافة نشاط سحب
+ */
+async function addWithdrawalActivity(userId, amount, status) {
+    let title, description;
     
-    if (status === 'completed') {
-        title = '✅ تم قبول طلب السحب';
-        message = `تمت الموافقة على طلب السحب بقيمة ${amount}$ وسيتم تحويلها قريباً`;
-    } else if (status === 'pending') {
-        title = '⏳ طلب سحب قيد المراجعة';
-        message = `تم تقديم طلب سحب بقيمة ${amount}$ بانتظار موافقة الإدارة`;
+    if (status === 'pending') {
+        title = '💰 طلب سحب';
+        description = `طلب سحب بقيمة ${amount}$ قيد المراجعة`;
+    } else if (status === 'approved' || status === 'completed') {
+        title = '✅ تمت الموافقة على السحب';
+        description = `تمت الموافقة على طلب السحب بقيمة ${amount}$`;
     } else if (status === 'rejected') {
         title = '❌ رفض طلب السحب';
-        message = `عذراً، تم رفض طلب السحب بقيمة ${amount}$ يرجى التواصل مع الدعم`;
-    } else {
-        title = '💰 تحديث حالة السحب';
-        message = `تم تحديث حالة طلب السحب بقيمة ${amount}$ إلى ${status}`;
+        description = `تم رفض طلب السحب بقيمة ${amount}$`;
     }
     
-    return createNotification({
+    return addActivity({
         userId: userId,
         type: 'withdrawal',
         title: title,
-        message: message,
-        data: { amount, status }
+        description: description,
+        amount: amount,
+        status: status
     });
 }
 
-async function createSubscriptionNotification(userId, packageName, amount, status) {
-    let title, message;
+/**
+ * إضافة نشاط اشتراك
+ */
+async function addSubscriptionActivity(userId, amount, packageName, status) {
+    let title, description;
     
-    if (status === 'approved') {
-        title = '🎉 تم تفعيل اشتراكك';
-        message = `تم تفعيل باقة ${packageName} بنجاح بقيمة ${amount}$، أرباحك اليومية بدأت`;
-    } else if (status === 'pending') {
-        title = '⏳ طلب اشتراك قيد المراجعة';
-        message = `طلب اشتراكك في باقة ${packageName} بقيمة ${amount}$ قيد المراجعة`;
+    if (status === 'pending') {
+        title = '📦 طلب اشتراك';
+        description = `طلب اشتراك في باقة ${packageName} بقيمة ${amount}$ قيد المراجعة`;
+    } else if (status === 'approved') {
+        title = '✅ تمت الموافقة على الاشتراك';
+        description = `تمت الموافقة على اشتراكك في باقة ${packageName}`;
     } else if (status === 'rejected') {
         title = '❌ رفض طلب الاشتراك';
-        message = `عذراً، تم رفض طلب اشتراكك في باقة ${packageName}`;
+        description = `تم رفض طلب اشتراكك في باقة ${packageName}`;
     }
     
-    return createNotification({
+    return addActivity({
         userId: userId,
         type: 'subscription',
         title: title,
-        message: message,
-        data: { packageName, amount, status }
+        description: description,
+        amount: amount,
+        status: status,
+        packageName: packageName
     });
 }
 
-async function createReferralNotification(userId, referralName, amount) {
-    return createNotification({
+/**
+ * إضافة نشاط تسجيل دخول
+ */
+async function addLoginActivity(userId) {
+    return addActivity({
         userId: userId,
-        type: 'referral',
-        title: '🎁 مكافأة إحالة جديدة',
-        message: `قام ${referralName} بالاشتراك وحصلت على ${amount}$ مكافأة`,
-        data: { referralName, amount }
+        type: 'login',
+        title: '🔐 تسجيل دخول',
+        description: 'تم تسجيل الدخول إلى حسابك'
     });
 }
 
-async function createAdminNotification(type, title, message, data = {}) {
+/**
+ * جلب نشاطات المستخدم
+ */
+async function getUserActivities(userId, limit = 50) {
     try {
-        const { data: admins, error } = await supabaseClient
-            .from('users')
-            .select('id')
-            .eq('is_admin', true);
-        
-        if (error) throw error;
-        
-        if (admins && admins.length > 0) {
-            const notifications = admins.map(admin => ({
-                user_id: admin.id,
-                type: type,
-                title: title,
-                message: message,
-                data: data,
-                is_admin_notification: true,
-                created_at: new Date().toISOString()
-            }));
-            
-            await supabaseClient.from('notifications').insert(notifications);
-        }
-        
-        return { success: true };
-    } catch (error) {
-        console.error('خطأ في إنشاء إشعار المسؤول:', error);
-        return { success: false };
-    }
-}
-
-async function getUserNotifications(userId, options = {}) {
-    try {
-        let query = supabaseClient
-            .from('notifications')
+        const { data, error } = await supabaseClient
+            .from('activity_log')
             .select('*')
             .eq('user_id', userId)
-            .order('created_at', { ascending: false });
-        
-        if (options.limit) {
-            query = query.limit(options.limit);
-        }
-        
-        if (options.unreadOnly) {
-            query = query.eq('is_read', false);
-        }
-        
-        if (options.type) {
-            query = query.eq('type', options.type);
-        }
-        
-        const { data, error } = await query;
+            .order('created_at', { ascending: false })
+            .limit(limit);
         
         if (error) throw error;
         
         return { success: true, data };
     } catch (error) {
-        console.error('خطأ في جلب الإشعارات:', error);
+        console.error('خطأ في جلب النشاطات:', error);
         return { success: false, error: error.message };
     }
 }
 
-async function markNotificationAsRead(notificationId) {
+/**
+ * جلب نشاطات المستخدم حسب النوع
+ */
+async function getUserActivitiesByType(userId, type, limit = 50) {
     try {
-        const { error } = await supabaseClient
-            .from('notifications')
-            .update({
-                is_read: true,
-                read_at: new Date().toISOString()
-            })
-            .eq('id', notificationId);
-        
-        if (error) throw error;
-        
-        return { success: true };
-    } catch (error) {
-        console.error('خطأ في تحديث الإشعار:', error);
-        return { success: false, error: error.message };
-    }
-}
-
-async function markAllNotificationsAsRead(userId) {
-    try {
-        const { error } = await supabaseClient
-            .from('notifications')
-            .update({
-                is_read: true,
-                read_at: new Date().toISOString()
-            })
+        const { data, error } = await supabaseClient
+            .from('activity_log')
+            .select('*')
             .eq('user_id', userId)
-            .eq('is_read', false);
+            .eq('type', type)
+            .order('created_at', { ascending: false })
+            .limit(limit);
         
         if (error) throw error;
         
-        return { success: true };
+        return { success: true, data };
     } catch (error) {
-        console.error('خطأ في تحديث جميع الإشعارات:', error);
+        console.error('خطأ في جلب النشاطات:', error);
         return { success: false, error: error.message };
-    }
-}
-
-async function deleteNotification(notificationId) {
-    try {
-        const { error } = await supabaseClient
-            .from('notifications')
-            .delete()
-            .eq('id', notificationId);
-        
-        if (error) throw error;
-        
-        return { success: true };
-    } catch (error) {
-        console.error('خطأ في حذف الإشعار:', error);
-        return { success: false, error: error.message };
-    }
-}
-
-async function getUnreadCount(userId) {
-    try {
-        const { count, error } = await supabaseClient
-            .from('notifications')
-            .select('*', { count: 'exact', head: true })
-            .eq('user_id', userId)
-            .eq('is_read', false);
-        
-        if (error) throw error;
-        
-        return { success: true, count: count || 0 };
-    } catch (error) {
-        console.error('خطأ في جلب عدد الإشعارات:', error);
-        return { success: false, error: error.message, count: 0 };
-    }
-}
-
-async function cleanOldNotifications() {
-    try {
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        
-        const { error } = await supabaseClient
-            .from('notifications')
-            .delete()
-            .lt('created_at', thirtyDaysAgo.toISOString())
-            .eq('is_read', true);
-        
-        if (error) throw error;
-        
-        return { success: true };
-    } catch (error) {
-        console.error('خطأ في تنظيف الإشعارات:', error);
-        return { success: false };
     }
 }
 
@@ -1573,19 +1435,14 @@ window.supabaseHelpers = {
     closeChat,
     getUserActiveChat,
     
-    // نظام الإشعارات
-    createNotification,
-    createProfitNotification,
-    createWithdrawalNotification,
-    createSubscriptionNotification,
-    createReferralNotification,
-    createAdminNotification,
-    getUserNotifications,
-    markNotificationAsRead,
-    markAllNotificationsAsRead,
-    deleteNotification,
-    getUnreadCount,
-    cleanOldNotifications
+    // نظام سجل النشاطات (بديل الإشعارات)
+    addActivity,
+    addProfitActivity,
+    addWithdrawalActivity,
+    addSubscriptionActivity,
+    addLoginActivity,
+    getUserActivities,
+    getUserActivitiesByType
 };
 
-console.log('✅ تم تحميل جميع دوال Supabase مع نظام الدردشة والإشعارات');
+console.log('✅ تم تحميل جميع دوال Supabase مع سجل النشاطات');

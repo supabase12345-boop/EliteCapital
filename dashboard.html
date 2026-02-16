@@ -143,27 +143,6 @@
             position: relative;
         }
 
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--danger);
-            color: white;
-            font-size: 11px;
-            padding: 3px 6px;
-            border-radius: 50px;
-            min-width: 18px;
-            text-align: center;
-            border: 2px solid var(--gold);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
         .user-dropdown {
             position: absolute;
             top: 60px;
@@ -211,20 +190,6 @@
             color: var(--gold);
         }
 
-        .dropdown-badge {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: var(--danger);
-            color: white;
-            font-size: 11px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            min-width: 18px;
-            text-align: center;
-        }
-
         .chat-badge {
             position: absolute;
             left: 15px;
@@ -238,6 +203,12 @@
             min-width: 22px;
             text-align: center;
             animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.1); }
+            100% { transform: translateY(-50%) scale(1); }
         }
 
         /* المحتوى الرئيسي */
@@ -480,53 +451,114 @@
             font-size: 12px;
         }
 
-        /* قائمة المعاملات */
-        .transactions-list {
-            max-height: 300px;
+        /* سجل النشاطات */
+        .activities-list {
+            max-height: 400px;
             overflow-y: auto;
-            padding-right: 10px;
+            padding-left: 10px;
         }
 
-        .transaction-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
+        .activity-item {
             background: rgba(255, 255, 255, 0.03);
             border-radius: 15px;
-            margin-bottom: 10px;
-            border-right: 4px solid var(--success);
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-right: 4px solid transparent;
+            transition: all 0.3s;
         }
 
-        .transaction-item.withdrawal {
-            border-right-color: var(--danger);
+        .activity-item:hover {
+            background: rgba(200, 169, 126, 0.1);
+            transform: translateX(-5px);
         }
 
-        .transaction-item.referral {
-            border-right-color: var(--gold);
+        .activity-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
         }
 
-        .transaction-info h4 {
-            font-size: 16px;
-            margin-bottom: 5px;
+        .icon-profit { background: rgba(39, 174, 96, 0.2); color: #27ae60; }
+        .icon-withdrawal { background: rgba(243, 156, 18, 0.2); color: #f39c12; }
+        .icon-subscription { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+        .icon-login { background: rgba(155, 89, 182, 0.2); color: #9b59b6; }
+
+        .activity-content {
+            flex: 1;
         }
 
-        .transaction-info p {
-            color: var(--text-muted);
+        .activity-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .activity-desc {
             font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
         }
 
-        .transaction-amount {
-            font-size: 18px;
+        .activity-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .activity-amount {
+            color: var(--success);
             font-weight: 700;
         }
 
-        .transaction-amount.positive {
-            color: var(--success);
+        .activity-status {
+            padding: 2px 8px;
+            border-radius: 50px;
+            font-size: 10px;
+            font-weight: 600;
         }
 
-        .transaction-amount.negative {
-            color: var(--danger);
+        .status-pending {
+            background: rgba(243, 156, 18, 0.2);
+            color: #f39c12;
+        }
+
+        .status-approved, .status-completed {
+            background: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+        }
+
+        .status-rejected {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .view-all-btn {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 10px;
+            border: 1px solid var(--gold);
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+
+        .view-all-btn:hover {
+            background: var(--gold);
+            color: var(--dark);
         }
 
         /* قائمة طلبات السحب */
@@ -1031,19 +1063,15 @@
         </div>
         
         <div class="user-menu">
-            <div class="user-avatar" id="userAvatar" onclick="toggleUserMenu()">
-                م
-                <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
-            </div>
+            <div class="user-avatar" id="userAvatar" onclick="toggleUserMenu()">م</div>
             <div class="user-dropdown" id="userDropdown">
                 <div class="user-dropdown-item" onclick="window.location.href='profile.html'">
                     <i class="fas fa-user"></i>
                     الملف الشخصي
                 </div>
-                <div class="user-dropdown-item" onclick="window.location.href='notifications.html'">
-                    <i class="fas fa-bell"></i>
-                    الإشعارات
-                    <span class="dropdown-badge" id="dropdownNotificationBadge" style="display: none;">0</span>
+                <div class="user-dropdown-item" onclick="window.location.href='activity.html'">
+                    <i class="fas fa-history"></i>
+                    سجل النشاطات
                 </div>
                 <div class="user-dropdown-item" onclick="window.location.href='chat.html'">
                     <i class="fas fa-comments"></i>
@@ -1111,7 +1139,7 @@
             <!-- الاشتراك الحالي (مع زر تحديث) -->
             <div id="subscriptionSection" style="position: relative;"></div>
 
-            <!-- شبكة المحتوى - سطرين: الإحالة + المعاملات -->
+            <!-- شبكة المحتوى - 3 أقسام -->
             <div class="content-grid">
                 <!-- نظام الإحالة -->
                 <div class="card">
@@ -1145,15 +1173,19 @@
                     </div>
                 </div>
 
-                <!-- آخر المعاملات -->
+                <!-- آخر النشاطات -->
                 <div class="card">
                     <div class="card-title">
                         <i class="fas fa-history"></i>
-                        آخر المعاملات
+                        آخر النشاطات
                     </div>
-                    <div class="transactions-list" id="transactionsList">
-                        <p style="color: var(--text-muted); text-align: center;">لا توجد معاملات</p>
+                    <div class="activities-list" id="recentActivities">
+                        <p style="color: var(--text-muted); text-align: center;">جاري التحميل...</p>
                     </div>
+                    <a href="activity.html" class="view-all-btn">
+                        <i class="fas fa-arrow-left"></i>
+                        عرض الكل
+                    </a>
                 </div>
             </div>
         </div>
@@ -1245,10 +1277,9 @@
             <i class="fas fa-chart-pie"></i>
             <span>الإحصائيات</span>
         </div>
-        <div class="nav-item" onclick="window.location.href='notifications.html'">
-            <i class="fas fa-bell"></i>
-            <span>الإشعارات</span>
-            <span class="nav-badge" id="navNotificationBadge" style="display: none;">0</span>
+        <div class="nav-item" onclick="window.location.href='activity.html'">
+            <i class="fas fa-history"></i>
+            <span>النشاطات</span>
         </div>
     </div>
 
@@ -1321,7 +1352,7 @@
         let referralStats = null;
         let currentNetwork = 'TRC20';
         let chatCheckInterval = null;
-        let notificationInterval = null;
+        let activitiesInterval = null;
         
         const withdrawalFees = {
             'TRC20': 5,
@@ -1338,8 +1369,8 @@
             await loadTransactions();
             await loadWithdrawals();
             await loadReferralStats();
+            await loadRecentActivities();
             await checkUnreadMessages();
-            await updateNotificationBadges();
             updateUI();
             
             // إضافة زر التحديث إذا وجد اشتراك
@@ -1348,8 +1379,8 @@
             // بدء التحقق من الرسائل غير المقروءة كل 10 ثواني
             chatCheckInterval = setInterval(checkUnreadMessages, 10000);
             
-            // بدء التحقق من الإشعارات كل 30 ثانية
-            notificationInterval = setInterval(updateNotificationBadges, 30000);
+            // تحديث النشاطات كل 30 ثانية
+            activitiesInterval = setInterval(loadRecentActivities, 30000);
         });
 
         // التحقق من المستخدم
@@ -1371,10 +1402,7 @@
                 }
             }
             
-            document.getElementById('userAvatar').innerHTML = `
-                ${currentUser.name?.charAt(0).toUpperCase() || 'م'}
-                <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
-            `;
+            document.getElementById('userAvatar').textContent = currentUser.name?.charAt(0).toUpperCase() || 'م';
         }
 
         // تحميل بيانات المستخدم
@@ -1393,6 +1421,89 @@
             
             if (currentUser.last_login) {
                 document.getElementById('lastLogin').textContent = new Date(currentUser.last_login).toLocaleString('ar-SA');
+            }
+        }
+
+        // تحميل آخر النشاطات
+        async function loadRecentActivities() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('activity_log')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
+                if (error) throw error;
+                
+                displayRecentActivities(data || []);
+                
+            } catch (error) {
+                console.error('خطأ في تحميل النشاطات:', error);
+            }
+        }
+
+        // عرض آخر النشاطات
+        function displayRecentActivities(activities) {
+            const container = document.getElementById('recentActivities');
+            
+            if (!activities || activities.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">لا توجد نشاطات</p>';
+                return;
+            }
+            
+            let html = '';
+            activities.slice(0, 5).forEach(activity => {
+                const icon = getActivityIcon(activity.type);
+                const date = new Date(activity.created_at).toLocaleDateString('ar-SA');
+                
+                let statusBadge = '';
+                if (activity.status) {
+                    let statusClass = '';
+                    let statusText = '';
+                    
+                    if (activity.status === 'pending') {
+                        statusClass = 'status-pending';
+                        statusText = 'قيد المراجعة';
+                    } else if (activity.status === 'approved' || activity.status === 'completed') {
+                        statusClass = 'status-approved';
+                        statusText = 'تمت الموافقة';
+                    } else if (activity.status === 'rejected') {
+                        statusClass = 'status-rejected';
+                        statusText = 'مرفوض';
+                    }
+                    
+                    statusBadge = `<span class="activity-status ${statusClass}">${statusText}</span>`;
+                }
+                
+                html += `
+                    <div class="activity-item">
+                        <div class="activity-icon ${icon.class}">
+                            <i class="fas ${icon.icon}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">${activity.title}</div>
+                            <div class="activity-desc">${activity.description}</div>
+                            <div class="activity-meta">
+                                <span><i class="far fa-clock"></i> ${date}</span>
+                                ${activity.amount ? `<span class="activity-amount">${activity.amount}$</span>` : ''}
+                                ${statusBadge}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function getActivityIcon(type) {
+            switch(type) {
+                case 'profit': return { icon: 'fa-coins', class: 'icon-profit' };
+                case 'withdrawal': return { icon: 'fa-money-bill-wave', class: 'icon-withdrawal' };
+                case 'subscription': return { icon: 'fa-crown', class: 'icon-subscription' };
+                case 'login': return { icon: 'fa-right-to-bracket', class: 'icon-login' };
+                default: return { icon: 'fa-circle', class: '' };
             }
         }
 
@@ -1543,6 +1654,7 @@
             // تحديث الاشتراك
             await loadSubscription();
             await loadUserData();
+            await loadRecentActivities();
             
             showNotification('✅ تم تحديث البيانات بنجاح');
         }
@@ -1578,50 +1690,8 @@
             
             if (result.success && result.data) {
                 transactions = result.data;
-                displayTransactions();
                 document.getElementById('statsTransactionsCount').textContent = transactions.length;
             }
-        }
-
-        // عرض المعاملات
-        function displayTransactions() {
-            const container = document.getElementById('transactionsList');
-            
-            if (!transactions || transactions.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">لا توجد معاملات</p>';
-                return;
-            }
-            
-            let html = '';
-            transactions.slice(0, 10).forEach(t => {
-                let itemClass = 'transaction-item';
-                let sign = '+';
-                let amountClass = 'positive';
-                
-                if (t.type === 'سحب') {
-                    itemClass += ' withdrawal';
-                    sign = '-';
-                    amountClass = 'negative';
-                } else if (t.type === 'مكافأة إحالة') {
-                    itemClass += ' referral';
-                }
-                
-                const date = t.created_at ? new Date(t.created_at).toLocaleDateString('ar-SA') : '';
-                
-                html += `
-                    <div class="${itemClass}">
-                        <div class="transaction-info">
-                            <h4>${t.type || 'معاملة'}</h4>
-                            <p>${t.description || ''}<br><small>${date}</small></p>
-                        </div>
-                        <div class="transaction-amount ${amountClass}">
-                            ${sign}${t.amount || 0}$
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
         }
 
         // تحميل طلبات السحب
@@ -1720,28 +1790,6 @@
             }
         }
 
-        // تحديث عداد الإشعارات
-        async function updateNotificationBadges() {
-            if (!currentUser) return;
-            
-            const result = await window.supabaseHelpers.getUnreadCount(currentUser.id);
-            
-            if (result.success && result.count > 0) {
-                document.getElementById('notificationBadge').style.display = 'inline';
-                document.getElementById('notificationBadge').textContent = result.count;
-                
-                document.getElementById('dropdownNotificationBadge').style.display = 'inline';
-                document.getElementById('dropdownNotificationBadge').textContent = result.count;
-                
-                document.getElementById('navNotificationBadge').style.display = 'inline';
-                document.getElementById('navNotificationBadge').textContent = result.count;
-            } else {
-                document.getElementById('notificationBadge').style.display = 'none';
-                document.getElementById('dropdownNotificationBadge').style.display = 'none';
-                document.getElementById('navNotificationBadge').style.display = 'none';
-            }
-        }
-
         // تحديث الواجهة
         function updateUI() {
             document.getElementById('balance').textContent = (currentUser.balance || 0) + '$';
@@ -1835,6 +1883,7 @@
                 await loadUserData();
                 await loadWithdrawals();
                 await loadTransactions();
+                await loadRecentActivities();
                 updateUI();
                 showNotification('✅ تم تقديم طلب السحب بنجاح');
             } else {
@@ -1857,7 +1906,7 @@
         async function logout() {
             if (confirm('هل تريد تسجيل الخروج؟')) {
                 if (chatCheckInterval) clearInterval(chatCheckInterval);
-                if (notificationInterval) clearInterval(notificationInterval);
+                if (activitiesInterval) clearInterval(activitiesInterval);
                 localStorage.removeItem('current_user');
                 window.location.href = 'index.html';
             }
@@ -1893,6 +1942,7 @@
                 console.log('تحديث تلقائي للبيانات...');
                 await loadUserData();
                 await loadTransactions();
+                await loadRecentActivities();
             }
         }, 30000);
 
@@ -1901,8 +1951,8 @@
             if (chatCheckInterval) {
                 clearInterval(chatCheckInterval);
             }
-            if (notificationInterval) {
-                clearInterval(notificationInterval);
+            if (activitiesInterval) {
+                clearInterval(activitiesInterval);
             }
         });
     </script>
