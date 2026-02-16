@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>الإشعارات - Elite Capital</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: #0f172a;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #1e293b;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 2px solid #c8a97e;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-btn {
+            width: 45px;
+            height: 45px;
+            background: rgba(200,169,126,0.1);
+            border: 2px solid #c8a97e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #c8a97e;
+            font-size: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .back-btn:active {
+            background: #c8a97e;
+            color: #0f172a;
+        }
+
+        .header h1 {
+            flex: 1;
+            font-size: 24px;
+            color: #c8a97e;
+        }
+
+        .mark-read-btn {
+            background: rgba(200,169,126,0.1);
+            border: 1px solid #c8a97e;
+            color: #c8a97e;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+
+        .mark-read-btn:active {
+            background: #c8a97e;
+            color: #0f172a;
+        }
+
+        .main {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* شريط الفلتر */
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+            background: rgba(30, 41, 59, 0.5);
+            padding: 15px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid rgba(200,169,126,0.3);
+            border-radius: 50px;
+            color: rgba(255,255,255,0.7);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .filter-btn:hover {
+            background: rgba(200,169,126,0.1);
+            border-color: #c8a97e;
+        }
+
+        .filter-btn.active {
+            background: #c8a97e;
+            color: #0f172a;
+            border-color: #c8a97e;
+            font-weight: 700;
+        }
+
+        /* قائمة الإشعارات */
+        .notifications-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 300px;
+        }
+
+        .notification-item {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 18px;
+            border: 1px solid rgba(200, 169, 126, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            border-right: 4px solid transparent;
+        }
+
+        .notification-item:hover {
+            background: rgba(30, 41, 59, 0.8);
+            transform: translateX(-5px);
+        }
+
+        .notification-item.unread {
+            background: rgba(200, 169, 126, 0.1);
+            border-right-color: #c8a97e;
+        }
+
+        .notification-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        /* ألوان الأيقونات */
+        .icon-profit { background: rgba(39, 174, 96, 0.2); color: #27ae60; }
+        .icon-withdrawal { background: rgba(243, 156, 18, 0.2); color: #f39c12; }
+        .icon-subscription { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+        .icon-referral { background: rgba(155, 89, 182, 0.2); color: #9b59b6; }
+        .icon-welcome { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+        .icon-default { background: rgba(200, 169, 126, 0.2); color: #c8a97e; }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .notification-message {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+
+        .notification-time {
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .unread-dot {
+            width: 10px;
+            height: 10px;
+            background: #c8a97e;
+            border-radius: 50%;
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* حالة عدم وجود إشعارات */
+        .no-notifications {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(30, 41, 59, 0.3);
+            border-radius: 30px;
+            border: 2px dashed rgba(200,169,126,0.3);
+            margin-top: 30px;
+        }
+
+        .no-notifications i {
+            font-size: 80px;
+            color: #c8a97e;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .no-notifications h3 {
+            font-size: 24px;
+            color: #c8a97e;
+            margin-bottom: 10px;
+        }
+
+        .no-notifications p {
+            color: rgba(255,255,255,0.5);
+            font-size: 16px;
+        }
+
+        /* التحميل */
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: #c8a97e;
+            animation: spin 1s linear infinite;
+            margin: 40px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* رسالة الخطأ */
+        .error-box {
+            text-align: center;
+            padding: 50px 20px;
+            background: rgba(231, 76, 60, 0.1);
+            border: 2px solid #e74c3c;
+            border-radius: 30px;
+            margin-top: 30px;
+        }
+
+        .error-box i {
+            font-size: 60px;
+            color: #e74c3c;
+            margin-bottom: 15px;
+        }
+
+        .error-box h3 {
+            color: #e74c3c;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .error-box p {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 20px;
+        }
+
+        .retry-btn {
+            background: #c8a97e;
+            color: #0f172a;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid #c8a97e;
+        }
+
+        .retry-btn:hover {
+            background: transparent;
+            color: #c8a97e;
+        }
+
+        @media (max-width: 600px) {
+            .filter-bar {
+                padding: 12px;
+                gap: 5px;
+            }
+            
+            .filter-btn {
+                padding: 6px 12px;
+                font-size: 12px;
+                min-width: 55px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h1>الإشعارات</h1>
+        <button class="mark-read-btn" onclick="markAllAsRead()">
+            <i class="fas fa-check-double"></i>
+            <span>تحديد الكل مقروء</span>
+        </button>
+    </div>
+
+    <div class="main">
+        <!-- شريط الفلتر -->
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterNotifications('all')">الكل</button>
+            <button class="filter-btn" onclick="filterNotifications('subscription')">اشتراكات</button>
+            <button class="filter-btn" onclick="filterNotifications('withdrawal')">سحب</button>
+            <button class="filter-btn" onclick="filterNotifications('profit')">أرباح</button>
+            <button class="filter-btn" onclick="filterNotifications('referral')">إحالات</button>
+            <button class="filter-btn" onclick="filterNotifications('unread')">غير مقروءة</button>
+        </div>
+
+        <!-- قائمة الإشعارات -->
+        <div class="notifications-list" id="notificationsContainer"></div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let currentFilter = 'all';
+        let retryCount = 0;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkUser();
+            await loadNotifications();
+        });
+
+        async function checkUser() {
+            const savedUser = localStorage.getItem('current_user');
+            if (!savedUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+            currentUser = JSON.parse(savedUser);
+        }
+
+        async function loadNotifications() {
+            const container = document.getElementById('notificationsContainer');
+            container.innerHTML = '<div class="loading-spinner"></div>';
+            
+            try {
+                // التحقق من وجود الجدول أولاً
+                const { error: tableCheck } = await supabaseClient
+                    .from('notifications')
+                    .select('count', { count: 'exact', head: true })
+                    .limit(1);
+                
+                if (tableCheck) {
+                    console.error('الجدول غير موجود:', tableCheck);
+                    showTableError();
+                    return;
+                }
+                
+                // بناء الاستعلام
+                let query = supabaseClient
+                    .from('notifications')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+                
+                // تطبيق الفلتر
+                if (currentFilter === 'unread') {
+                    query = query.eq('is_read', false);
+                } else if (currentFilter !== 'all') {
+                    query = query.eq('type', currentFilter);
+                }
+                
+                const { data, error } = await query;
+                
+                if (error) {
+                    console.error('خطأ في جلب الإشعارات:', error);
+                    showError(error.message);
+                    return;
+                }
+                
+                // إذا ما في بيانات، جرب نضيف إشعارات تجريبية
+                if (!data || data.length === 0) {
+                    await createSampleNotifications();
+                    // حاول مرة ثانية
+                    const { data: newData } = await supabaseClient
+                        .from('notifications')
+                        .select('*')
+                        .eq('user_id', currentUser.id)
+                        .order('created_at', { ascending: false });
+                    
+                    if (newData && newData.length > 0) {
+                        displayNotifications(newData);
+                    } else {
+                        showNoNotifications();
+                    }
+                } else {
+                    displayNotifications(data);
+                }
+                
+            } catch (err) {
+                console.error('استثناء:', err);
+                showError('حدث خطأ غير متوقع');
+            }
+        }
+
+        async function createSampleNotifications() {
+            try {
+                const sampleNotifications = [
+                    {
+                        user_id: currentUser.id,
+                        type: 'welcome',
+                        title: '👋 مرحباً بك',
+                        message: 'نرحب بك في Elite Capital',
+                        created_at: new Date()
+                    },
+                    {
+                        user_id: currentUser.id,
+                        type: 'subscription',
+                        title: '🎉 تم تفعيل اشتراكك',
+                        message: 'تم تفعيل باقة الذهبية بنجاح',
+                        created_at: new Date(Date.now() - 86400000)
+                    },
+                    {
+                        user_id: currentUser.id,
+                        type: 'profit',
+                        title: '💰 أرباح يومية',
+                        message: 'تم إضافة 25$ أرباح يومية',
+                        created_at: new Date(Date.now() - 172800000)
+                    },
+                    {
+                        user_id: currentUser.id,
+                        type: 'withdrawal',
+                        title: '✅ تم قبول طلب السحب',
+                        message: 'تمت الموافقة على طلب السحب بقيمة 100$',
+                        created_at: new Date(Date.now() - 259200000)
+                    },
+                    {
+                        user_id: currentUser.id,
+                        type: 'referral',
+                        title: '🎁 مكافأة إحالة',
+                        message: 'قام أحمد بالاشتراك وحصلت على 50$',
+                        created_at: new Date(Date.now() - 345600000)
+                    }
+                ];
+                
+                await supabaseClient.from('notifications').insert(sampleNotifications);
+                
+            } catch (err) {
+                console.error('خطأ في إنشاء إشعارات تجريبية:', err);
+            }
+        }
+
+        function displayNotifications(notifications) {
+            const container = document.getElementById('notificationsContainer');
+            
+            let html = '';
+            notifications.forEach(n => {
+                const icon = getNotificationIcon(n.type);
+                const date = new Date(n.created_at).toLocaleDateString('ar-SA', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                html += `
+                    <div class="notification-item ${!n.is_read ? 'unread' : ''}" onclick="openNotification(${n.id})">
+                        <div class="notification-icon ${icon}">
+                            <i class="fas ${getNotificationIconName(n.type)}"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">${n.title || 'إشعار'}</div>
+                            <div class="notification-message">${n.message || 'لا يوجد نص'}</div>
+                            <div class="notification-time">
+                                <i class="far fa-clock"></i>
+                                ${date}
+                            </div>
+                        </div>
+                        ${!n.is_read ? '<span class="unread-dot"></span>' : ''}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function getNotificationIcon(type) {
+            switch(type) {
+                case 'profit': return 'icon-profit';
+                case 'withdrawal': return 'icon-withdrawal';
+                case 'subscription': return 'icon-subscription';
+                case 'referral': return 'icon-referral';
+                case 'welcome': return 'icon-welcome';
+                default: return 'icon-default';
+            }
+        }
+
+        function getNotificationIconName(type) {
+            switch(type) {
+                case 'profit': return 'fa-coins';
+                case 'withdrawal': return 'fa-money-bill-wave';
+                case 'subscription': return 'fa-crown';
+                case 'referral': return 'fa-gift';
+                case 'welcome': return 'fa-hand-wave';
+                default: return 'fa-bell';
+            }
+        }
+
+        function showTableError() {
+            const container = document.getElementById('notificationsContainer');
+            container.innerHTML = `
+                <div class="error-box">
+                    <i class="fas fa-database"></i>
+                    <h3>خطأ في قاعدة البيانات</h3>
+                    <p>جدول الإشعارات غير موجود. يرجى التواصل مع الدعم الفني.</p>
+                    <button class="retry-btn" onclick="location.reload()">
+                        <i class="fas fa-sync-alt"></i>
+                        إعادة المحاولة
+                    </button>
+                </div>
+            `;
+        }
+
+        function showError(message) {
+            const container = document.getElementById('notificationsContainer');
+            container.innerHTML = `
+                <div class="error-box">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h3>حدث خطأ</h3>
+                    <p>${message || 'حدث خطأ في تحميل الإشعارات'}</p>
+                    <button class="retry-btn" onclick="loadNotifications()">
+                        <i class="fas fa-sync-alt"></i>
+                        إعادة المحاولة
+                    </button>
+                </div>
+            `;
+        }
+
+        function showNoNotifications() {
+            const container = document.getElementById('notificationsContainer');
+            container.innerHTML = `
+                <div class="no-notifications">
+                    <i class="fas fa-bell-slash"></i>
+                    <h3>لا توجد إشعارات</h3>
+                    <p>سوف تظهر هنا جميع الإشعارات الجديدة</p>
+                </div>
+            `;
+        }
+
+        function filterNotifications(filter) {
+            currentFilter = filter;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            loadNotifications();
+        }
+
+        async function openNotification(id) {
+            try {
+                await supabaseClient
+                    .from('notifications')
+                    .update({ is_read: true, read_at: new Date().toISOString() })
+                    .eq('id', id);
+                
+                // تحديث القائمة
+                loadNotifications();
+                
+            } catch (err) {
+                console.error('خطأ في تحديث الإشعار:', err);
+            }
+        }
+
+        async function markAllAsRead() {
+            if (!confirm('تحديد جميع الإشعارات كمقروءة؟')) return;
+            
+            try {
+                await supabaseClient
+                    .from('notifications')
+                    .update({ is_read: true, read_at: new Date().toISOString() })
+                    .eq('user_id', currentUser.id)
+                    .eq('is_read', false);
+                
+                loadNotifications();
+                
+            } catch (err) {
+                console.error('خطأ في تحديد الكل كمقروء:', err);
+            }
+        }
+    </script>
+</body>
+</html>
