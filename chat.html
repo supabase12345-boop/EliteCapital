@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>الدردشة المباشرة</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    
+<!-- PWA -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#c8a97e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Elite Capital">
+<link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+<link rel="apple-touch-startup-image" href="/icons/icon-512x512.png">
+<meta name="msapplication-TileColor" content="#c8a97e">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: #0f172a;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ===== الهيدر ===== */
+        .header {
+            background: #1e293b;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #c8a97e;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 70px;
+        }
+
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(200,169,126,0.1);
+            border: 2px solid #c8a97e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #c8a97e;
+            font-size: 20px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .back-btn:active {
+            background: #c8a97e;
+            color: #0f172a;
+        }
+
+        .header-info {
+            flex: 1;
+        }
+
+        .header-info h1 {
+            font-size: 18px;
+            color: #c8a97e;
+            margin-bottom: 4px;
+        }
+
+        .header-info p {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(39,174,96,0.1);
+            padding: 6px 12px;
+            border-radius: 30px;
+            border: 1px solid #27ae60;
+            font-size: 13px;
+            color: #27ae60;
+            flex-shrink: 0;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #27ae60;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* ===== منطقة المحادثة ===== */
+        .chat-area {
+            position: fixed;
+            top: 70px;
+            bottom: 80px;
+            left: 0;
+            right: 0;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: linear-gradient(135deg, #0f172a, #1a1f2e);
+        }
+
+        /* رسالة المستخدم */
+        .message-user {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+        }
+
+        .message-user-content {
+            background: #c8a97e;
+            color: #0f172a;
+            padding: 12px 16px;
+            border-radius: 18px 18px 5px 18px;
+            max-width: 80%;
+            font-size: 15px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        /* رسالة الدعم */
+        .message-support {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .message-support-content {
+            background: #1e293b;
+            border: 1px solid rgba(200,169,126,0.3);
+            padding: 12px 16px;
+            border-radius: 18px 18px 18px 5px;
+            max-width: 80%;
+            font-size: 15px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        /* معلومات الرسالة */
+        .message-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+            margin-top: 4px;
+            padding: 0 4px;
+        }
+
+        .message-user .message-info {
+            justify-content: flex-end;
+        }
+
+        /* فاصل التاريخ */
+        .date-divider {
+            text-align: center;
+            margin: 16px 0;
+        }
+
+        .date-divider span {
+            background: rgba(255,255,255,0.05);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+            border: 1px solid rgba(200,169,126,0.2);
+        }
+
+        /* ===== منطقة الإدخال ===== */
+        .input-area {
+            background: #1e293b;
+            padding: 12px 16px;
+            display: flex;
+            gap: 10px;
+            border-top: 2px solid #c8a97e;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            z-index: 100;
+        }
+
+        .input-area input {
+            flex: 1;
+            height: 56px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(200,169,126,0.3);
+            border-radius: 30px;
+            padding: 0 20px;
+            color: white;
+            font-size: 16px;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .input-area input:focus {
+            outline: none;
+            border-color: #c8a97e;
+            background: rgba(200,169,126,0.1);
+        }
+
+        .input-area input::placeholder {
+            color: rgba(255,255,255,0.4);
+            font-size: 15px;
+        }
+
+        .input-area input:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .send-btn {
+            width: 56px;
+            height: 56px;
+            background: #c8a97e;
+            border: none;
+            border-radius: 50%;
+            color: #0f172a;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            box-shadow: 0 5px 15px rgba(200,169,126,0.3);
+        }
+
+        .send-btn:active {
+            transform: scale(0.95);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* ===== صفحة بدء المحادثة ===== */
+        .start-page {
+            position: fixed;
+            top: 70px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #0f172a, #1a1f2e);
+        }
+
+        .start-icon {
+            font-size: 80px;
+            color: #c8a97e;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .start-page h2 {
+            font-size: 28px;
+            color: #c8a97e;
+            margin-bottom: 10px;
+        }
+
+        .start-page p {
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 30px;
+            line-height: 1.8;
+            font-size: 16px;
+            padding: 0 20px;
+        }
+
+        .start-btn {
+            background: #c8a97e;
+            color: #0f172a;
+            border: none;
+            border-radius: 50px;
+            padding: 16px 40px;
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            width: 90%;
+            max-width: 300px;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(200,169,126,0.3);
+        }
+
+        .start-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* ===== الإشعارات ===== */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 16px;
+            right: 16px;
+            background: #27ae60;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 14px;
+            display: none;
+            z-index: 9999;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            border-right: 4px solid white;
+        }
+
+        .toast.error {
+            background: #e74c3c;
+        }
+
+        /* ===== حالة عدم وجود رسائل ===== */
+        .no-messages {
+            text-align: center;
+            color: rgba(255,255,255,0.3);
+            padding: 40px 20px;
+            font-size: 14px;
+        }
+
+        /* تحسينات للشاشات الصغيرة */
+        @media (max-width: 380px) {
+            .status span:not(.status-dot) {
+                display: none;
+            }
+            
+            .header-info h1 {
+                font-size: 16px;
+            }
+            
+            .message-user-content,
+            .message-support-content {
+                max-width: 90%;
+                font-size: 14px;
+                padding: 10px 14px;
+            }
+            
+            .input-area input {
+                height: 48px;
+                font-size: 14px;
+            }
+            
+            .send-btn {
+                width: 48px;
+                height: 48px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- الهيدر -->
+    <div class="header">
+        <a href="dashboard.html" class="back-btn" onclick="goBack()">
+            <i class="fas fa-arrow-right"></i>
+        </a>
+        <div class="header-info">
+            <h1 id="chatTitle">الدردشة المباشرة</h1>
+            <p id="chatSubtitle">...</p>
+        </div>
+        <div class="status" id="onlineStatus" style="display: none;">
+            <span class="status-dot"></span>
+            <span>الدعم متصل</span>
+        </div>
+    </div>
+
+    <!-- منطقة المحادثة (تظهر عند وجود محادثة) -->
+    <div id="chatContainer" style="display: none;">
+        <div class="chat-area" id="messagesContainer">
+            <!-- الرسائل تظهر هنا -->
+        </div>
+
+        <!-- منطقة الإدخال -->
+        <div class="input-area">
+            <input type="text" id="messageInput" placeholder="اكتب رسالتك هنا..." disabled>
+            <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- صفحة بدء المحادثة (تظهر عند عدم وجود محادثة) -->
+    <div id="startContainer" class="start-page">
+        <div class="start-icon">
+            <i class="fas fa-comments"></i>
+        </div>
+        <h2>مرحباً بك</h2>
+        <p>يمكنك التواصل مع فريق الدعم<br>نحن هنا لمساعدتك على مدار الساعة</p>
+        <button class="start-btn" onclick="startChat()">
+            <i class="fas fa-play"></i>
+            بدء المحادثة
+        </button>
+    </div>
+
+    <!-- الإشعارات -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let currentUser = null;
+        let currentChat = null;
+        let messageInterval = null;
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('✅ تم تحميل الصفحة');
+            await checkUser();
+            await checkExistingChat();
+        });
+
+        // التحقق من المستخدم
+        async function checkUser() {
+            const savedUser = localStorage.getItem('current_user');
+            if (!savedUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            currentUser = JSON.parse(savedUser);
+            console.log('المستخدم:', currentUser);
+            
+            if (window.supabaseHelpers) {
+                const result = await window.supabaseHelpers.getUserById(currentUser.id);
+                if (result.success && result.data) {
+                    currentUser = result.data;
+                }
+            }
+        }
+
+        // التحقق من وجود محادثة نشطة
+        async function checkExistingChat() {
+            try {
+                console.log('التحقق من المحادثة النشطة...');
+                const result = await window.supabaseHelpers.getUserActiveChat(currentUser.id);
+                
+                if (result.success && result.data) {
+                    console.log('محادثة موجودة:', result.data);
+                    currentChat = result.data;
+                    showChatInterface();
+                    await loadMessages();
+                    
+                    if (messageInterval) clearInterval(messageInterval);
+                    messageInterval = setInterval(loadMessages, 3000);
+                } else {
+                    console.log('لا توجد محادثة نشطة');
+                    showStartInterface();
+                }
+            } catch (error) {
+                console.error('خطأ في التحقق من المحادثة:', error);
+                showStartInterface();
+            }
+        }
+
+        // إظهار واجهة المحادثة
+        function showChatInterface() {
+            console.log('إظهار واجهة المحادثة');
+            document.getElementById('startContainer').style.display = 'none';
+            document.getElementById('chatContainer').style.display = 'block';
+            
+            const messageInput = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            
+            messageInput.disabled = false;
+            sendBtn.disabled = false;
+            
+            document.getElementById('chatSubtitle').textContent = 'محادثة نشطة';
+            
+            // التحقق من وجود مسؤول
+            if (currentChat.admin_id) {
+                document.getElementById('onlineStatus').style.display = 'flex';
+            } else {
+                document.getElementById('onlineStatus').style.display = 'none';
+            }
+            
+            // تركيز على حقل الإدخال
+            setTimeout(() => {
+                messageInput.focus();
+            }, 500);
+        }
+
+        // إظهار واجهة البداية
+        function showStartInterface() {
+            console.log('إظهار واجهة البداية');
+            document.getElementById('startContainer').style.display = 'flex';
+            document.getElementById('chatContainer').style.display = 'none';
+        }
+
+        // بدء محادثة جديدة
+        async function startChat() {
+            try {
+                console.log('بدء محادثة جديدة...');
+                showToast('جاري بدء المحادثة...', 'info');
+                
+                const result = await window.supabaseHelpers.startLiveChat(currentUser.id);
+                
+                if (result.success) {
+                    console.log('تم بدء المحادثة:', result.data);
+                    currentChat = result.data;
+                    showChatInterface();
+                    await loadMessages();
+                    
+                    // رسالة ترحيب بعد ثانية
+                    setTimeout(async () => {
+                        await sendWelcomeMessage();
+                    }, 1000);
+                    
+                    if (messageInterval) clearInterval(messageInterval);
+                    messageInterval = setInterval(loadMessages, 3000);
+                    
+                    showToast('✅ تم بدء المحادثة');
+                } else {
+                    showToast('❌ ' + result.error, 'error');
+                }
+            } catch (error) {
+                console.error('خطأ في بدء المحادثة:', error);
+                showToast('❌ حدث خطأ', 'error');
+            }
+        }
+
+        // إرسال رسالة ترحيب
+        async function sendWelcomeMessage() {
+            if (!currentChat) return;
+            
+            await window.supabaseHelpers.sendChatMessage(
+                currentChat.id,
+                currentUser.id,
+                'مرحباً، كيف يمكنني مساعدتك؟'
+            );
+            await loadMessages();
+        }
+
+        // تحميل الرسائل
+        async function loadMessages() {
+            if (!currentChat) return;
+
+            try {
+                const result = await window.supabaseHelpers.getChatMessages(currentChat.id);
+                
+                if (result.success && result.data) {
+                    displayMessages(result.data);
+                    await window.supabaseHelpers.markMessagesAsRead(currentChat.id, currentUser.id);
+                }
+            } catch (error) {
+                console.error('خطأ في تحميل الرسائل:', error);
+            }
+        }
+
+        // عرض الرسائل
+        function displayMessages(messages) {
+            const container = document.getElementById('messagesContainer');
+            
+            let html = '';
+            let lastDate = null;
+            
+            messages.forEach(msg => {
+                const isUser = msg.user_id === currentUser.id;
+                const msgDate = new Date(msg.created_at);
+                const dateStr = msgDate.toLocaleDateString('ar-SA');
+                const timeStr = msgDate.toLocaleTimeString('ar-SA', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
+                // فاصل التاريخ
+                if (lastDate !== dateStr) {
+                    html += `
+                        <div class="date-divider">
+                            <span>${dateStr}</span>
+                        </div>
+                    `;
+                    lastDate = dateStr;
+                }
+                
+                if (isUser) {
+                    html += `
+                        <div class="message-user">
+                            <div style="max-width: 80%;">
+                                <div class="message-user-content">${msg.message}</div>
+                                <div class="message-info">
+                                    <span>أنت</span>
+                                    <span>•</span>
+                                    <span>${timeStr}</span>
+                                    <span>${msg.is_read ? '✓✓' : '✓'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const senderName = msg.users?.is_admin ? 'الدعم' : (msg.users?.name || 'مستخدم');
+                    html += `
+                        <div class="message-support">
+                            <div style="max-width: 80%;">
+                                <div class="message-support-content">${msg.message}</div>
+                                <div class="message-info">
+                                    <span>${senderName}</span>
+                                    <span>•</span>
+                                    <span>${timeStr}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            if (messages.length === 0) {
+                html = '<div class="no-messages">لا توجد رسائل بعد</div>';
+            }
+            
+            container.innerHTML = html;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // إرسال رسالة
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message || !currentChat) {
+                console.log('لا يمكن الإرسال:', { message, currentChat });
+                return;
+            }
+            
+            console.log('إرسال رسالة:', message);
+            input.value = '';
+            
+            const result = await window.supabaseHelpers.sendChatMessage(
+                currentChat.id,
+                currentUser.id,
+                message
+            );
+            
+            if (result.success) {
+                console.log('تم إرسال الرسالة');
+                await loadMessages();
+            } else {
+                showToast('❌ ' + result.error, 'error');
+            }
+        }
+
+        // إرسال بالضغط على Enter
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // العودة للصفحة السابقة
+        function goBack() {
+            if (messageInterval) {
+                clearInterval(messageInterval);
+            }
+            window.location.href = 'dashboard.html';
+        }
+
+        // إظهار الإشعارات
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + (type === 'error' ? 'error' : '');
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // تنظيف
+        window.addEventListener('beforeunload', function() {
+            if (messageInterval) {
+                clearInterval(messageInterval);
+            }
+        });
+    </script>
+
+<script src="/pwa-init.js"></script>
+
+</body>
+</html>

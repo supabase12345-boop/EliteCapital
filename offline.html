@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لا يوجد اتصال - Elite Capital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: #0f172a;
+            color: white;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .offline-container {
+            max-width: 400px;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .icon {
+            font-size: 100px;
+            color: #c8a97e;
+            margin-bottom: 20px;
+            opacity: 0.8;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        h1 {
+            color: #c8a97e;
+            margin-bottom: 15px;
+            font-size: 28px;
+        }
+        
+        p {
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 30px;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+        
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .retry-btn {
+            background: #c8a97e;
+            color: #0f172a;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(200,169,126,0.3);
+            transition: all 0.3s;
+        }
+        
+        .retry-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .home-btn {
+            background: transparent;
+            color: white;
+            border: 2px solid #c8a97e;
+            border-radius: 50px;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .home-btn:hover {
+            background: rgba(200,169,126,0.1);
+        }
+        
+        .suggestions {
+            margin-top: 30px;
+            text-align: right;
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(200,169,126,0.2);
+        }
+        
+        .suggestions h3 {
+            color: #c8a97e;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .suggestions ul {
+            list-style: none;
+        }
+        
+        .suggestions li {
+            margin-bottom: 10px;
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .suggestions li i {
+            color: #c8a97e;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="icon">📡</div>
+        <h1>لا يوجد اتصال بالإنترنت</h1>
+        <p>يبدو أنك غير متصل بالشبكة<br>يمكنك استعراض البيانات المخزنة مؤقتاً</p>
+        
+        <div class="actions">
+            <button class="retry-btn" onclick="location.reload()">
+                <i class="fas fa-sync-alt"></i>
+                إعادة المحاولة
+            </button>
+            <a href="/dashboard.html" class="home-btn">
+                <i class="fas fa-home"></i>
+                العودة للوحة التحكم
+            </a>
+        </div>
+        
+        <div class="suggestions">
+            <h3>ماذا يمكنك فعل الآن؟</h3>
+            <ul>
+                <li><i class="fas fa-check-circle"></i> استعراض أرباحك السابقة</li>
+                <li><i class="fas fa-check-circle"></i> مشاهدة الباقات المتاحة</li>
+                <li><i class="fas fa-check-circle"></i> قراءة آخر الإشعارات</li>
+                <li><i class="fas fa-check-circle"></i> التحقق من رصيدك</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
