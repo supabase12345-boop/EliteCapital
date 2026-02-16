@@ -18,16 +18,16 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
     
-<!-- PWA -->
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#c8a97e">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Elite Capital">
-<link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-<link rel="apple-touch-startup-image" href="/icons/icon-512x512.png">
-<meta name="msapplication-TileColor" content="#c8a97e">
-<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#c8a97e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Elite Capital">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-startup-image" href="/icons/icon-512x512.png">
+    <meta name="msapplication-TileColor" content="#c8a97e">
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
 
     <style>
         * {
@@ -191,6 +191,93 @@
         .admin-header .date {
             color: var(--text-muted);
             font-size: 14px;
+        }
+
+        .admin-header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* قائمة المستخدم */
+        .user-menu {
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--dark);
+            cursor: pointer;
+            border: 2px solid var(--gold);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 250px;
+            background: var(--dark-light);
+            border-radius: 20px;
+            padding: 15px;
+            border: 2px solid var(--gold);
+            display: none;
+            box-shadow: var(--shadow);
+            z-index: 1001;
+        }
+
+        .user-dropdown.active {
+            display: block;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: var(--text);
+            border-radius: 12px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .user-dropdown-item:hover {
+            background: rgba(200, 169, 126, 0.1);
+            color: var(--gold);
+        }
+
+        .user-dropdown-item .badge {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--danger);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            min-width: 18px;
+            text-align: center;
         }
 
         /* شبكة الإحصائيات */
@@ -887,6 +974,11 @@
                     <i class="fas fa-user-friends"></i>
                     <span>الإحالة</span>
                 </a></li>
+                <li><a onclick="showSection('notifications')">
+                    <i class="fas fa-bell"></i>
+                    <span>الإشعارات</span>
+                    <span class="badge" id="notificationBadge">0</span>
+                </a></li>
                 <li><a onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>خروج</span>
@@ -899,7 +991,27 @@
             <!-- الشريط العلوي -->
             <div class="admin-header">
                 <h2 id="pageTitle">لوحة التحكم</h2>
-                <div class="date" id="currentDateTime"></div>
+                <div class="admin-header-left">
+                    <div class="date" id="currentDateTime"></div>
+                    <div class="user-menu">
+                        <div class="user-avatar" id="userAvatar" onclick="toggleUserMenu()">أ</div>
+                        <div class="user-dropdown" id="userDropdown">
+                            <div class="user-dropdown-item" onclick="window.location.href='notifications.html'">
+                                <i class="fas fa-bell"></i>
+                                الإشعارات
+                                <span class="badge" id="adminNotificationBadge" style="display: none;">0</span>
+                            </div>
+                            <div class="user-dropdown-item" onclick="refreshData()">
+                                <i class="fas fa-sync-alt"></i>
+                                تحديث البيانات
+                            </div>
+                            <div class="user-dropdown-item" onclick="logout()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                تسجيل الخروج
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- قسم لوحة التحكم -->
@@ -1199,7 +1311,6 @@
                     </div>
                     
                     <div class="chats-list" id="chatsContainer">
-                        <!-- سيتم تحميل المحادثات هنا -->
                         <div class="loading-spinner"></div>
                     </div>
                 </div>
@@ -1264,6 +1375,39 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- قسم الإشعارات -->
+            <div id="notifications-section" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-bell"></i>
+                            سجل الإشعارات
+                        </h3>
+                        <div class="d-flex gap-2">
+                            <select id="notificationFilter" class="form-control" style="width: 150px;" onchange="loadAdminNotifications()">
+                                <option value="all">جميع الإشعارات</option>
+                                <option value="profit">أرباح</option>
+                                <option value="withdrawal">سحب</option>
+                                <option value="subscription">اشتراكات</option>
+                                <option value="referral">إحالات</option>
+                                <option value="chat">دردشة</option>
+                            </select>
+                            <button class="btn btn-sm btn-success" onclick="markAllNotificationsRead()">
+                                <i class="fas fa-check-double"></i>
+                                تحديد الكل مقروء
+                            </button>
+                            <button class="btn btn-sm btn-primary" onclick="loadAdminNotifications()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="notifications-list" id="adminNotificationsContainer">
+                        <div class="loading-spinner"></div>
                     </div>
                 </div>
             </div>
@@ -1428,6 +1572,7 @@
         let currentWithdrawalId = null;
         let currentChatId = null;
         let chatInterval = null;
+        let notificationInterval = null;
         
         // ========== التحقق من صلاحية المسؤول ==========
         async function checkAdminAccess() {
@@ -1451,17 +1596,27 @@
                     currentAdmin = result.data;
                 }
             }
+            
+            document.getElementById('userAvatar').textContent = currentAdmin.name?.charAt(0).toUpperCase() || 'أ';
         }
         
         // ========== تهيئة الصفحة ==========
         document.addEventListener('DOMContentLoaded', async function() {
             await checkAdminAccess();
             await loadAllData();
+            await loadAdminNotifications();
+            await updateNotificationBadges();
             updateDateTime();
             setInterval(updateDateTime, 1000);
             
             // بدء التحقق من المحادثات كل 10 ثواني
             setInterval(loadActiveChats, 10000);
+            
+            // بدء التحقق من الإشعارات كل 30 ثانية
+            notificationInterval = setInterval(updateNotificationBadges, 30000);
+            
+            // إعداد الإشعارات الفورية
+            setupRealtimeNotifications();
         });
         
         // ========== تحميل جميع البيانات ==========
@@ -1780,7 +1935,7 @@
                             name: user.name,
                             code: user.referral_code,
                             count: user.referral_count,
-                            active: 0, // يمكن حسابها لاحقاً
+                            active: 0,
                             earnings: user.referral_earnings || 0
                         });
                     }
@@ -1788,8 +1943,8 @@
                 
                 document.getElementById('totalReferrals').textContent = totalReferrals;
                 document.getElementById('totalReferralEarnings').textContent = totalEarnings + '$';
-                document.getElementById('pendingReferralRewards').textContent = '0$'; // يمكن حسابها
-                document.getElementById('referralRate').textContent = '0%'; // يمكن حسابها
+                document.getElementById('pendingReferralRewards').textContent = '0$';
+                document.getElementById('referralRate').textContent = '0%';
                 
                 displayMarketers(marketers.sort((a, b) => b.count - a.count));
             } catch (error) {
@@ -1829,15 +1984,11 @@
                 if (result.success && result.data) {
                     displayChats(result.data);
                     
-                    // تحديث العداد
                     const unreadCount = result.data.reduce((sum, chat) => sum + (chat.unread_count || 0), 0);
                     document.getElementById('chatBadge').textContent = unreadCount > 0 ? unreadCount : 0;
                     
-                    // تحديث عنوان الصفحة إذا كان هناك رسائل غير مقروءة
                     if (unreadCount > 0) {
                         document.title = `(${unreadCount}) لوحة الإدارة - Elite Capital`;
-                    } else {
-                        document.title = 'لوحة الإدارة - Elite Capital';
                     }
                 }
             } catch (error) {
@@ -1853,7 +2004,6 @@
                 return;
             }
             
-            // تطبيق الفلتر
             const filter = document.getElementById('chatFilter')?.value || 'all';
             let filteredChats = chats;
             
@@ -1896,7 +2046,7 @@
         
         function getTimeAgo(date) {
             const now = new Date();
-            const diff = Math.floor((now - date) / 1000); // الفرق بالثواني
+            const diff = Math.floor((now - date) / 1000);
             
             if (diff < 60) return 'الآن';
             if (diff < 3600) return `منذ ${Math.floor(diff / 60)} دقيقة`;
@@ -1909,13 +2059,9 @@
             document.getElementById('chatUserName').textContent = userName;
             document.getElementById('chatModal').classList.add('active');
             
-            // انضمام المسؤول للمحادثة
             await window.supabaseHelpers.joinChat(chatId, currentAdmin.id);
-            
-            // تحميل الرسائل
             await loadChatMessages();
             
-            // بدء تحديث الرسائل كل 3 ثواني
             if (chatInterval) clearInterval(chatInterval);
             chatInterval = setInterval(loadChatMessages, 3000);
         }
@@ -1928,11 +2074,7 @@
                 
                 if (result.success && result.data) {
                     displayChatMessages(result.data);
-                    
-                    // تحديد الرسائل كمقروءة
                     await window.supabaseHelpers.markMessagesAsRead(currentChatId, currentAdmin.id);
-                    
-                    // تحديث قائمة المحادثات
                     await loadActiveChats();
                 }
             } catch (error) {
@@ -1951,7 +2093,6 @@
                 const msgDate = new Date(msg.created_at);
                 const dateStr = msgDate.toLocaleDateString('ar-SA');
                 
-                // إضافة فاصل التاريخ
                 if (lastDate !== dateStr) {
                     html += `
                         <div style="text-align: center; margin: 20px 0;">
@@ -2019,6 +2160,162 @@
                 clearInterval(chatInterval);
             }
             currentChatId = null;
+        }
+        
+        // ========== نظام الإشعارات ==========
+        
+        async function loadAdminNotifications() {
+            try {
+                const filter = document.getElementById('notificationFilter')?.value || 'all';
+                const result = await window.supabaseHelpers.getUserNotifications(currentAdmin.id, { 
+                    limit: 50,
+                    type: filter !== 'all' ? filter : null
+                });
+                
+                if (result.success && result.data) {
+                    displayAdminNotifications(result.data);
+                }
+            } catch (error) {
+                console.error('خطأ في تحميل الإشعارات:', error);
+            }
+        }
+        
+        function displayAdminNotifications(notifications) {
+            const container = document.getElementById('adminNotificationsContainer');
+            
+            if (!notifications || notifications.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">لا توجد إشعارات</div>';
+                return;
+            }
+            
+            let html = '';
+            notifications.forEach(notif => {
+                const icon = getNotificationIcon(notif.type);
+                const date = new Date(notif.created_at).toLocaleString('ar-SA');
+                const isUnread = !notif.is_read;
+                
+                html += `
+                    <div class="notification-item ${isUnread ? 'unread' : ''}" style="background: rgba(255,255,255,0.03); border-radius: 15px; padding: 15px; margin-bottom: 10px; border-right: 4px solid ${isUnread ? 'var(--gold)' : 'transparent'};">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 40px; height: 40px; border-radius: 10px; background: ${icon.color}; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas ${icon.icon}" style="color: white;"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 700; color: var(--gold);">${notif.title}</div>
+                                <div style="font-size: 13px; color: var(--text-muted); margin: 5px 0;">${notif.message}</div>
+                                <div style="font-size: 11px; color: var(--text-muted);">${date}</div>
+                            </div>
+                            ${!notif.is_read ? '<span style="width: 10px; height: 10px; background: var(--gold); border-radius: 50%;"></span>' : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function getNotificationIcon(type) {
+            switch(type) {
+                case 'profit': return { icon: 'fa-coins', color: '#27ae60' };
+                case 'withdrawal': return { icon: 'fa-money-bill-wave', color: '#f39c12' };
+                case 'subscription': return { icon: 'fa-crown', color: '#3498db' };
+                case 'referral': return { icon: 'fa-gift', color: '#9b59b6' };
+                case 'chat': return { icon: 'fa-comments', color: '#c8a97e' };
+                default: return { icon: 'fa-bell', color: '#7f8c8d' };
+            }
+        }
+        
+        async function updateNotificationBadges() {
+            if (!currentAdmin) return;
+            
+            const result = await window.supabaseHelpers.getUnreadCount(currentAdmin.id);
+            
+            if (result.success) {
+                const badge = document.getElementById('notificationBadge');
+                const adminBadge = document.getElementById('adminNotificationBadge');
+                
+                if (result.count > 0) {
+                    badge.textContent = result.count;
+                    badge.style.display = 'inline';
+                    adminBadge.textContent = result.count;
+                    adminBadge.style.display = 'inline';
+                    document.title = `(${result.count}) لوحة الإدارة - Elite Capital`;
+                } else {
+                    badge.style.display = 'none';
+                    adminBadge.style.display = 'none';
+                    document.title = 'لوحة الإدارة - Elite Capital';
+                }
+            }
+        }
+        
+        async function markAllNotificationsRead() {
+            if (!confirm('تحديد جميع الإشعارات كمقروءة؟')) return;
+            
+            const result = await window.supabaseHelpers.markAllNotificationsAsRead(currentAdmin.id);
+            
+            if (result.success) {
+                showNotification('✅ تم تحديد الكل كمقروء');
+                await loadAdminNotifications();
+                await updateNotificationBadges();
+            }
+        }
+        
+        function setupRealtimeNotifications() {
+            if (!window.supabaseClient) return;
+            
+            const subscription = supabaseClient
+                .channel('admin-notifications')
+                .on('postgres_changes', {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'notifications',
+                    filter: `user_id=eq.${currentAdmin.id}`
+                }, payload => {
+                    showPopupNotification(payload.new);
+                    updateNotificationBadges();
+                    if (document.getElementById('notifications-section').classList.contains('active')) {
+                        loadAdminNotifications();
+                    }
+                })
+                .subscribe();
+        }
+        
+        function showPopupNotification(notification) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #1e293b;
+                border: 2px solid #c8a97e;
+                border-radius: 20px;
+                padding: 15px 20px;
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+                animation: slideDown 0.3s;
+                max-width: 350px;
+                width: 90%;
+            `;
+            
+            toast.innerHTML = `
+                <div style="width: 40px; height: 40px; border-radius: 10px; background: ${getNotificationIcon(notification.type).color}; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas ${getNotificationIcon(notification.type).icon}" style="color: white;"></i>
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 700; color: #c8a97e; margin-bottom: 5px;">${notification.title}</div>
+                    <div style="font-size: 13px; color: rgba(255,255,255,0.7);">${notification.message}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 5000);
         }
         
         // ========== إدارة الباقات ==========
@@ -2234,20 +2531,34 @@
                 'pending': 'طلبات الاشتراك',
                 'withdrawals': 'طلبات السحب',
                 'livechat': 'الدردشة المباشرة',
-                'referrals': 'نظام الإحالة'
+                'referrals': 'نظام الإحالة',
+                'notifications': 'الإشعارات'
             };
             
             document.getElementById('pageTitle').textContent = titles[sectionId] || 'لوحة التحكم';
             
-            // تحميل البيانات عند فتح القسم
             if (sectionId === 'livechat') {
                 loadActiveChats();
+            }
+            if (sectionId === 'notifications') {
+                loadAdminNotifications();
             }
         }
         
         function updateDateTime() {
             const now = new Date();
             document.getElementById('currentDateTime').textContent = now.toLocaleString('ar-SA');
+        }
+        
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('active');
+        }
+        
+        function refreshData() {
+            showNotification('جاري تحديث البيانات...', 'info');
+            loadAllData();
+            loadAdminNotifications();
+            updateNotificationBadges();
         }
         
         function showNotification(message, type = 'success') {
@@ -2261,6 +2572,7 @@
         function logout() {
             if (confirm('هل تريد تسجيل الخروج؟')) {
                 if (chatInterval) clearInterval(chatInterval);
+                if (notificationInterval) clearInterval(notificationInterval);
                 localStorage.removeItem('current_user');
                 window.location.href = 'index.html';
             }
@@ -2271,10 +2583,21 @@
             if (chatInterval) {
                 clearInterval(chatInterval);
             }
+            if (notificationInterval) {
+                clearInterval(notificationInterval);
+            }
+        });
+
+        // إغلاق القائمة عند النقر خارجها
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('userDropdown');
+            const avatar = document.getElementById('userAvatar');
+            if (dropdown && avatar && !avatar.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
         });
     </script>
 
-<script src="/pwa-init.js"></script>
-
+    <script src="/pwa-init.js"></script>
 </body>
 </html>
