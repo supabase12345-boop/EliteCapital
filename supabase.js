@@ -1,5 +1,5 @@
 // ===================================
-// supabase.js - Elite Capital (نسخة محدثة مع سجل النشاطات)
+// supabase.js - Elite Capital (نسخة محدثة مع سجل النشاطات والتنبيهات)
 // ===================================
 
 const SUPABASE_URL = 'https://aiorcrtfvhjpwjdsebzp.supabase.co';
@@ -43,7 +43,6 @@ async function registerUser(userData) {
     try {
         console.log('بدء تسجيل مستخدم جديد:', userData.email);
         
-        // التحقق من وجود المستخدم
         const { data: existing, error: checkError } = await supabaseClient
             .from('users')
             .select('id')
@@ -58,10 +57,8 @@ async function registerUser(userData) {
             throw new Error('البريد الإلكتروني أو اسم المستخدم مستخدم مسبقاً');
         }
         
-        // إنشاء كود إحالة فريد
         const referralCode = generateReferralCode(userData.username);
         
-        // التحقق من صحة كود الإحالة إذا وجد
         let referredBy = null;
         if (userData.referralCode) {
             const { data: referrer } = await supabaseClient
@@ -76,7 +73,6 @@ async function registerUser(userData) {
             }
         }
         
-        // إنشاء المستخدم
         const newUserData = {
             name: userData.name,
             username: userData.username,
@@ -93,15 +89,7 @@ async function registerUser(userData) {
             joined_date: new Date().toISOString(),
             last_login: new Date().toISOString(),
             created_at: new Date().toISOString(),
-            wallet_address: '',
-            notification_settings: {
-                email: true,
-                push: true,
-                profit: true,
-                withdrawal: true,
-                subscription: true,
-                referral: true
-            }
+            wallet_address: ''
         };
         
         console.log('بيانات المستخدم الجديد:', newUserData);
@@ -118,14 +106,6 @@ async function registerUser(userData) {
         }
         
         console.log('✅ تم إنشاء المستخدم بنجاح:', newUser.id);
-        
-        // إنشاء نشاط ترحيبي
-        await addActivity({
-            userId: newUser.id,
-            type: 'welcome',
-            title: '👋 مرحباً بك',
-            description: 'نرحب بك في Elite Capital'
-        });
         
         return { success: true, data: newUser };
     } catch (error) {
@@ -161,13 +141,11 @@ async function loginUser(usernameOrEmail, password) {
             throw new Error('حسابك محظور');
         }
         
-        // تحديث آخر تسجيل دخول
         await supabaseClient
             .from('users')
             .update({ last_login: new Date().toISOString() })
             .eq('id', user.id);
         
-        // إضافة نشاط تسجيل دخول
         await addLoginActivity(user.id);
         
         console.log('✅ تم تسجيل الدخول بنجاح:', user.email);
@@ -397,7 +375,6 @@ async function createPendingPackage(pendingData) {
         
         console.log('✅ تم حفظ الطلب بنجاح:', data);
         
-        // إضافة نشاط اشتراك (قيد المراجعة)
         await addSubscriptionActivity(user.id, pendingData.amount, pkg.name, 'pending');
         
         return { success: true, data };
@@ -439,7 +416,6 @@ async function approvePendingPackage(id, adminId) {
         
         console.log('معالجة طلب:', pending);
         
-        // 1. تحديث حالة الطلب
         await supabaseClient
             .from('pending_packages')
             .update({ 
@@ -449,7 +425,6 @@ async function approvePendingPackage(id, adminId) {
             })
             .eq('id', id);
         
-        // 2. إنشاء اشتراك جديد
         const startDate = new Date();
         const endDate = new Date();
         endDate.setDate(endDate.getDate() + 30);
@@ -473,7 +448,6 @@ async function approvePendingPackage(id, adminId) {
         
         if (subError) throw subError;
         
-        // 3. تحديث المستخدم
         await supabaseClient
             .from('users')
             .update({ 
@@ -483,7 +457,6 @@ async function approvePendingPackage(id, adminId) {
             })
             .eq('id', pending.user_id);
         
-        // 4. تسجيل معاملة إيداع
         await supabaseClient
             .from('transactions')
             .insert([{
@@ -496,12 +469,10 @@ async function approvePendingPackage(id, adminId) {
                 created_at: new Date().toISOString()
             }]);
         
-        // 5. معالجة الإحالة إذا وجدت
         if (pending.referred_by) {
             await processReferralRewards(pending.user_id, pending.referred_by);
         }
         
-        // 6. إضافة نشاط اشتراك (تمت الموافقة)
         await addSubscriptionActivity(pending.user_id, pending.amount, pending.package_name, 'approved');
         
         return { success: true, data: subscription };
@@ -531,7 +502,6 @@ async function rejectPendingPackage(id, reason, adminId) {
         
         if (error) throw error;
         
-        // إضافة نشاط اشتراك (مرفوض)
         if (pending) {
             await addSubscriptionActivity(pending.user_id, pending.amount, pending.package_name, 'rejected');
         }
@@ -573,7 +543,6 @@ async function processReferralRewards(newUserId, referralCode) {
             return { success: false };
         }
         
-        // تحديث رصيد المحال
         await supabaseClient
             .from('users')
             .update({ 
@@ -583,7 +552,6 @@ async function processReferralRewards(newUserId, referralCode) {
             })
             .eq('id', newUserId);
         
-        // تحديث رصيد المحيل
         await supabaseClient
             .from('users')
             .update({ 
@@ -594,7 +562,6 @@ async function processReferralRewards(newUserId, referralCode) {
             })
             .eq('id', referrer.id);
         
-        // تسجيل المعاملات
         const transactions = [
             {
                 user_id: newUserId,
@@ -743,7 +710,6 @@ async function createWithdrawal(withdrawalData) {
                 created_at: new Date().toISOString()
             }]);
         
-        // إضافة نشاط سحب (قيد المراجعة)
         await addWithdrawalActivity(withdrawalData.userId, withdrawalData.amount, 'pending');
         
         return { success: true, data };
@@ -820,7 +786,6 @@ async function updateWithdrawalStatus(id, status, adminId, txHash = null) {
             });
         }
         
-        // إضافة نشاط سحب (تحديث الحالة)
         await addWithdrawalActivity(data.user_id, data.amount, status);
         
         return { success: true, data };
@@ -973,7 +938,6 @@ async function processDailyProfits() {
                     created_at: new Date().toISOString()
                 }]);
             
-            // إضافة نشاط ربح يومي
             await addProfitActivity(sub.user_id, profitAmount, sub.package_name);
             
             profits.push(profit);
@@ -1207,10 +1171,6 @@ async function getUserActiveChat(userId) {
 }
 
 // ========== نظام سجل النشاطات ==========
-
-/**
- * إضافة نشاط جديد
- */
 async function addActivity(activityData) {
     try {
         const { data, error } = await supabaseClient
@@ -1237,9 +1197,6 @@ async function addActivity(activityData) {
     }
 }
 
-/**
- * إضافة نشاط ربح يومي
- */
 async function addProfitActivity(userId, amount, packageName) {
     return addActivity({
         userId: userId,
@@ -1252,16 +1209,16 @@ async function addProfitActivity(userId, amount, packageName) {
     });
 }
 
-/**
- * إضافة نشاط سحب
- */
 async function addWithdrawalActivity(userId, amount, status) {
     let title, description;
     
     if (status === 'pending') {
         title = '💰 طلب سحب';
         description = `طلب سحب بقيمة ${amount}$ قيد المراجعة`;
-    } else if (status === 'approved' || status === 'completed') {
+    } else if (status === 'completed') {
+        title = '✅ تم اكتمال السحب';
+        description = `تم اكتمال طلب السحب بقيمة ${amount}$ بنجاح`;
+    } else if (status === 'approved') {
         title = '✅ تمت الموافقة على السحب';
         description = `تمت الموافقة على طلب السحب بقيمة ${amount}$`;
     } else if (status === 'rejected') {
@@ -1279,9 +1236,6 @@ async function addWithdrawalActivity(userId, amount, status) {
     });
 }
 
-/**
- * إضافة نشاط اشتراك
- */
 async function addSubscriptionActivity(userId, amount, packageName, status) {
     let title, description;
     
@@ -1307,9 +1261,6 @@ async function addSubscriptionActivity(userId, amount, packageName, status) {
     });
 }
 
-/**
- * إضافة نشاط تسجيل دخول
- */
 async function addLoginActivity(userId) {
     return addActivity({
         userId: userId,
@@ -1319,9 +1270,6 @@ async function addLoginActivity(userId) {
     });
 }
 
-/**
- * جلب نشاطات المستخدم
- */
 async function getUserActivities(userId, limit = 50) {
     try {
         const { data, error } = await supabaseClient
@@ -1340,9 +1288,6 @@ async function getUserActivities(userId, limit = 50) {
     }
 }
 
-/**
- * جلب نشاطات المستخدم حسب النوع
- */
 async function getUserActivitiesByType(userId, type, limit = 50) {
     try {
         const { data, error } = await supabaseClient
@@ -1358,6 +1303,84 @@ async function getUserActivitiesByType(userId, type, limit = 50) {
         return { success: true, data };
     } catch (error) {
         console.error('خطأ في جلب النشاطات:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// ========== نظام التنبيهات العامة ==========
+async function addGlobalAlert(alertData) {
+    try {
+        const { data, error } = await supabaseClient
+            .from('global_alerts')
+            .insert([{
+                title: alertData.title,
+                message: alertData.message,
+                type: alertData.type || 'info',
+                created_by: alertData.createdBy,
+                expires_at: alertData.expiresAt || null,
+                is_active: true,
+                created_at: new Date().toISOString()
+            }])
+            .select()
+            .single();
+        
+        if (error) throw error;
+        
+        return { success: true, data };
+    } catch (error) {
+        console.error('خطأ في إضافة التنبيه:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+async function getActiveAlerts() {
+    try {
+        const now = new Date().toISOString();
+        
+        const { data, error } = await supabaseClient
+            .from('global_alerts')
+            .select('*')
+            .eq('is_active', true)
+            .or(`expires_at.is.null,expires_at.gt.${now}`)
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        return { success: true, data };
+    } catch (error) {
+        console.error('خطأ في جلب التنبيهات:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+async function disableAlert(alertId) {
+    try {
+        const { error } = await supabaseClient
+            .from('global_alerts')
+            .update({ is_active: false })
+            .eq('id', alertId);
+        
+        if (error) throw error;
+        
+        return { success: true };
+    } catch (error) {
+        console.error('خطأ في تعطيل التنبيه:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+async function deleteAlert(alertId) {
+    try {
+        const { error } = await supabaseClient
+            .from('global_alerts')
+            .delete()
+            .eq('id', alertId);
+        
+        if (error) throw error;
+        
+        return { success: true };
+    } catch (error) {
+        console.error('خطأ في حذف التنبيه:', error);
         return { success: false, error: error.message };
     }
 }
@@ -1380,7 +1403,6 @@ createFunctions();
 // ========== تصدير الدوال ==========
 window.supabaseClient = supabaseClient;
 window.supabaseHelpers = {
-    // المستخدمين
     registerUser,
     loginUser,
     getUserById,
@@ -1388,44 +1410,35 @@ window.supabaseHelpers = {
     getAllUsers,
     updateUserStatus,
     
-    // الباقات
     getAllPackages,
     getPackageById,
     createPackage,
     updatePackage,
     deletePackage,
     
-    // طلبات الاشتراك
     createPendingPackage,
     getPendingPackages,
     approvePendingPackage,
     rejectPendingPackage,
     
-    // الإحالة
     generateReferralCode,
     getReferralStats,
     
-    // الاشتراكات
     getUserSubscription,
     
-    // السحب
     createWithdrawal,
     getUserWithdrawals,
     getAllWithdrawals,
     getPendingWithdrawals,
     updateWithdrawalStatus,
     
-    // المعاملات
     getUserTransactions,
     getAllTransactions,
     
-    // الإحصائيات
     getDashboardStats,
     
-    // الأرباح اليومية
     processDailyProfits,
     
-    // نظام الدردشة
     startLiveChat,
     sendChatMessage,
     getChatMessages,
@@ -1435,14 +1448,18 @@ window.supabaseHelpers = {
     closeChat,
     getUserActiveChat,
     
-    // نظام سجل النشاطات (بديل الإشعارات)
     addActivity,
     addProfitActivity,
     addWithdrawalActivity,
     addSubscriptionActivity,
     addLoginActivity,
     getUserActivities,
-    getUserActivitiesByType
+    getUserActivitiesByType,
+    
+    addGlobalAlert,
+    getActiveAlerts,
+    disableAlert,
+    deleteAlert
 };
 
-console.log('✅ تم تحميل جميع دوال Supabase مع سجل النشاطات');
+console.log('✅ تم تحميل جميع دوال Supabase مع سجل النشاطات والتنبيهات');
