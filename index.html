@@ -1502,7 +1502,7 @@
         </div>
     </div>
 
-    <!-- نافذة الدفع -->
+    <!-- نافذة الدفع (محدثة مع إضافة الباركود) -->
     <div class="modal" id="paymentModal">
         <div class="payment-modal">
             <div class="modal-header">
@@ -1519,9 +1519,38 @@
                 <div class="wallet-box" id="walletAddress">
                     TH7am2Vu7jTyxSYTSo9tUS4NC11KVxDuVi
                 </div>
-                <button onclick="copyWalletAddress()" class="btn btn-primary" style="width: 100%;">
+                
+                <!-- زر نسخ العنوان -->
+                <button onclick="copyWalletAddress()" class="btn btn-primary" style="width: 100%; margin-bottom: 20px;">
                     <i class="fas fa-copy"></i> نسخ العنوان
                 </button>
+                
+                <!-- صورة الباركود -->
+                <div style="text-align: center; margin: 15px 0; padding: 15px; background: linear-gradient(135deg, #ffffff, #f8f9fa); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                    <img src="IMG_6945.png" alt="QR Code للتحويل" style="max-width: 200px; width: 100%; height: auto; border-radius: 15px; border: 3px solid var(--gold);">
+                    <p style="color: var(--gold); margin-top: 10px; font-size: 14px; font-weight: 500;">
+                        <i class="fas fa-qrcode"></i> امسح الباركود للتحويل السريع
+                    </p>
+                    <p style="color: var(--text-muted); font-size: 12px; margin-top: 5px;">
+                        تأكد من اختيار شبكة TRC20
+                    </p>
+                </div>
+                
+                <!-- معلومات إضافية عن التحويل من الصورة IMG_6945.png -->
+                <div style="background: rgba(255,255,255,0.05); border-radius: 15px; padding: 15px; margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--text-muted); font-size: 13px;">
+                        <span><i class="fas fa-clock"></i> وقت الوصول:</span>
+                        <span style="color: var(--success);">~ 1 دقيقة</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--text-muted); font-size: 13px;">
+                        <span><i class="fas fa-hourglass-half"></i> وقت السحب:</span>
+                        <span style="color: var(--success);">~ 2 دقيقة</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 13px;">
+                        <span><i class="fas fa-coins"></i> الحد الأدنى:</span>
+                        <span style="color: var(--gold);">0.01 USDT</span>
+                    </div>
+                </div>
             </div>
             
             <div class="upload-area" onclick="document.getElementById('fileInput').click()">
