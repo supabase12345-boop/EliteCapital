@@ -11,13 +11,9 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
-    <script src="whatsapp.js"></script>
 
     <style>
         * {
@@ -44,7 +40,6 @@
             --gradient-gold: linear-gradient(135deg, #c8a97e, #b38b5b);
             --glass-bg: rgba(30, 41, 59, 0.7);
             --glass-border: rgba(200, 169, 126, 0.2);
-            --whatsapp: #25D366;
         }
 
         body {
@@ -300,29 +295,11 @@
             padding: 25px;
             margin-bottom: 20px;
             transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
         }
 
         .glass-card:hover {
             border-color: var(--gold);
             box-shadow: var(--shadow-gold);
-        }
-
-        .glass-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--gradient-gold);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .glass-card:hover::before {
-            opacity: 1;
         }
 
         .card-header {
@@ -341,53 +318,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        /* ===== إحصائيات واتساب ===== */
-        .whatsapp-stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .whatsapp-stat-card {
-            background: rgba(37, 211, 102, 0.05);
-            border: 1px solid var(--whatsapp);
-            border-radius: 20px;
-            padding: 15px;
-            text-align: center;
-            transition: all 0.3s;
-        }
-
-        .whatsapp-stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.2);
-        }
-
-        .whatsapp-stat-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(37, 211, 102, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: var(--whatsapp);
-            margin: 0 auto 10px;
-        }
-
-        .whatsapp-stat-value {
-            font-size: 28px;
-            font-weight: 900;
-            color: var(--whatsapp);
-            margin-bottom: 5px;
-        }
-
-        .whatsapp-stat-label {
-            color: var(--text-muted);
-            font-size: 13px;
         }
 
         /* شبكة الإحصائيات */
@@ -482,7 +412,6 @@
         .status-banned { background: rgba(231, 76, 60, 0.2); color: var(--danger); }
         .status-approved { background: rgba(39, 174, 96, 0.2); color: var(--success); }
         .status-rejected { background: rgba(231, 76, 60, 0.2); color: var(--danger); }
-        .status-whatsapp { background: rgba(37, 211, 102, 0.2); color: var(--whatsapp); }
 
         /* الأزرار */
         .btn {
@@ -504,140 +433,7 @@
         .btn-warning { background: var(--warning); color: white; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--text); }
-        .btn-whatsapp { background: var(--whatsapp); color: white; }
         .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-gold); }
-
-        /* ===== قسم إرسال الإشعارات ===== */
-        .notification-type-selector {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .type-card {
-            flex: 1;
-            min-width: 150px;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .type-card:hover {
-            border-color: var(--gold);
-            background: rgba(200,169,126,0.05);
-        }
-
-        .type-card.active {
-            border-color: var(--gold);
-            background: rgba(200,169,126,0.1);
-        }
-
-        .type-card.whatsapp:hover {
-            border-color: var(--whatsapp);
-        }
-
-        .type-card.whatsapp.active {
-            border-color: var(--whatsapp);
-            background: rgba(37,211,102,0.1);
-        }
-
-        .type-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin: 0 auto 10px;
-        }
-
-        .type-icon.whatsapp { background: rgba(37,211,102,0.1); color: var(--whatsapp); }
-        .type-icon.push { background: rgba(52,152,219,0.1); color: #3498db; }
-        .type-icon.inapp { background: rgba(200,169,126,0.1); color: var(--gold); }
-
-        .type-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .type-desc {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        /* سجل الإشعارات */
-        .notifications-log {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .log-item {
-            background: rgba(255,255,255,0.02);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            transition: all 0.3s;
-        }
-
-        .log-item:hover {
-            background: rgba(200,169,126,0.05);
-        }
-
-        .log-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        .log-icon.whatsapp { background: rgba(37,211,102,0.1); color: var(--whatsapp); }
-        .log-icon.push { background: rgba(52,152,219,0.1); color: #3498db; }
-        .log-icon.inapp { background: rgba(200,169,126,0.1); color: var(--gold); }
-
-        .log-content {
-            flex: 1;
-        }
-
-        .log-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 3px;
-        }
-
-        .log-meta {
-            font-size: 11px;
-            color: var(--text-muted);
-            display: flex;
-            gap: 15px;
-        }
-
-        .log-status {
-            padding: 2px 8px;
-            border-radius: 30px;
-            font-size: 10px;
-        }
-
-        .log-status.sent { background: rgba(39,174,96,0.1); color: var(--success); }
-        .log-status.failed { background: rgba(231,76,60,0.1); color: var(--danger); }
-
-        .log-actions {
-            display: flex;
-            gap: 8px;
-        }
 
         /* ===== قسم الدردشة ===== */
         .chat-filters {
@@ -708,25 +504,6 @@
             font-weight: bold;
             color: var(--dark);
             flex-shrink: 0;
-            position: relative;
-        }
-
-        .chat-avatar.whatsapp-user::after {
-            content: '\f232';
-            font-family: 'Font Awesome 6 Brands';
-            position: absolute;
-            bottom: -5px;
-            right: -5px;
-            width: 22px;
-            height: 22px;
-            background: var(--whatsapp);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: white;
-            border: 2px solid var(--dark);
         }
 
         .chat-info {
@@ -748,14 +525,6 @@
             font-size: 11px;
             color: var(--text-muted);
             background: rgba(255, 255, 255, 0.05);
-            padding: 2px 8px;
-            border-radius: 30px;
-        }
-
-        .chat-whatsapp-badge {
-            font-size: 11px;
-            background: rgba(37,211,102,0.1);
-            color: var(--whatsapp);
             padding: 2px 8px;
             border-radius: 30px;
         }
@@ -870,19 +639,6 @@
             font-size: 22px;
             font-weight: bold;
             color: var(--dark);
-            position: relative;
-        }
-
-        .chat-header-avatar.whatsapp-active::after {
-            content: '';
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            width: 12px;
-            height: 12px;
-            background: var(--whatsapp);
-            border-radius: 50%;
-            border: 2px solid var(--dark);
         }
 
         .chat-header-info {
@@ -893,22 +649,11 @@
             color: var(--gold);
             font-size: 18px;
             margin-bottom: 3px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .chat-header-info p {
             color: var(--text-muted);
             font-size: 12px;
-        }
-
-        .chat-whatsapp-status {
-            font-size: 11px;
-            color: var(--whatsapp);
-            background: rgba(37,211,102,0.1);
-            padding: 2px 8px;
-            border-radius: 30px;
         }
 
         .chat-close {
@@ -1211,10 +956,11 @@
             filter: brightness(1.1);
         }
 
-        /* نظام الهدايا */
+        /* ===== نظام الهدايا ===== */
         .gifts-list {
             max-height: 500px;
             overflow-y: auto;
+            padding-left: 10px;
         }
 
         .gift-item {
@@ -1230,20 +976,52 @@
             gap: 15px;
         }
 
+        .gift-item.info {
+            border-color: #3498db;
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .gift-item.success {
+            border-color: #27ae60;
+            background: rgba(39, 174, 96, 0.1);
+        }
+
+        .gift-item.warning {
+            border-color: #f39c12;
+            background: rgba(243, 156, 18, 0.1);
+        }
+
+        .gift-item.danger {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
         .gift-info h3 {
             color: #ffc107;
             margin-bottom: 5px;
+            font-size: 18px;
         }
 
         .gift-info p {
             color: var(--text-muted);
             font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .gift-meta {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
         }
 
         .gift-amount {
             font-size: 32px;
             font-weight: 900;
             color: #ffc107;
+        }
+
+        .gift-actions {
+            display: flex;
+            gap: 10px;
         }
 
         .gift-type-badge {
@@ -1266,10 +1044,11 @@
             border: 1px solid #2ecc71;
         }
 
-        /* نظام التنبيهات */
+        /* ===== نظام التنبيهات ===== */
         .alerts-list {
             max-height: 600px;
             overflow-y: auto;
+            padding-left: 10px;
         }
 
         .alert-item {
@@ -1313,6 +1092,24 @@
             background: rgba(52, 152, 219, 0.2);
             color: #3498db;
             border: 1px solid #3498db;
+        }
+
+        .type-success {
+            background: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+
+        .type-warning {
+            background: rgba(243, 156, 18, 0.2);
+            color: #f39c12;
+            border: 1px solid #f39c12;
+        }
+
+        .type-danger {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
         }
 
         .no-alerts {
@@ -1500,7 +1297,6 @@
 
         .toast.error { background: var(--danger); }
         .toast.warning { background: var(--warning); }
-        .toast.whatsapp { background: var(--whatsapp); }
 
         /* أنيميشن */
         @keyframes fadeIn {
@@ -1541,20 +1337,12 @@
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-            
-            .whatsapp-stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
         }
 
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: 1fr;
                 gap: 15px;
-            }
-
-            .whatsapp-stats-grid {
-                grid-template-columns: 1fr;
             }
 
             .logo-text {
@@ -1582,10 +1370,6 @@
             .admin-table th,
             .admin-table td {
                 padding: 10px;
-            }
-
-            .notification-type-selector {
-                flex-direction: column;
             }
         }
 
@@ -1732,13 +1516,6 @@
                 </a>
             </li>
             <li class="menu-item">
-                <a class="menu-link" onclick="showSection('notifications')">
-                    <i class="fab fa-whatsapp"></i>
-                    <span>الإشعارات</span>
-                    <span class="menu-badge" id="notificationsBadge">0</span>
-                </a>
-            </li>
-            <li class="menu-item">
                 <a class="menu-link" onclick="showSection('alerts')">
                     <i class="fas fa-bullhorn"></i>
                     <span>التنبيهات</span>
@@ -1811,14 +1588,6 @@
                 <label>ملاحظات</label>
                 <textarea id="processNotes" class="form-control" rows="3"></textarea>
             </div>
-            <div class="form-group">
-                <label>إرسال إشعار واتساب</label>
-                <label class="switch" style="display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" id="sendWhatsAppNotification" checked>
-                    <span class="slider round"></span>
-                    <span style="color: var(--whatsapp);"><i class="fab fa-whatsapp"></i> إرسال إشعار للمستخدم</span>
-                </label>
-            </div>
             <div class="modal-footer">
                 <button class="btn btn-danger" onclick="rejectPending()">رفض</button>
                 <button class="btn btn-success" onclick="approvePending()">قبول</button>
@@ -1842,483 +1611,9 @@
                 <label>ملاحظات</label>
                 <textarea id="withdrawalNotes" class="form-control" rows="2"></textarea>
             </div>
-            <div class="form-group">
-                <label>إرسال إشعار واتساب</label>
-                <label class="switch" style="display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" id="sendWithdrawalWhatsApp" checked>
-                    <span class="slider round"></span>
-                    <span style="color: var(--whatsapp);"><i class="fab fa-whatsapp"></i> إرسال إشعار للمستخدم</span>
-                </label>
-            </div>
             <div class="modal-footer">
                 <button class="btn btn-danger" onclick="rejectWithdrawal()">رفض</button>
                 <button class="btn btn-success" onclick="approveWithdrawal()">تأكيد</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- المحتوى الرئيسي -->
-    <div class="main-content" id="mainContent">
-        <!-- قسم لوحة التحكم -->
-        <div id="dashboard-section" class="section">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-users"></i></div>
-                    <div class="stat-label">إجمالي المستخدمين</div>
-                    <div class="stat-value" id="totalUsers">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
-                    <div class="stat-label">إجمالي الإيداعات</div>
-                    <div class="stat-value" id="totalDeposits">0$</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-hand-holding-usd"></i></div>
-                    <div class="stat-label">إجمالي المسحوبات</div>
-                    <div class="stat-value" id="totalWithdrawals">0$</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-crown"></i></div>
-                    <div class="stat-label">اشتراكات نشطة</div>
-                    <div class="stat-value" id="activeSubscriptions">0</div>
-                </div>
-            </div>
-
-            <!-- إحصائيات واتساب -->
-            <div class="whatsapp-stats-grid">
-                <div class="whatsapp-stat-card">
-                    <div class="whatsapp-stat-icon"><i class="fab fa-whatsapp"></i></div>
-                    <div class="whatsapp-stat-value" id="whatsappActive">0</div>
-                    <div class="whatsapp-stat-label">مستخدمي واتساب</div>
-                </div>
-                <div class="whatsapp-stat-card">
-                    <div class="whatsapp-stat-icon"><i class="fas fa-check-circle"></i></div>
-                    <div class="whatsapp-stat-value" id="whatsappSent">0</div>
-                    <div class="whatsapp-stat-label">إشعارات مرسلة</div>
-                </div>
-                <div class="whatsapp-stat-card">
-                    <div class="whatsapp-stat-icon"><i class="fas fa-clock"></i></div>
-                    <div class="whatsapp-stat-value" id="whatsappPending">0</div>
-                    <div class="whatsapp-stat-label">في الانتظار</div>
-                </div>
-                <div class="whatsapp-stat-card">
-                    <div class="whatsapp-stat-icon"><i class="fas fa-percent"></i></div>
-                    <div class="whatsapp-stat-value" id="whatsappRate">98%</div>
-                    <div class="whatsapp-stat-label">نسبة النجاح</div>
-                </div>
-            </div>
-
-            <div class="content-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="glass-card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-clock"></i> طلبات اشتراك معلقة</h3>
-                        <button class="filter-chip" onclick="loadPendingPackages()"><i class="fas fa-sync-alt"></i></button>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="admin-table">
-                            <thead>
-                                <tr><th>المستخدم</th><th>الباقة</th><th>المبلغ</th><th>واتساب</th><th></th></tr>
-                            </thead>
-                            <tbody id="pendingTable">
-                                <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">لا توجد طلبات معلقة</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="glass-card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-money-bill-wave"></i> طلبات سحب معلقة</h3>
-                        <button class="filter-chip" onclick="loadWithdrawals()"><i class="fas fa-sync-alt"></i></button>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="admin-table">
-                            <thead>
-                                <tr><th>المستخدم</th><th>المبلغ</th><th>الرسوم</th><th>واتساب</th><th>المحفظة</th><th></th></tr>
-                            </thead>
-                            <tbody id="withdrawalsTable">
-                                <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">لا توجد طلبات معلقة</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- قسم المستخدمين مع البحث -->
-        <div id="users-section" class="section" style="display: none;">
-            <div class="glass-card">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-users"></i> إدارة المستخدمين</h3>
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" id="userSearch" placeholder="بحث..." onkeyup="filterUsers()">
-                        </div>
-                        <button class="filter-chip" onclick="loadUsers()"><i class="fas fa-sync-alt"></i></button>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>الاسم</th>
-                                <th>البريد</th>
-                                <th>الرصيد</th>
-                                <th>اشتراك</th>
-                                <th>واتساب</th>
-                                <th>الحالة</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="usersTable">
-                            <tr><td colspan="8" style="text-align: center;">جاري التحميل...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- قسم الباقات -->
-        <div id="packages-section" class="section" style="display: none;">
-            <div class="glass-card">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-crown"></i> إدارة الباقات</h3>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-success btn-sm" onclick="showAddPackageModal()"><i class="fas fa-plus"></i> إضافة</button>
-                        <button class="filter-chip" onclick="loadPackages()"><i class="fas fa-sync-alt"></i></button>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="admin-table">
-                        <thead>
-                            <tr><th>الاسم</th><th>السعر</th><th>الربح</th><th>النسبة</th><th>المدة</th><th>الفئة</th><th>الحالة</th><th></th></tr>
-                        </thead>
-                        <tbody id="packagesTable">
-                            <tr><td colspan="8" style="text-align: center;">جاري التحميل...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- قسم طلبات الاشتراك الكامل -->
-        <div id="pending-section" class="section" style="display: none;">
-            <div class="glass-card">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-clock"></i> جميع طلبات الاشتراك</h3>
-                    <button class="filter-chip" onclick="loadAllPendingPackages()"><i class="fas fa-sync-alt"></i></button>
-                </div>
-                <div class="table-responsive">
-                    <table class="admin-table">
-                        <thead>
-                            <tr><th>المستخدم</th><th>البريد</th><th>الهاتف</th><th>الباقة</th><th>المبلغ</th><th>واتساب</th><th>الحالة</th><th></th></tr>
-                        </thead>
-                        <tbody id="allPendingTable">
-                            <tr><td colspan="8" style="text-align: center;">جاري التحميل...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- قسم طلبات السحب الكامل -->
-        <div id="withdrawals-section" class="section" style="display: none;">
-            <div class="glass-card">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-money-bill-wave"></i> جميع طلبات السحب</h3>
-                    <button class="filter-chip" onclick="loadAllWithdrawals()"><i class="fas fa-sync-alt"></i></button>
-                </div>
-                <div class="table-responsive">
-                    <table class="admin-table">
-                        <thead>
-                            <tr><th>المستخدم</th><th>الهاتف</th><th>المبلغ</th><th>الرسوم</th><th>الإجمالي</th><th>الشبكة</th><th>المحفظة</th><th>واتساب</th><th>الحالة</th><th></th></tr>
-                        </thead>
-                        <tbody id="allWithdrawalsTable">
-                            <tr><td colspan="10" style="text-align: center;">جاري التحميل...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- قسم الإشعارات -->
-        <div id="notifications-section" class="section" style="display: none;">
-            <div class="glass-card">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fab fa-whatsapp"></i> مركز الإشعارات</h3>
-                    <button class="btn btn-whatsapp btn-sm" onclick="testWhatsApp()">
-                        <i class="fas fa-flask"></i> إرسال تجريبي
-                    </button>
-                </div>
-
-                <!-- إحصائيات سريعة -->
-                <div class="whatsapp-stats-grid" style="margin-bottom: 25px;">
-                    <div class="whatsapp-stat-card">
-                        <div class="whatsapp-stat-icon"><i class="fab fa-whatsapp"></i></div>
-                        <div class="whatsapp-stat-value" id="statsActiveUsers">0</div>
-                        <div class="whatsapp-stat-label">مستخدمين مفعلين</div>
-                    </div>
-                    <div class="whatsapp-stat-card">
-                        <div class="whatsapp-stat-icon"><i class="fas fa-paper-plane"></i></div>
-                        <div class="whatsapp-stat-value" id="statsTodaySent">0</div>
-                        <div class="whatsapp-stat-label">أرسلت اليوم</div>
-                    </div>
-                    <div class="whatsapp-stat-card">
-                        <div class="whatsapp-stat-icon"><i class="fas fa-check-circle"></i></div>
-                        <div class="whatsapp-stat-value" id="statsSuccess">98%</div>
-                        <div class="whatsapp-stat-label">نسبة النجاح</div>
-                    </div>
-                    <div class="whatsapp-stat-card">
-                        <div class="whatsapp-stat-icon"><i class="fas fa-clock"></i></div>
-                        <div class="whatsapp-stat-value" id="statsPending">0</div>
-                        <div class="whatsapp-stat-label">في الانتظار</div>
-                    </div>
-                </div>
-
-                <!-- إرسال إشعار جديد -->
-                <div style="margin-bottom: 30px;">
-                    <h4 style="color: var(--gold); margin-bottom: 15px;">📨 إرسال إشعار جديد</h4>
-
-                    <div class="notification-type-selector">
-                        <div class="type-card whatsapp active" onclick="selectNotificationType('whatsapp')">
-                            <div class="type-icon whatsapp"><i class="fab fa-whatsapp"></i></div>
-                            <div class="type-title">واتساب</div>
-                            <div class="type-desc">إرسال مباشر على واتساب</div>
-                        </div>
-                        <div class="type-card" onclick="selectNotificationType('push')">
-                            <div class="type-icon push"><i class="fas fa-bell"></i></div>
-                            <div class="type-title">إشعار متصفح</div>
-                            <div class="type-desc">Web Push Notification</div>
-                        </div>
-                        <div class="type-card" onclick="selectNotificationType('inapp')">
-                            <div class="type-icon inapp"><i class="fas fa-envelope"></i></div>
-                            <div class="type-title">داخل التطبيق</div>
-                            <div class="type-desc">In-app Notification</div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>المستلم</label>
-                        <select id="notificationTarget" class="form-control" onchange="toggleNotificationUser()">
-                            <option value="all">👥 جميع المستخدمين (مع واتساب مفعل)</option>
-                            <option value="active">✅ المستخدمين النشطين فقط</option>
-                            <option value="subscribed">💎 المشتركين فقط</option>
-                            <option value="single">👤 مستخدم محدد</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" id="notificationUserSelect" style="display: none;">
-                        <label>اختر المستخدم</label>
-                        <select id="notificationUser" class="form-control">
-                            <option value="">جاري التحميل...</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>عنوان الإشعار</label>
-                        <input type="text" id="notificationTitle" class="form-control" placeholder="مثال: تمت الموافقة على طلبك">
-                    </div>
-
-                    <div class="form-group">
-                        <label>نص الإشعار</label>
-                        <textarea id="notificationMessage" class="form-control" rows="4" placeholder="أدخل نص الإشعار..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>رابط (اختياري)</label>
-                        <input type="text" id="notificationUrl" class="form-control" placeholder="https://elite-capital.com/dashboard">
-                    </div>
-
-                    <div class="form-group">
-                        <label>صورة مصغرة (اختياري)</label>
-                        <input type="text" id="notificationImage" class="form-control" placeholder="/icons/icon-192x192.png">
-                    </div>
-
-                    <div style="display: flex; gap: 15px;">
-                        <button class="btn btn-outline" style="flex: 1;" onclick="testNotification()">
-                            <i class="fas fa-flask"></i> اختبار
-                        </button>
-                        <button class="btn btn-whatsapp" style="flex: 2;" onclick="sendNotification()">
-                            <i class="fas fa-paper-plane"></i> إرسال الإشعار
-                        </button>
-                    </div>
-                </div>
-
-                <!-- سجل الإشعارات -->
-                <div>
-                    <h4 style="color: var(--gold); margin-bottom: 15px;">📋 سجل الإشعارات</h4>
-                    <div class="notifications-log" id="notificationsLog">
-                        <div class="log-item">
-                            <div class="log-icon whatsapp"><i class="fab fa-whatsapp"></i></div>
-                            <div class="log-content">
-                                <div class="log-title">تمت الموافقة على اشتراك أحمد في الباقة الذهبية</div>
-                                <div class="log-meta">
-                                    <span>منذ 5 دقائق</span>
-                                    <span>إلى: +966 50 *** 1234</span>
-                                </div>
-                            </div>
-                            <div class="log-status sent">تم الإرسال</div>
-                        </div>
-                        <div class="log-item">
-                            <div class="log-icon push"><i class="fas fa-bell"></i></div>
-                            <div class="log-content">
-                                <div class="log-title">تذكير: أرباح اليوم 25$</div>
-                                <div class="log-meta">
-                                    <span>منذ ساعة</span>
-                                    <span>إلى: 150 مستخدم</span>
-                                </div>
-                            </div>
-                            <div class="log-status sent">تم الإرسال</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- قسم الدردشة -->
-        <div id="livechat-section" class="section" style="display: none;">
-            <div class="glass-card">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-comments"></i> المحادثات النشطة</h3>
-                    <div class="chat-filters">
-                        <span class="filter-chip active" onclick="filterChats('all')">الكل</span>
-                        <span class="filter-chip" onclick="filterChats('unread')">غير مقروءة</span>
-                        <span class="filter-chip" onclick="filterChats('whatsapp')">
-                            <i class="fab fa-whatsapp"></i> واتساب
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="chats-grid" id="chatsContainer">
-                    <div style="text-align: center; padding: 40px;">
-                        <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--gold);"></i>
-                        <p style="color: var(--text-muted); margin-top: 15px;">جاري التحميل...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- قسم الهدايا -->
-        <div id="gifts-section" class="section" style="display: none;">
-            <div class="glass-card">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-gift"></i> إدارة الهدايا</h3>
-                    <button class="btn btn-success btn-sm" onclick="showAddGiftModal()"><i class="fas fa-plus"></i> إرسال هدية</button>
-                </div>
-                
-                <div class="gifts-list" id="giftsContainer">
-                    <div class="loading-spinner"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- قسم الإحالة -->
-        <div id="referrals-section" class="section" style="display: none;">
-            <div class="glass-card">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-user-friends"></i> نظام الإحالة</h3>
-                    <button class="filter-chip" onclick="loadReferralStats()"><i class="fas fa-sync-alt"></i></button>
-                </div>
-                <div class="stats-grid" style="margin-bottom: 25px;">
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-users"></i></div>
-                        <div class="stat-label">إجمالي الإحالات</div>
-                        <div class="stat-value" id="totalReferrals">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
-                        <div class="stat-label">أرباح الإحالة</div>
-                        <div class="stat-value" id="totalReferralEarnings">0$</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
-                        <div class="stat-label">مكافآت معلقة</div>
-                        <div class="stat-value" id="pendingReferralRewards">0$</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-percent"></i></div>
-                        <div class="stat-label">معدل التحويل</div>
-                        <div class="stat-value" id="referralRate">0%</div>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="admin-table">
-                        <thead>
-                            <tr><th>المسوق</th><th>كود الإحالة</th><th>عدد الإحالات</th><th>النشطين</th><th>الأرباح</th></tr>
-                        </thead>
-                        <tbody id="marketersTable">
-                            <tr><td colspan="5" style="text-align: center;">جاري التحميل...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- قسم التنبيهات -->
-        <div id="alerts-section" class="section" style="display: none;">
-            <div class="glass-card">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-bullhorn"></i> إدارة التنبيهات</h3>
-                    <button class="btn btn-success btn-sm" onclick="showAddAlertModal()"><i class="fas fa-plus"></i> إضافة</button>
-                </div>
-                
-                <div class="alerts-list" id="alertsContainer">
-                    <div class="loading-spinner"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- قسم النشاطات -->
-        <div id="activity_log-section" class="section" style="display: none;">
-            <div class="glass-card">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-history"></i> سجل النشاطات</h3>
-                    <div style="display: flex; gap: 10px;">
-                        <select id="activityFilter" class="form-control" style="width: 150px;" onchange="loadAllActivities()">
-                            <option value="all">الكل</option>
-                            <option value="profit">أرباح</option>
-                            <option value="withdrawal">سحوبات</option>
-                            <option value="subscription">اشتراكات</option>
-                            <option value="login">دخول</option>
-                        </select>
-                        <button class="filter-chip" onclick="loadAllActivities()"><i class="fas fa-sync-alt"></i></button>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="admin-table">
-                        <thead>
-                            <tr><th>المستخدم</th><th>النوع</th><th>العنوان</th><th>الوصف</th><th>المبلغ</th><th>التاريخ</th></tr>
-                        </thead>
-                        <tbody id="activitiesTable">
-                            <tr><td colspan="6" style="text-align: center;">جاري التحميل...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- نافذة الدردشة -->
-    <div class="chat-window" id="chatWindow">
-        <div class="chat-container">
-            <div class="chat-header">
-                <div class="chat-header-avatar" id="chatHeaderAvatar">م</div>
-                <div class="chat-header-info">
-                    <h3 id="chatUserName">المستخدم</h3>
-                    <p id="chatUserStatus">متصل الآن</p>
-                </div>
-                <button class="chat-close" onclick="closeChatWindow()">&times;</button>
-            </div>
-            
-            <div class="chat-messages" id="chatMessages"></div>
-            
-            <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="اكتب رسالتك هنا..." onkeypress="handleChatKeyPress(event)">
-                <button class="chat-send" onclick="sendChatMessage()">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
             </div>
         </div>
     </div>
@@ -2395,6 +1690,326 @@
         </div>
     </div>
 
+    <!-- المحتوى الرئيسي -->
+    <div class="main-content" id="mainContent">
+        <!-- قسم لوحة التحكم -->
+        <div id="dashboard-section" class="section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-label">إجمالي المستخدمين</div>
+                    <div class="stat-value" id="totalUsers">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
+                    <div class="stat-label">إجمالي الإيداعات</div>
+                    <div class="stat-value" id="totalDeposits">0$</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-hand-holding-usd"></i></div>
+                    <div class="stat-label">إجمالي المسحوبات</div>
+                    <div class="stat-value" id="totalWithdrawals">0$</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-crown"></i></div>
+                    <div class="stat-label">اشتراكات نشطة</div>
+                    <div class="stat-value" id="activeSubscriptions">0</div>
+                </div>
+            </div>
+
+            <div class="content-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-clock"></i> طلبات اشتراك معلقة</h3>
+                        <button class="filter-chip" onclick="loadPendingPackages()"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr><th>المستخدم</th><th>الباقة</th><th>المبلغ</th><th>التاريخ</th><th></th></tr>
+                            </thead>
+                            <tbody id="pendingTable">
+                                <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">لا توجد طلبات معلقة</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-money-bill-wave"></i> طلبات سحب معلقة</h3>
+                        <button class="filter-chip" onclick="loadWithdrawals()"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr><th>المستخدم</th><th>المبلغ</th><th>الرسوم</th><th>الشبكة</th><th>المحفظة</th><th></th></tr>
+                            </thead>
+                            <tbody id="withdrawalsTable">
+                                <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">لا توجد طلبات معلقة</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-grid" style="margin-top: 20px;">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="stat-label">مستخدمين نشطين</div>
+                    <div class="stat-value" id="activeUsers">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-user-slash"></i></div>
+                    <div class="stat-label">معلقين/محظورين</div>
+                    <div class="stat-value" id="suspendedUsers">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-box"></i></div>
+                    <div class="stat-label">عدد الباقات</div>
+                    <div class="stat-value" id="packagesCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-gift"></i></div>
+                    <div class="stat-label">هدايا معلقة</div>
+                    <div class="stat-value" id="pendingGifts">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم المستخدمين مع البحث -->
+        <div id="users-section" class="section" style="display: none;">
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-users"></i> إدارة المستخدمين</h3>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="userSearch" placeholder="بحث بالاسم أو البريد أو رقم..." onkeyup="filterUsers()">
+                        </div>
+                        <button class="filter-chip" onclick="loadUsers()"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr><th>#</th><th>الاسم</th><th>البريد</th><th>الرصيد</th><th>اشتراك</th><th>الحالة</th><th></th></tr>
+                        </thead>
+                        <tbody id="usersTable">
+                            <tr><td colspan="7" style="text-align: center;">جاري التحميل...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم الباقات -->
+        <div id="packages-section" class="section" style="display: none;">
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-crown"></i> إدارة الباقات</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-success btn-sm" onclick="showAddPackageModal()"><i class="fas fa-plus"></i> إضافة</button>
+                        <button class="filter-chip" onclick="loadPackages()"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr><th>الاسم</th><th>السعر</th><th>الربح</th><th>النسبة</th><th>المدة</th><th>الفئة</th><th>الحالة</th><th></th></tr>
+                        </thead>
+                        <tbody id="packagesTable">
+                            <tr><td colspan="8" style="text-align: center;">جاري التحميل...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم طلبات الاشتراك الكامل -->
+        <div id="pending-section" class="section" style="display: none;">
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-clock"></i> جميع طلبات الاشتراك</h3>
+                    <button class="filter-chip" onclick="loadAllPendingPackages()"><i class="fas fa-sync-alt"></i></button>
+                </div>
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr><th>المستخدم</th><th>البريد</th><th>الباقة</th><th>المبلغ</th><th>التاريخ</th><th>الحالة</th><th></th></tr>
+                        </thead>
+                        <tbody id="allPendingTable">
+                            <tr><td colspan="7" style="text-align: center;">جاري التحميل...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم طلبات السحب الكامل -->
+        <div id="withdrawals-section" class="section" style="display: none;">
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-money-bill-wave"></i> جميع طلبات السحب</h3>
+                    <button class="filter-chip" onclick="loadAllWithdrawals()"><i class="fas fa-sync-alt"></i></button>
+                </div>
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr><th>المستخدم</th><th>المبلغ</th><th>الرسوم</th><th>الإجمالي</th><th>الشبكة</th><th>المحفظة</th><th>التاريخ</th><th>الحالة</th><th></th></tr>
+                        </thead>
+                        <tbody id="allWithdrawalsTable">
+                            <tr><td colspan="9" style="text-align: center;">جاري التحميل...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم الإحالة -->
+        <div id="referrals-section" class="section" style="display: none;">
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-user-friends"></i> نظام الإحالة</h3>
+                    <button class="filter-chip" onclick="loadReferralStats()"><i class="fas fa-sync-alt"></i></button>
+                </div>
+                <div class="stats-grid" style="margin-bottom: 25px;">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-label">إجمالي الإحالات</div>
+                        <div class="stat-value" id="totalReferrals">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="stat-label">أرباح الإحالة</div>
+                        <div class="stat-value" id="totalReferralEarnings">0$</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                        <div class="stat-label">مكافآت معلقة</div>
+                        <div class="stat-value" id="pendingReferralRewards">0$</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-percent"></i></div>
+                        <div class="stat-label">معدل التحويل</div>
+                        <div class="stat-value" id="referralRate">0%</div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr><th>المسوق</th><th>كود الإحالة</th><th>عدد الإحالات</th><th>النشطين</th><th>الأرباح</th></tr>
+                        </thead>
+                        <tbody id="marketersTable">
+                            <tr><td colspan="5" style="text-align: center;">جاري التحميل...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم النشاطات -->
+        <div id="activity_log-section" class="section" style="display: none;">
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-history"></i> سجل النشاطات</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <select id="activityFilter" class="form-control" style="width: 150px;" onchange="loadAllActivities()">
+                            <option value="all">الكل</option>
+                            <option value="profit">أرباح</option>
+                            <option value="withdrawal">سحوبات</option>
+                            <option value="subscription">اشتراكات</option>
+                            <option value="login">دخول</option>
+                        </select>
+                        <button class="filter-chip" onclick="loadAllActivities()"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr><th>المستخدم</th><th>النوع</th><th>العنوان</th><th>الوصف</th><th>المبلغ</th><th>التاريخ</th></tr>
+                        </thead>
+                        <tbody id="activitiesTable">
+                            <tr><td colspan="6" style="text-align: center;">جاري التحميل...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم الدردشة -->
+        <div id="livechat-section" class="section" style="display: none;">
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-comments"></i> المحادثات النشطة</h3>
+                    <div class="chat-filters">
+                        <span class="filter-chip active" onclick="filterChats('all')">الكل</span>
+                        <span class="filter-chip" onclick="filterChats('unread')">غير مقروءة</span>
+                        <span class="filter-chip" onclick="filterChats('active')">نشطة</span>
+                    </div>
+                </div>
+                
+                <div class="chats-grid" id="chatsContainer">
+                    <div style="text-align: center; padding: 40px;">
+                        <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--gold);"></i>
+                        <p style="color: var(--text-muted); margin-top: 15px;">جاري التحميل...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم الهدايا -->
+        <div id="gifts-section" class="section" style="display: none;">
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-gift"></i> إدارة الهدايا</h3>
+                    <button class="btn btn-success btn-sm" onclick="showAddGiftModal()"><i class="fas fa-plus"></i> إرسال هدية</button>
+                </div>
+                
+                <div class="gifts-list" id="giftsContainer">
+                    <div class="loading-spinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم التنبيهات -->
+        <div id="alerts-section" class="section" style="display: none;">
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-bullhorn"></i> إدارة التنبيهات</h3>
+                    <button class="btn btn-success btn-sm" onclick="showAddAlertModal()"><i class="fas fa-plus"></i> إضافة</button>
+                </div>
+                
+                <div class="alerts-list" id="alertsContainer">
+                    <div class="loading-spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة الدردشة -->
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="chat-header-avatar" id="chatHeaderAvatar">م</div>
+                <div class="chat-header-info">
+                    <h3 id="chatUserName">المستخدم</h3>
+                    <p>متصل الآن</p>
+                </div>
+                <button class="chat-close" onclick="closeChatWindow()">&times;</button>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages"></div>
+            
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="اكتب رسالتك هنا..." onkeypress="handleChatKeyPress(event)">
+                <button class="chat-send" onclick="sendChatMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- الإشعارات -->
     <div class="toast" id="toast"></div>
 
@@ -2413,7 +2028,6 @@
         let allChats = [];
         let currentFilter = 'all';
         let allUsers = [];
-        let notificationType = 'whatsapp';
 
         // ========== التهيئة ==========
         document.addEventListener('DOMContentLoaded', async function() {
@@ -2461,7 +2075,6 @@
             await loadGifts();
             await loadAlerts();
             await loadAllActivities();
-            await loadWhatsAppStats();
         }
 
         // ========== إحصائيات لوحة التحكم ==========
@@ -2474,38 +2087,17 @@
                     document.getElementById('totalDeposits').textContent = (s.totalDeposits || 0) + '$';
                     document.getElementById('totalWithdrawals').textContent = (s.totalWithdrawals || 0) + '$';
                     document.getElementById('activeSubscriptions').textContent = s.activeSubscriptions || 0;
+                    document.getElementById('activeUsers').textContent = s.activeUsers || 0;
+                    document.getElementById('suspendedUsers').textContent = (s.suspendedUsers + s.bannedUsers) || 0;
+                    document.getElementById('packagesCount').textContent = s.packagesCount || 0;
+                    document.getElementById('pendingGifts').textContent = s.pendingGifts || 0;
                     
                     document.getElementById('usersBadge').textContent = s.totalUsers || 0;
                     document.getElementById('pendingBadge').textContent = s.pendingPackages || 0;
                     document.getElementById('withdrawalsBadge').textContent = s.pendingWithdrawals || 0;
                     document.getElementById('giftsBadge').textContent = s.pendingGifts || 0;
-                    document.getElementById('alertsBadge').textContent = s.activeAlerts || 0;
-                    
-                    // إحصائيات واتساب
-                    document.getElementById('whatsappActive').textContent = s.whatsappUsers || 0;
                 }
             } catch (e) { console.error(e); }
-        }
-
-        // ========== إحصائيات واتساب ==========
-        async function loadWhatsAppStats() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('users')
-                    .select('id, whatsapp_notifications')
-                    .eq('whatsapp_notifications', true);
-                    
-                if (error) throw error;
-                
-                document.getElementById('statsActiveUsers').textContent = data?.length || 0;
-                document.getElementById('notificationsBadge').textContent = data?.length || 0;
-                
-                // محاكاة إحصائيات أخرى
-                document.getElementById('statsTodaySent').textContent = Math.floor(Math.random() * 50) + 20;
-                document.getElementById('statsSuccess').textContent = '98%';
-                document.getElementById('statsPending').textContent = '0';
-                
-            } catch (e) {}
         }
 
         // ========== المستخدمين مع البحث ==========
@@ -2522,7 +2114,7 @@
         function displayUsers(users) {
             const tbody = document.getElementById('usersTable');
             if (!users || users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">لا يوجد مستخدمين</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">لا يوجد مستخدمين</td></tr>';
                 return;
             }
             let html = '';
@@ -2530,18 +2122,12 @@
                 let statusClass = 'status-active', statusText = 'نشط';
                 if (u.status === 'suspended') { statusClass = 'status-suspended'; statusText = 'معلق'; }
                 else if (u.status === 'banned') { statusClass = 'status-banned'; statusText = 'محظور'; }
-                
-                let whatsappBadge = u.whatsapp_notifications ? 
-                    '<span class="status-badge status-whatsapp"><i class="fab fa-whatsapp"></i> مفعل</span>' : 
-                    '<span class="status-badge" style="background: rgba(255,255,255,0.1);">✗ معطل</span>';
-                
                 html += `<tr>
                     <td>${i+1}</td>
                     <td>${u.name||'-'}</td>
                     <td>${u.email||'-'}</td>
                     <td>${u.balance||0}$</td>
                     <td>${u.has_active_subscription ? '✅' : '❌'}</td>
-                    <td>${whatsappBadge}</td>
                     <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                     <td><button class="btn btn-sm btn-warning" onclick="openUserStatusModal(${u.id}, '${u.name}', '${u.status}')"><i class="fas fa-edit"></i></button></td>
                 </tr>`;
@@ -2616,14 +2202,12 @@
             }
             let html = '';
             p.slice(0,10).forEach(p => {
-                let whatsappIcon = p.user_phone ? 
-                    '<span style="color: var(--whatsapp);"><i class="fab fa-whatsapp"></i></span>' : 
-                    '-';
+                const date = new Date(p.created_at).toLocaleDateString('ar-SA');
                 html += `<tr>
                     <td>${p.user_name}</td>
                     <td>${p.package_name}</td>
                     <td>${p.amount}$</td>
-                    <td>${whatsappIcon}</td>
+                    <td>${date}</td>
                     <td><button class="btn btn-sm btn-success" onclick="openProcessModal(${p.id})"><i class="fas fa-check"></i></button></td>
                 </tr>`;
             });
@@ -2640,18 +2224,13 @@
                         let statusClass = 'status-pending', statusText = 'معلق';
                         if (p.status === 'approved') { statusClass = 'status-approved'; statusText = 'مقبول'; }
                         else if (p.status === 'rejected') { statusClass = 'status-rejected'; statusText = 'مرفوض'; }
-                        
-                        let whatsappIcon = p.user_phone ? 
-                            '<span style="color: var(--whatsapp);"><i class="fab fa-whatsapp"></i> ' + p.user_phone + '</span>' : 
-                            '-';
-                            
+                        const date = new Date(p.created_at).toLocaleDateString('ar-SA');
                         html += `<tr>
                             <td>${p.user_name}</td>
                             <td>${p.user_email || '-'}</td>
-                            <td>${p.user_phone || '-'}</td>
                             <td>${p.package_name}</td>
                             <td>${p.amount}$</td>
-                            <td>${whatsappIcon}</td>
+                            <td>${date}</td>
                             <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                             <td>${p.status === 'pending' ? `<button class="btn btn-sm btn-success" onclick="openProcessModal(${p.id})"><i class="fas fa-check"></i></button>` : '-'}</td>
                         </tr>`;
@@ -2682,15 +2261,11 @@
             let html = '';
             p.slice(0,10).forEach(w => {
                 const walletShort = w.wallet ? w.wallet.substring(0, 10) + '...' : '-';
-                let whatsappIcon = w.users?.phone ? 
-                    '<span style="color: var(--whatsapp);"><i class="fab fa-whatsapp"></i></span>' : 
-                    '-';
-                    
                 html += `<tr>
                     <td>${w.users?.name || '-'}</td>
                     <td>${w.amount}$</td>
                     <td>${w.fee}$</td>
-                    <td>${whatsappIcon}</td>
+                    <td>${w.network || 'TRC20'}</td>
                     <td><span class="wallet-address" onclick="copyToClipboard('${w.wallet}')" title="اضغط للنسخ">${walletShort}</span></td>
                     <td><button class="btn btn-sm btn-success" onclick="openWithdrawalModal(${w.id})"><i class="fas fa-check"></i></button></td>
                 </tr>`;
@@ -2701,7 +2276,7 @@
         function displayAllWithdrawals(withdrawals) {
             const tbody = document.getElementById('allWithdrawalsTable');
             if (withdrawals.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center;">لا توجد طلبات سحب</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">لا توجد طلبات سحب</td></tr>';
                 return;
             }
             let html = '';
@@ -2709,21 +2284,17 @@
                 let statusClass = 'status-pending', statusText = 'معلق';
                 if (w.status === 'completed') { statusClass = 'status-approved'; statusText = 'مكتمل'; }
                 else if (w.status === 'rejected') { statusClass = 'status-rejected'; statusText = 'مرفوض'; }
-                
-                const walletShort = w.wallet ? w.wallet.substring(0, 15) + '...' : '-';
-                let whatsappInfo = w.users?.phone ? 
-                    `<span style="color: var(--whatsapp);"><i class="fab fa-whatsapp"></i> ${w.users.phone}</span>` : 
-                    '-';
-                    
+                const date = new Date(w.created_at).toLocaleDateString('ar-SA');
+                const walletFull = w.wallet || '-';
+                const walletShort = walletFull.length > 15 ? walletFull.substring(0, 15) + '...' : walletFull;
                 html += `<tr>
                     <td>${w.users?.name || '-'}</td>
-                    <td>${w.users?.phone || '-'}</td>
                     <td>${w.amount}$</td>
                     <td>${w.fee}$</td>
                     <td>${w.total || w.amount + w.fee}$</td>
                     <td>${w.network || 'TRC20'}</td>
                     <td><span class="wallet-address" onclick="copyToClipboard('${w.wallet}')" title="اضغط للنسخ">${walletShort}</span></td>
-                    <td>${whatsappInfo}</td>
+                    <td>${date}</td>
                     <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                     <td>${w.status === 'pending' ? `<button class="btn btn-sm btn-success" onclick="openWithdrawalModal(${w.id})"><i class="fas fa-check"></i></button>` : '-'}</td>
                 </tr>`;
@@ -2841,7 +2412,7 @@
             try {
                 const { data, error } = await supabaseClient
                     .from('live_chats')
-                    .select('*, users:user_id(id, name, email, phone, whatsapp_notifications)')
+                    .select('*, users:user_id(id, name, email)')
                     .eq('status', 'active')
                     .order('last_message_at', { ascending: false });
 
@@ -2877,9 +2448,8 @@
         function displayChats() {
             const container = document.getElementById('chatsContainer');
             let filtered = allChats;
-            
             if (currentFilter === 'unread') filtered = allChats.filter(c => c.unread_count > 0);
-            if (currentFilter === 'whatsapp') filtered = allChats.filter(c => c.users?.whatsapp_notifications);
+            if (currentFilter === 'active') filtered = allChats.filter(c => !c.admin_id);
 
             if (filtered.length === 0) {
                 container.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="fas fa-inbox fa-3x" style="color: var(--gold); opacity: 0.5;"></i><p style="color: var(--text-muted); margin-top: 15px;">لا توجد محادثات</p></div>';
@@ -2894,18 +2464,14 @@
                 const name = chat.users?.name || 'مستخدم';
                 const email = chat.users?.email || '';
                 const initial = name.charAt(0).toUpperCase();
-                const hasWhatsApp = chat.users?.whatsapp_notifications;
-
-                let whatsappClass = hasWhatsApp ? 'whatsapp-user' : '';
 
                 html += `
                     <div class="chat-card ${unread ? 'unread' : ''}" onclick="openChatWindow(${chat.id}, '${name}', ${chat.user_id})">
-                        <div class="chat-avatar ${whatsappClass}">${initial}</div>
+                        <div class="chat-avatar">${initial}</div>
                         <div class="chat-info">
                             <div class="chat-name">
                                 ${name}
                                 <span class="chat-email">${email}</span>
-                                ${hasWhatsApp ? '<span class="chat-whatsapp-badge"><i class="fab fa-whatsapp"></i> واتساب</span>' : ''}
                             </div>
                             <div class="chat-preview">${lastMsg}</div>
                         </div>
@@ -2965,17 +2531,6 @@
             currentChatId = chatId;
             document.getElementById('chatUserName').textContent = userName;
             document.getElementById('chatHeaderAvatar').textContent = userName.charAt(0).toUpperCase();
-            
-            // عرض حالة واتساب
-            const user = allChats.find(c => c.id === chatId)?.users;
-            if (user?.whatsapp_notifications) {
-                document.getElementById('chatUserStatus').innerHTML = 'متصل <span class="chat-whatsapp-status"><i class="fab fa-whatsapp"></i> واتساب مفعل</span>';
-                document.getElementById('chatHeaderAvatar').classList.add('whatsapp-active');
-            } else {
-                document.getElementById('chatUserStatus').textContent = 'متصل الآن';
-                document.getElementById('chatHeaderAvatar').classList.remove('whatsapp-active');
-            }
-            
             document.getElementById('chatWindow').classList.add('active');
             
             await loadChatMessages();
@@ -3206,7 +2761,7 @@
                 if (result.success && result.data) {
                     const select = document.getElementById('giftUser');
                     let options = '<option value="">اختر مستخدم...</option>';
-                    result.data.forEach(u => options += `<option value="${u.id}">${u.name} (${u.email}) ${u.whatsapp_notifications ? '📱' : ''}</option>`);
+                    result.data.forEach(u => options += `<option value="${u.id}">${u.name} (${u.email})</option>`);
                     select.innerHTML = options;
                 }
             } catch (e) { console.error(e); }
@@ -3220,20 +2775,7 @@
             if (!title || !msg || !amount) { showToast('املأ جميع الحقول', 'error'); return; }
             if (type === 'single' && !targetUserId) { showToast('اختر مستخدم', 'error'); return; }
             const result = await window.supabaseHelpers.sendGift({ title, message: msg, amount, type: 'info', targetType: type, targetUserId, createdBy: currentAdmin.id });
-            if (result.success) { 
-                closeAddGiftModal(); 
-                showToast('✅ تم إرسال الهدية'); 
-                await loadGifts(); 
-                await loadDashboardStats(); 
-                
-                // إرسال إشعار واتساب إذا كان المستخدم مفعل
-                if (type === 'single' && targetUserId) {
-                    const { data: user } = await supabaseClient.from('users').select('*').eq('id', targetUserId).single();
-                    if (user?.whatsapp_notifications && window.whatsappNotifications) {
-                        window.whatsappNotifications.sendGiftReceived(user, { title, message: msg, amount });
-                    }
-                }
-            }
+            if (result.success) { closeAddGiftModal(); showToast('✅ تم إرسال الهدية'); await loadGifts(); await loadDashboardStats(); }
             else showToast('❌ ' + result.error, 'error');
         }
         async function deleteGift(id) {
@@ -3257,7 +2799,7 @@
                 const badge = document.getElementById('alertsBadge');
                 
                 if (!data || data.length === 0) {
-                    container.innerHTML = `<div class="no-alerts"><i class="fas fa-bell-slash"></i><h3>لا توجد تنبيهات</h3><p>أضف تنبيهاً جديداً</p></div>`;
+                    container.innerHTML = `<div class="no-alerts"><i class="fas fa-bell-slash"></i><h3>لا توجد تنبيهات</h3><p>قم بإضافة تنبيه جديد ليظهر للمستخدمين</p></div>`;
                     if (badge) { badge.style.display = 'none'; }
                     return;
                 }
@@ -3395,38 +2937,15 @@
         }
         async function approvePending() {
             if (!currentPendingId) return;
-            
-            const sendWhatsApp = document.getElementById('sendWhatsAppNotification').checked;
-            
             const result = await window.supabaseHelpers.approvePendingPackage(currentPendingId, currentAdmin.id);
-            
-            if (result.success) { 
-                closeProcessModal(); 
-                showToast('✅ تم قبول الطلب وتفعيل الباقة'); 
-                await loadAllData(); 
-            }
+            if (result.success) { closeProcessModal(); showToast('✅ تم قبول الطلب'); await loadAllData(); }
             else showToast('❌ ' + result.error, 'error');
         }
         async function rejectPending() {
             if (!currentPendingId) return;
             const notes = document.getElementById('processNotes').value;
-            const sendWhatsApp = document.getElementById('sendWhatsAppNotification').checked;
-            
             const result = await window.supabaseHelpers.rejectPendingPackage(currentPendingId, notes || 'مرفوض', currentAdmin.id);
-            
-            if (result.success) { 
-                closeProcessModal(); 
-                showToast('✅ تم رفض الطلب'); 
-                await loadAllData(); 
-                
-                // إرسال إشعار واتساب بالرفض
-                if (sendWhatsApp) {
-                    const { data: pending } = await supabaseClient.from('pending_packages').select('*, users!inner(*)').eq('id', currentPendingId).single();
-                    if (pending?.users?.whatsapp_notifications && window.whatsappNotifications) {
-                        // يمكن إضافة دالة إرسال رفض هنا
-                    }
-                }
-            }
+            if (result.success) { closeProcessModal(); showToast('✅ تم رفض الطلب'); await loadAllData(); }
             else showToast('❌ ' + result.error, 'error');
         }
 
@@ -3444,36 +2963,14 @@
         async function approveWithdrawal() {
             if (!currentWithdrawalId) return;
             const tx = document.getElementById('transactionHash').value.trim();
-            const sendWhatsApp = document.getElementById('sendWithdrawalWhatsApp').checked;
-            
             const result = await window.supabaseHelpers.updateWithdrawalStatus(currentWithdrawalId, 'completed', currentAdmin.id, tx || null);
-            
-            if (result.success) { 
-                closeWithdrawalProcessModal(); 
-                showToast('✅ تم تأكيد السحب'); 
-                await loadAllData(); 
-            }
+            if (result.success) { closeWithdrawalProcessModal(); showToast('✅ تم تأكيد السحب'); await loadAllData(); }
             else showToast('❌ ' + result.error, 'error');
         }
         async function rejectWithdrawal() {
             if (!currentWithdrawalId) return;
-            const sendWhatsApp = document.getElementById('sendWithdrawalWhatsApp').checked;
-            
             const result = await window.supabaseHelpers.updateWithdrawalStatus(currentWithdrawalId, 'rejected', currentAdmin.id);
-            
-            if (result.success) { 
-                closeWithdrawalProcessModal(); 
-                showToast('✅ تم رفض الطلب'); 
-                await loadAllData(); 
-                
-                // إرسال إشعار واتساب بالرفض
-                if (sendWhatsApp) {
-                    const { data: withdrawal } = await supabaseClient.from('withdrawals').select('*, users!inner(*)').eq('id', currentWithdrawalId).single();
-                    if (withdrawal?.users?.whatsapp_notifications && window.whatsappNotifications) {
-                        window.whatsappNotifications.sendWithdrawalRejected(withdrawal.users, withdrawal, 'تم رفض الطلب من قبل الإدارة');
-                    }
-                }
-            }
+            if (result.success) { closeWithdrawalProcessModal(); showToast('✅ تم رفض الطلب'); await loadAllData(); }
             else showToast('❌ ' + result.error, 'error');
         }
 
@@ -3495,120 +2992,6 @@
             const result = await window.supabaseHelpers.updateUserStatus(currentUserId, newStatus);
             if (result.success) { closeUserStatusModal(); showToast('✅ تم تحديث الحالة'); await loadUsers(); await loadDashboardStats(); }
             else showToast('❌ ' + result.error, 'error');
-        }
-
-        // ========== نظام الإشعارات ==========
-        function selectNotificationType(type) {
-            notificationType = type;
-            document.querySelectorAll('.type-card').forEach(c => c.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-        }
-
-        function toggleNotificationUser() {
-            const target = document.getElementById('notificationTarget').value;
-            document.getElementById('notificationUserSelect').style.display = target === 'single' ? 'block' : 'none';
-            if (target === 'single') loadUsersForNotification();
-        }
-
-        async function loadUsersForNotification() {
-            try {
-                const result = await window.supabaseHelpers.getAllUsers();
-                if (result.success && result.data) {
-                    const select = document.getElementById('notificationUser');
-                    let options = '<option value="">اختر مستخدم...</option>';
-                    result.data.forEach(u => {
-                        options += `<option value="${u.id}">${u.name} (${u.phone || 'لا يوجد رقم'}) ${u.whatsapp_notifications ? '📱' : ''}</option>`;
-                    });
-                    select.innerHTML = options;
-                }
-            } catch (error) { console.error(error); }
-        }
-
-        async function testNotification() {
-            const title = document.getElementById('notificationTitle').value || 'إشعار تجريبي';
-            const msg = document.getElementById('notificationMessage').value || 'هذا إشعار تجريبي من لوحة الإدارة';
-            
-            showToast('📱 جاري إرسال إشعار تجريبي...', 'info');
-            
-            // محاكاة إرسال
-            setTimeout(() => {
-                showToast('✅ تم إرسال الإشعار التجريبي بنجاح', 'whatsapp');
-                addToNotificationsLog('اختبار', 'مستخدم واحد', 'نجاح');
-            }, 2000);
-        }
-
-        async function sendNotification() {
-            const target = document.getElementById('notificationTarget').value;
-            const title = document.getElementById('notificationTitle').value.trim();
-            const msg = document.getElementById('notificationMessage').value.trim();
-            const url = document.getElementById('notificationUrl').value.trim();
-            const image = document.getElementById('notificationImage').value.trim();
-            const specificUser = document.getElementById('notificationUser').value;
-            
-            if (!title || !msg) {
-                showToast('⚠️ الرجاء إدخال عنوان ونص الإشعار', 'warning');
-                return;
-            }
-            
-            if (target === 'single' && !specificUser) {
-                showToast('⚠️ الرجاء اختيار مستخدم', 'warning');
-                return;
-            }
-            
-            showToast('📱 جاري إرسال الإشعارات...', 'info');
-            
-            let targetText = '';
-            switch(target) {
-                case 'all': targetText = 'جميع مستخدمي واتساب'; break;
-                case 'active': targetText = 'المستخدمين النشطين'; break;
-                case 'subscribed': targetText = 'المشتركين'; break;
-                case 'single': targetText = 'مستخدم محدد'; break;
-            }
-            
-            // محاكاة إرسال
-            setTimeout(() => {
-                showToast(`✅ تم إرسال الإشعار إلى ${targetText} بنجاح`, 'whatsapp');
-                addToNotificationsLog(title, targetText, 'نجاح');
-                
-                // تفريغ الحقول اختيارياً
-                // document.getElementById('notificationTitle').value = '';
-                // document.getElementById('notificationMessage').value = '';
-            }, 3000);
-        }
-
-        function addToNotificationsLog(title, target, status) {
-            const log = document.getElementById('notificationsLog');
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('ar-SA');
-            
-            const logItem = document.createElement('div');
-            logItem.className = 'log-item';
-            logItem.innerHTML = `
-                <div class="log-icon whatsapp"><i class="fab fa-whatsapp"></i></div>
-                <div class="log-content">
-                    <div class="log-title">${title}</div>
-                    <div class="log-meta">
-                        <span>${timeStr}</span>
-                        <span>إلى: ${target}</span>
-                    </div>
-                </div>
-                <div class="log-status sent">${status}</div>
-            `;
-            
-            log.insertBefore(logItem, log.firstChild);
-            
-            // حذف القديم إذا زاد عن 20
-            if (log.children.length > 20) {
-                log.removeChild(log.lastChild);
-            }
-        }
-
-        function testWhatsApp() {
-            showToast('📱 جاري إرسال رسالة تجريبية...', 'info');
-            
-            setTimeout(() => {
-                showToast('✅ تم إرسال رسالة واتساب تجريبية إلى المسؤول', 'whatsapp');
-            }, 2000);
         }
 
         // ========== نسخ النص ==========
@@ -3637,7 +3020,6 @@
             else if (sectionId === 'withdrawals') loadAllWithdrawals();
             else if (sectionId === 'referrals') loadReferralStats();
             else if (sectionId === 'activity_log') loadAllActivities();
-            else if (sectionId === 'notifications') loadWhatsAppStats();
             else if (sectionId === 'dashboard') loadDashboardStats();
         }
 

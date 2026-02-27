@@ -1,5 +1,5 @@
 // ===================================
-// supabase.js - Elite Capital (نسخة محدثة مع دعم واتساب)
+// supabase.js - Elite Capital (نسخة محدثة بالكامل)
 // ===================================
 
 const SUPABASE_URL = 'https://macbjaiunubocfyhvbvd.supabase.co';
@@ -114,8 +114,7 @@ async function registerUser(userData) {
             violation_count: 0,
             is_suspended: false,
             suspension_reason: null,
-            suspended_until: null,
-            whatsapp_notifications: false // إضافة حقل إشعارات واتساب
+            suspended_until: null
         };
         
         const { data: newUser, error } = await supabaseClient
@@ -125,20 +124,6 @@ async function registerUser(userData) {
             .single();
         
         if (error) throw error;
-        
-        // إرسال إشعار واتساب ترحيبي
-        if (newUser.phone && window.whatsappNotifications) {
-            setTimeout(() => {
-                window.whatsappNotifications.sendWelcome(newUser);
-            }, 2000);
-        }
-        
-        // إشعار المسؤول
-        if (window.whatsappNotifications) {
-            setTimeout(() => {
-                window.whatsappNotifications.sendNewUserToAdmin(newUser);
-            }, 3000);
-        }
         
         return { success: true, data: newUser };
     } catch (error) {
@@ -268,7 +253,7 @@ async function handleDoubleClaimViolation(userId) {
         // جلب المستخدم
         const { data: user } = await supabaseClient
             .from('users')
-            .select('violation_count, is_suspended, phone, name')
+            .select('violation_count, is_suspended')
             .eq('id', userId)
             .single();
         
@@ -297,12 +282,6 @@ async function handleDoubleClaimViolation(userId) {
             description: `محاولة مطالبة مزدوجة - تم تعليق الحساب حتى ${suspendUntil.toLocaleDateString('ar-SA')}`,
             status: 'suspended'
         });
-        
-        // إرسال إشعار واتساب بالمخالفة
-        if (user.phone && window.whatsappNotifications) {
-            const updatedUser = { ...user, violation_count: newViolationCount, suspended_until: suspendUntil };
-            window.whatsappNotifications.sendViolation(updatedUser);
-        }
         
         return { 
             success: true, 
@@ -474,7 +453,6 @@ async function getPendingPackages() {
     }
 }
 
-// ========== الموافقة على طلب اشتراك ==========
 async function approvePendingPackage(id, adminId) {
     try {
         const { data: pending, error: fetchError } = await supabaseClient
@@ -565,17 +543,6 @@ async function approvePendingPackage(id, adminId) {
         
         await addSubscriptionActivity(pending.user_id, pending.amount, pending.package_name, 'approved');
         
-        // إرسال إشعار واتساب
-        const { data: user } = await supabaseClient
-            .from('users')
-            .select('*')
-            .eq('id', pending.user_id)
-            .single();
-        
-        if (user?.phone && user?.whatsapp_notifications && window.whatsappNotifications) {
-            window.whatsappNotifications.sendSubscriptionApproved(user, subscription);
-        }
-        
         return { success: true, data: subscription };
     } catch (error) {
         return { success: false, error: error.message };
@@ -602,13 +569,13 @@ async function rejectPendingPackage(id, reason, adminId) {
     }
 }
 
-// ========== نظام المطالبة بالأرباح اليومية ==========
+// ========== نظام المطالبة بالأرباح اليومية (محدث مع منع التكرار) ==========
 async function claimDailyProfit(userId) {
     try {
         // التحقق من حالة المستخدم
         const { data: user } = await supabaseClient
             .from('users')
-            .select('is_suspended, violation_count, phone, name')
+            .select('is_suspended, violation_count')
             .eq('id', userId)
             .single();
         
@@ -828,11 +795,6 @@ async function processReferralRewards(newUserId, referralCode) {
         
         await supabaseClient.from('transactions').insert(transactions);
         
-        // إرسال إشعار واتساب للمحيل
-        if (referrer.phone && referrer.whatsapp_notifications && window.whatsappNotifications) {
-            window.whatsappNotifications.sendNewReferral(referrer, newUser);
-        }
-        
         return { success: true };
     } catch (error) {
         return { success: false };
@@ -968,7 +930,7 @@ async function getAllWithdrawals(status = null) {
     try {
         let query = supabaseClient
             .from('withdrawals')
-            .select('*, users(name, email, phone, whatsapp_notifications)')
+            .select('*, users(name, email)')
             .order('created_at', { ascending: false });
         
         if (status) {
@@ -988,7 +950,6 @@ async function getPendingWithdrawals() {
     return getAllWithdrawals('pending');
 }
 
-// ========== تحديث حالة السحب ==========
 async function updateWithdrawalStatus(id, status, adminId, txHash = null) {
     try {
         const updates = { 
@@ -1019,22 +980,6 @@ async function updateWithdrawalStatus(id, status, adminId, txHash = null) {
                 .from('users')
                 .update({ balance: user.balance + data.total })
                 .eq('id', data.user_id);
-            
-            // إرسال إشعار رفض
-            if (user?.phone && user?.whatsapp_notifications && window.whatsappNotifications) {
-                window.whatsappNotifications.sendWithdrawalRejected(user, data, 'تم رفض الطلب من قبل الإدارة');
-            }
-        } else if (status === 'completed') {
-            // إرسال إشعار موافقة
-            const { data: user } = await supabaseClient
-                .from('users')
-                .select('*')
-                .eq('id', data.user_id)
-                .single();
-            
-            if (user?.phone && user?.whatsapp_notifications && window.whatsappNotifications) {
-                window.whatsappNotifications.sendWithdrawalApproved(user, data);
-            }
         }
         
         await addWithdrawalActivity(data.user_id, data.amount, status);
@@ -1103,7 +1048,7 @@ async function sendGift(giftData) {
         if (giftData.targetType === 'all') {
             const { data: users } = await supabaseClient
                 .from('users')
-                .select('id, phone, whatsapp_notifications');
+                .select('id');
             
             for (const user of users) {
                 await supabaseClient
@@ -1114,11 +1059,6 @@ async function sendGift(giftData) {
                         status: 'pending',
                         created_at: new Date().toISOString()
                     }]);
-                
-                // إرسال إشعار واتساب للمستخدمين (اختياري)
-                if (user?.phone && user?.whatsapp_notifications && window.whatsappNotifications) {
-                    // يمكن إرسال إشعار جماعي هنا (اختياري)
-                }
             }
         } else if (giftData.targetType === 'single' && giftData.targetUserId) {
             await supabaseClient
@@ -1129,17 +1069,6 @@ async function sendGift(giftData) {
                     status: 'pending',
                     created_at: new Date().toISOString()
                 }]);
-            
-            // إرسال إشعار للمستخدم المستهدف
-            const { data: user } = await supabaseClient
-                .from('users')
-                .select('*')
-                .eq('id', giftData.targetUserId)
-                .single();
-            
-            if (user?.phone && user?.whatsapp_notifications && window.whatsappNotifications) {
-                window.whatsappNotifications.sendGiftReceived(user, giftData);
-            }
         }
         
         return { success: true, data: gift };
@@ -1279,8 +1208,7 @@ async function getDashboardStats() {
                 pendingPackages: pendingPackages.length,
                 pendingWithdrawals: withdrawals.filter(w => w.status === 'pending').length,
                 packagesCount: packages.length,
-                pendingGifts: pendingGifts,
-                usersWithWhatsApp: users.filter(u => u.whatsapp_notifications).length // إضافة إحصائية واتساب
+                pendingGifts: pendingGifts
             }
         };
     } catch (error) {
@@ -1288,7 +1216,7 @@ async function getDashboardStats() {
     }
 }
 
-// ========== نظام الصور في الدردشة ==========
+// ========== نظام الصور في الدردشة (Base64) ==========
 async function uploadChatImage(file, userId) {
     try {
         if (file.size > 5 * 1024 * 1024) {
@@ -1868,10 +1796,7 @@ window.supabaseHelpers = {
     addGlobalAlert,
     getActiveAlerts,
     disableAlert,
-    deleteAlert,
-    
-    // نظام المخالفات
-    handleDoubleClaimViolation
+    deleteAlert
 };
 
-console.log('✅ تم تحميل جميع دوال Supabase مع دعم واتساب');
+console.log('✅ تم تحميل جميع دوال Supabase مع نظام منع التكرار');

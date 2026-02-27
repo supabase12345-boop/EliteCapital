@@ -22,7 +22,6 @@
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase.js"></script>
-    <script src="whatsapp.js"></script>
     
     <!-- PWA -->
     <link rel="manifest" href="/manifest.json">
@@ -58,9 +57,6 @@
             --shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
             --shadow-gold: 0 10px 30px rgba(200, 169, 126, 0.3);
             --gradient-gold: linear-gradient(135deg, #c8a97e, #b38b5b);
-            --glass-bg: rgba(30, 41, 59, 0.7);
-            --glass-border: rgba(200, 169, 126, 0.2);
-            --whatsapp: #25D366;
         }
 
         body {
@@ -70,34 +66,20 @@
             overflow-x: hidden;
             min-height: 100vh;
             padding-bottom: 100px;
-            position: relative;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%23c8a97e" stroke-width="0.5" opacity="0.05"/></svg>') repeat;
-            pointer-events: none;
-            z-index: -1;
         }
 
         /* شريط التمرير */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 8px;
         }
 
         ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         ::-webkit-scrollbar-thumb {
             background: var(--gold);
-            border-radius: 10px;
+            border-radius: 4px;
         }
 
         /* الشريط العلوي */
@@ -107,11 +89,10 @@
             left: 0;
             right: 0;
             z-index: 1000;
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 12px 20px;
+            border-bottom: 2px solid var(--gold);
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -160,18 +141,6 @@
             cursor: pointer;
             border: 2px solid var(--gold);
             position: relative;
-        }
-
-        .user-avatar::after {
-            content: '';
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            width: 10px;
-            height: 10px;
-            background: var(--success);
-            border-radius: 50%;
-            border: 2px solid var(--dark);
         }
 
         .user-dropdown {
@@ -363,268 +332,8 @@
 
         /* المحتوى الرئيسي */
         .main {
-            margin-top: 80px;
-            padding: 20px;
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* ===== قسم الإشعارات الجديد ===== */
-        .notifications-bar {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .notifications-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .notifications-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(200, 169, 126, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: var(--gold);
-            position: relative;
-        }
-
-        .notifications-count {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--danger);
-            color: white;
-            font-size: 12px;
-            padding: 3px 6px;
-            border-radius: 50px;
-            min-width: 22px;
-            text-align: center;
-            border: 2px solid var(--dark);
-            animation: pulse 2s infinite;
-        }
-
-        .notifications-text h4 {
-            color: var(--gold);
-            margin-bottom: 3px;
-        }
-
-        .notifications-text p {
-            color: var(--text-muted);
-            font-size: 13px;
-        }
-
-        .whatsapp-quick-toggle {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: rgba(37, 211, 102, 0.05);
-            border: 1px solid var(--whatsapp);
-            border-radius: 50px;
-            padding: 5px 15px 5px 5px;
-        }
-
-        .whatsapp-icon-small {
-            width: 40px;
-            height: 40px;
-            background: rgba(37, 211, 102, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            color: var(--whatsapp);
-        }
-
-        .whatsapp-status {
-            font-size: 14px;
-            color: var(--text);
-        }
-
-        .whatsapp-status small {
-            color: var(--text-muted);
-            font-size: 11px;
-            display: block;
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 26px;
-            margin-right: 10px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(255,255,255,0.1);
-            transition: .4s;
-            border: 1px solid var(--glass-border);
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            right: 3px;
-            bottom: 2px;
-            background-color: white;
-            transition: .4s;
-        }
-
-        input:checked + .slider {
-            background-color: var(--whatsapp);
-            border-color: var(--whatsapp);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(-24px);
-        }
-
-        .slider.round {
-            border-radius: 34px;
-        }
-
-        .slider.round:before {
-            border-radius: 50%;
-        }
-
-        /* قائمة الإشعارات المنسدلة */
-        .notifications-dropdown {
-            position: relative;
-        }
-
-        .notifications-dropdown-toggle {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 30px;
-            padding: 10px 20px;
-            color: var(--text);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s;
-        }
-
-        .notifications-dropdown-toggle:hover {
-            border-color: var(--gold);
-        }
-
-        .notifications-dropdown-menu {
-            position: absolute;
-            top: 50px;
-            left: 0;
-            width: 350px;
-            background: var(--dark-light);
-            border: 2px solid var(--gold);
-            border-radius: 20px;
-            padding: 15px;
-            display: none;
-            z-index: 100;
-            box-shadow: var(--shadow);
-        }
-
-        .notifications-dropdown-menu.active {
-            display: block;
-            animation: slideDown 0.3s;
-        }
-
-        .notifications-list {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-        }
-
-        .notification-item {
-            padding: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            gap: 10px;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .notification-item:hover {
-            background: rgba(200, 169, 126, 0.05);
-        }
-
-        .notification-item.unread {
-            background: rgba(37, 211, 102, 0.05);
-            border-right: 3px solid var(--whatsapp);
-        }
-
-        .notification-icon {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-
-        .notification-icon.whatsapp { background: rgba(37, 211, 102, 0.1); color: var(--whatsapp); }
-        .notification-icon.success { background: rgba(39, 174, 96, 0.1); color: var(--success); }
-        .notification-icon.warning { background: rgba(243, 156, 18, 0.1); color: var(--warning); }
-        .notification-icon.danger { background: rgba(231, 76, 60, 0.1); color: var(--danger); }
-
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 3px;
-        }
-
-        .notification-time {
-            font-size: 10px;
-            color: var(--text-muted);
-        }
-
-        .notification-status {
-            font-size: 11px;
-            color: var(--whatsapp);
-        }
-
-        .view-all-link {
-            display: block;
-            text-align: center;
-            padding: 10px;
-            color: var(--gold);
-            text-decoration: none;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            font-size: 13px;
+            margin-top: 90px;
+            padding: 20px 30px;
         }
 
         /* ===== بطاقات الإحصائيات المزدوجة ===== */
@@ -636,12 +345,15 @@
         }
 
         .stats-card {
-            background: var(--glass-bg);
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.5));
             backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
             border-radius: 25px;
             padding: 20px;
+            border: 1px solid rgba(200, 169, 126, 0.3);
             transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
         .stats-card:hover {
@@ -694,23 +406,23 @@
 
         /* بطاقة الاشتراك */
         .subscription-card {
-            background: linear-gradient(135deg, rgba(200, 169, 126, 0.15), rgba(179, 139, 91, 0.15));
-            border: 2px solid var(--gold);
+            background: linear-gradient(135deg, rgba(200, 169, 126, 0.1), rgba(179, 139, 91, 0.1));
             border-radius: 30px;
-            padding: 25px;
+            padding: 30px;
             margin-bottom: 30px;
+            border: 2px solid var(--gold);
             position: relative;
             overflow: hidden;
         }
 
         .subscription-card::before {
-            content: '👑';
+            content: '';
             position: absolute;
-            bottom: -20px;
-            left: -20px;
-            font-size: 120px;
-            opacity: 0.1;
-            transform: rotate(-15deg);
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-gold);
         }
 
         .subscription-header {
@@ -718,8 +430,6 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
         }
 
         .subscription-name {
@@ -759,48 +469,32 @@
             color: var(--gold);
         }
 
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            margin: 15px 0;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--gradient-gold);
-            border-radius: 4px;
-            transition: width 0.3s;
-        }
-
         /* حالة عدم وجود اشتراك */
         .no-subscription {
             text-align: center;
-            padding: 40px;
+            padding: 60px;
             background: rgba(200, 169, 126, 0.05);
-            border-radius: 30px;
+            border-radius: 40px;
             border: 2px dashed var(--gold);
             margin-bottom: 30px;
         }
 
         .no-subscription i {
-            font-size: 60px;
+            font-size: 80px;
             color: var(--gold);
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             opacity: 0.5;
         }
 
         .no-subscription h3 {
-            font-size: 24px;
+            font-size: 28px;
             color: var(--gold);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .no-subscription p {
             color: var(--text-muted);
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         /* ===== بطاقة الهدايا (في صفحة المهام) ===== */
@@ -1218,11 +912,11 @@
 
         /* البطاقات العامة */
         .card {
-            background: var(--glass-bg);
+            background: rgba(30, 41, 59, 0.5);
             backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
             border-radius: 25px;
             padding: 25px;
+            border: 1px solid rgba(200, 169, 126, 0.3);
         }
 
         .card-title {
@@ -1319,7 +1013,6 @@
         .icon-withdrawal { background: rgba(243, 156, 18, 0.2); color: #f39c12; }
         .icon-subscription { background: rgba(52, 152, 219, 0.2); color: #3498db; }
         .icon-login { background: rgba(155, 89, 182, 0.2); color: #9b59b6; }
-        .icon-whatsapp { background: rgba(37, 211, 102, 0.2); color: #25D366; }
 
         .activity-content {
             flex: 1;
@@ -1504,7 +1197,7 @@
             width: 100%;
             padding: 15px 20px;
             background: rgba(255, 255, 255, 0.03);
-            border: 2px solid var(--glass-border);
+            border: 2px solid rgba(200, 169, 126, 0.3);
             border-radius: 30px;
             color: white;
             font-size: 16px;
@@ -1588,15 +1281,13 @@
             right: 20px;
             background: var(--success);
             color: white;
-            padding: 16px 24px;
+            padding: 15px 25px;
             border-radius: 50px;
             display: none;
-            z-index: 5000;
+            z-index: 3000;
             box-shadow: var(--shadow);
             border-right: 4px solid white;
             min-width: 300px;
-            backdrop-filter: blur(10px);
-            animation: slideInLeft 0.3s;
         }
 
         .toast.error {
@@ -1607,19 +1298,8 @@
             background: var(--warning);
         }
 
-        .toast.whatsapp {
-            background: var(--whatsapp);
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(100%);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        .toast.info {
+            background: var(--secondary);
         }
 
         /* الشريط السفلي */
@@ -1630,7 +1310,7 @@
             transform: translateX(-50%);
             width: 90%;
             max-width: 550px;
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(20px);
             border-radius: 40px;
             padding: 10px 15px;
@@ -1692,10 +1372,6 @@
 
         /* استجابة */
         @media (max-width: 992px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
             .subscription-details {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -1708,6 +1384,10 @@
         @media (max-width: 768px) {
             .main {
                 padding: 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
             
             .subscription-details {
@@ -1764,16 +1444,6 @@
                 font-size: 18px;
                 padding: 12px 30px;
             }
-
-            .notifications-bar {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .notifications-dropdown-menu {
-                width: 300px;
-                left: -100px;
-            }
         }
 
         @media (max-width: 480px) {
@@ -1800,30 +1470,36 @@
             .stat-value {
                 font-size: 20px;
             }
-
-            .notifications-dropdown-menu {
-                width: 280px;
-                left: -70px;
-            }
         }
 
-        /* تأثيرات إضافية */
+        /* تأثيرات */
         .glow {
             animation: glow 2s ease-in-out infinite;
         }
 
         @keyframes glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(200, 169, 126, 0.3); }
-            50% { box-shadow: 0 0 40px rgba(200, 169, 126, 0.6); }
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(200, 169, 126, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(200, 169, 126, 0.6);
+            }
         }
 
-        .floating {
-            animation: floating 3s ease-in-out infinite;
+        .pulse {
+            animation: pulse 2s infinite;
         }
 
-        @keyframes floating {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
     </style>
 </head>
@@ -1913,72 +1589,6 @@
 
     <!-- المحتوى الرئيسي -->
     <div class="main">
-        <!-- شريط الإشعارات العلوي -->
-        <div class="notifications-bar">
-            <div class="notifications-info">
-                <div class="notifications-icon">
-                    <i class="fas fa-bell"></i>
-                    <span class="notifications-count" id="notificationsCount">3</span>
-                </div>
-                <div class="notifications-text">
-                    <h4>مركز الإشعارات</h4>
-                    <p>آخر التحديثات والأحداث</p>
-                </div>
-            </div>
-
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <!-- مفتاح واتساب السريع -->
-                <div class="whatsapp-quick-toggle">
-                    <div class="whatsapp-icon-small">
-                        <i class="fab fa-whatsapp"></i>
-                    </div>
-                    <div class="whatsapp-status">
-                        <span id="whatsappStatusText">إشعارات واتساب</span>
-                        <small id="whatsappPhoneDisplay"></small>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="whatsappQuickToggle" onchange="quickToggleWhatsApp()">
-                        <span class="slider round"></span>
-                    </label>
-                </div>
-
-                <!-- قائمة الإشعارات المنسدلة -->
-                <div class="notifications-dropdown">
-                    <div class="notifications-dropdown-toggle" onclick="toggleNotificationsDropdown()">
-                        <i class="fas fa-bell"></i>
-                        <span id="unreadCount">3</span>
-                    </div>
-                    <div class="notifications-dropdown-menu" id="notificationsDropdown">
-                        <div class="notifications-list" id="notificationsList">
-                            <!-- الإشعارات تظهر هنا ديناميكياً -->
-                            <div class="notification-item unread">
-                                <div class="notification-icon whatsapp">
-                                    <i class="fab fa-whatsapp"></i>
-                                </div>
-                                <div class="notification-content">
-                                    <div class="notification-title">✅ تمت الموافقة على اشتراكك</div>
-                                    <div class="notification-time">منذ 5 دقائق</div>
-                                    <div class="notification-status">تم الإرسال عبر واتساب</div>
-                                </div>
-                            </div>
-                            <div class="notification-item">
-                                <div class="notification-icon success">
-                                    <i class="fas fa-coins"></i>
-                                </div>
-                                <div class="notification-content">
-                                    <div class="notification-title">💰 تذكير: أرباحك اليومية 25$</div>
-                                    <div class="notification-time">منذ ساعتين</div>
-                                </div>
-                            </div>
-                        </div>
-                        <a href="#" class="view-all-link" onclick="showAllNotifications()">
-                            عرض كل الإشعارات
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- الصفحة الرئيسية -->
         <div id="home-page" class="page active">
             <!-- بطاقات الإحصائيات المزدوجة -->
@@ -2321,8 +1931,6 @@
         let allActivities = [];
         let hasShownAlert = false;
         let claimStatus = null;
-        let notifications = [];
-        let unreadCount = 3;
         
         const withdrawalFees = {
             'TRC20': 5,
@@ -2344,7 +1952,6 @@
             await checkForActiveAlerts();
             await checkUnreadMessages();
             await checkClaimStatus();
-            await loadNotifications();
             updateUI();
             
             addRefreshButton();
@@ -2358,129 +1965,6 @@
             // تفعيل الصفحة الرئيسية
             showPage('home');
         });
-
-        // تحميل الإشعارات
-        function loadNotifications() {
-            // محاكاة تحميل الإشعارات
-            notifications = [
-                {
-                    id: 1,
-                    title: '✅ تمت الموافقة على اشتراكك',
-                    time: 'منذ 5 دقائق',
-                    type: 'whatsapp',
-                    read: false,
-                    message: 'تم تفعيل اشتراكك في الباقة الذهبية بنجاح'
-                },
-                {
-                    id: 2,
-                    title: '💰 تذكير: أرباحك اليومية 25$',
-                    time: 'منذ ساعتين',
-                    type: 'success',
-                    read: true,
-                    message: 'يمكنك المطالبة بأرباحك اليومية الآن'
-                },
-                {
-                    id: 3,
-                    title: '🎁 لديك هدية جديدة 50$',
-                    time: 'منذ يوم',
-                    type: 'warning',
-                    read: false,
-                    message: 'هدية من الإدارة بمناسبة عيد الفطر'
-                }
-            ];
-            
-            updateNotificationsDisplay();
-        }
-
-        // تحديث عرض الإشعارات
-        function updateNotificationsDisplay() {
-            const list = document.getElementById('notificationsList');
-            const count = document.getElementById('unreadCount');
-            const badge = document.getElementById('notificationsCount');
-            
-            unreadCount = notifications.filter(n => !n.read).length;
-            
-            if (count) count.textContent = unreadCount;
-            if (badge) badge.textContent = unreadCount;
-            
-            let html = '';
-            notifications.slice(0, 5).forEach(n => {
-                html += `
-                    <div class="notification-item ${!n.read ? 'unread' : ''}" onclick="markNotificationRead(${n.id})">
-                        <div class="notification-icon ${n.type}">
-                            <i class="${n.type === 'whatsapp' ? 'fab fa-whatsapp' : n.type === 'success' ? 'fas fa-coins' : 'fas fa-gift'}"></i>
-                        </div>
-                        <div class="notification-content">
-                            <div class="notification-title">${n.title}</div>
-                            <div class="notification-time">${n.time}</div>
-                            ${n.type === 'whatsapp' ? '<div class="notification-status">تم الإرسال عبر واتساب</div>' : ''}
-                        </div>
-                    </div>
-                `;
-            });
-            
-            list.innerHTML = html;
-        }
-
-        // تحديث حالة واتساب
-        async function updateWhatsAppStatus() {
-            const toggle = document.getElementById('whatsappQuickToggle');
-            const statusText = document.getElementById('whatsappStatusText');
-            const phoneDisplay = document.getElementById('whatsappPhoneDisplay');
-            
-            if (currentUser) {
-                toggle.checked = currentUser.whatsapp_notifications || false;
-                statusText.textContent = currentUser.whatsapp_notifications ? 'واتساب مفعل' : 'تفعيل واتساب';
-                phoneDisplay.textContent = currentUser.phone || 'أضف رقم هاتف';
-            }
-        }
-
-        // تبديل واتساب سريع
-        async function quickToggleWhatsApp() {
-            const enabled = document.getElementById('whatsappQuickToggle').checked;
-            
-            if (enabled && !currentUser.phone) {
-                showToast('⚠️ الرجاء إضافة رقم هاتف في الملف الشخصي أولاً', 'warning');
-                document.getElementById('whatsappQuickToggle').checked = false;
-                return;
-            }
-            
-            const result = await window.supabaseHelpers.updateUser(currentUser.id, {
-                whatsapp_notifications: enabled
-            });
-            
-            if (result.success) {
-                currentUser.whatsapp_notifications = enabled;
-                updateWhatsAppStatus();
-                showToast(enabled ? '✅ تم تفعيل إشعارات واتساب' : '✅ تم تعطيل إشعارات واتساب', 'whatsapp');
-                
-                // إرسال إشعار تجريبي
-                if (enabled && window.whatsappNotifications) {
-                    setTimeout(() => {
-                        window.whatsappNotifications.sendTest(currentUser.phone);
-                    }, 1000);
-                }
-            }
-        }
-
-        // تبديل قائمة الإشعارات
-        function toggleNotificationsDropdown() {
-            document.getElementById('notificationsDropdown').classList.toggle('active');
-        }
-
-        // تعليم الإشعار كمقروء
-        function markNotificationRead(id) {
-            const notification = notifications.find(n => n.id === id);
-            if (notification) {
-                notification.read = true;
-                updateNotificationsDisplay();
-            }
-        }
-
-        // عرض كل الإشعارات
-        function showAllNotifications() {
-            alert('سيتم فتح صفحة كل الإشعارات قريباً');
-        }
 
         // عرض الصفحة المحددة
         function showPage(page) {
@@ -2599,7 +2083,6 @@
             }
             
             document.getElementById('userAvatar').textContent = currentUser.name?.charAt(0).toUpperCase() || 'م';
-            updateWhatsAppStatus();
         }
 
         // تحميل بيانات المستخدم
@@ -2743,13 +2226,8 @@
                         </div>
                     </div>
                     
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${progress}%;"></div>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 13px; margin-top: 10px;">
-                        <span>تاريخ البدء: ${startDate.toLocaleDateString('ar-SA')}</span>
-                        <span>تقدم: ${progress}%</span>
+                    <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin: 15px 0; overflow: hidden;">
+                        <div style="width: ${progress}%; height: 100%; background: var(--gradient-gold); border-radius: 4px;"></div>
                     </div>
                 </div>
             `;
@@ -2827,12 +2305,10 @@
             await loadReferralStats();
             await loadRecentActivities();
             await loadGifts();
-            await loadNotifications();
             await checkForActiveAlerts();
             await checkUnreadMessages();
             await checkClaimStatus();
             updateUI();
-            updateWhatsAppStatus();
             
             showToast('✅ تم تحديث البيانات بنجاح');
         }
@@ -3352,13 +2828,6 @@
             const avatar = document.getElementById('userAvatar');
             if (dropdown && avatar && !avatar.contains(e.target) && !dropdown.contains(e.target)) {
                 dropdown.classList.remove('active');
-            }
-            
-            // إغلاق قائمة الإشعارات عند النقر خارجها
-            const notifDropdown = document.getElementById('notificationsDropdown');
-            const notifToggle = document.querySelector('.notifications-dropdown-toggle');
-            if (notifDropdown && notifToggle && !notifToggle.contains(e.target) && !notifDropdown.contains(e.target)) {
-                notifDropdown.classList.remove('active');
             }
         });
 
