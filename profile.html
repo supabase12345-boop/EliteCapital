@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>الملف الشخصي - Elite Capital</title>
+    
+    <!-- منع التخزين المؤقت -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#c8a97e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Elite Capital">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-startup-image" href="/icons/icon-512x512.png">
+    <meta name="msapplication-TileColor" content="#c8a97e">
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #c8a97e;
+            --primary-dark: #b38b5b;
+            --primary-light: #dac09a;
+            --secondary: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --gold: #c8a97e;
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            --shadow-gold: 0 10px 30px rgba(200, 169, 126, 0.3);
+            --gradient-gold: linear-gradient(135deg, #c8a97e, #b38b5b);
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(200, 169, 126, 0.2);
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%23c8a97e" stroke-width="0.5" opacity="0.05"/></svg>') repeat;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* شريط التمرير */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 10px;
+        }
+
+        /* الشريط العلوي */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .back-btn {
+            width: 45px;
+            height: 45px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: var(--gold);
+            color: var(--dark);
+            transform: rotate(90deg);
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-title i {
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .date-badge {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+            backdrop-filter: blur(10px);
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--dark);
+            cursor: pointer;
+            border: 2px solid var(--gold);
+            position: relative;
+        }
+
+        .user-avatar::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 10px;
+            height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            border: 2px solid var(--dark);
+        }
+
+        /* قائمة المستخدم */
+        .user-dropdown {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 250px;
+            background: var(--dark-light);
+            border-radius: 20px;
+            padding: 15px;
+            border: 2px solid var(--gold);
+            display: none;
+            box-shadow: var(--shadow);
+            z-index: 1001;
+        }
+
+        .user-dropdown.active {
+            display: block;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: var(--text);
+            border-radius: 12px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .user-dropdown-item:hover {
+            background: rgba(200, 169, 126, 0.1);
+            color: var(--gold);
+        }
+
+        /* المحتوى الرئيسي */
+        .main-content {
+            margin-top: 80px;
+            padding: 20px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* البطاقات الزجاجية */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card:hover {
+            border-color: var(--gold);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-gold);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .glass-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(200, 169, 126, 0.1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--gold);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gold);
+            flex: 1;
+        }
+
+        /* ملف التعريف */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .profile-avatar-wrapper {
+            position: relative;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background: var(--gradient-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--dark);
+            border: 4px solid var(--gold);
+            box-shadow: var(--shadow-gold);
+            transition: all 0.3s;
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(200, 169, 126, 0.5);
+        }
+
+        .profile-status {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            background: var(--success);
+            border-radius: 50%;
+            border: 3px solid var(--dark);
+            animation: pulse 2s infinite;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+
+        .profile-email {
+            font-size: 16px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-email i {
+            color: var(--gold);
+            font-size: 18px;
+        }
+
+        .profile-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            background: rgba(39, 174, 96, 0.2);
+            border: 1px solid var(--success);
+            border-radius: 30px;
+            color: var(--success);
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        /* شبكة المعلومات */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .info-item:hover {
+            background: rgba(200, 169, 126, 0.05);
+            border-color: var(--gold);
+            transform: translateY(-3px);
+        }
+
+        .info-label {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-label i {
+            color: var(--gold);
+            font-size: 16px;
+        }
+
+        .info-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            padding-right: 24px;
+        }
+
+        .info-value.highlight {
+            color: var(--gold);
+            font-size: 20px;
+        }
+
+        /* بطاقة الاشتراك */
+        .subscription-card {
+            background: linear-gradient(135deg, rgba(200, 169, 126, 0.15), rgba(179, 139, 91, 0.15));
+            border: 2px solid var(--gold);
+            border-radius: 30px;
+            padding: 25px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subscription-card::before {
+            content: '👑';
+            position: absolute;
+            bottom: -20px;
+            left: -20px;
+            font-size: 120px;
+            opacity: 0.1;
+            transform: rotate(-15deg);
+        }
+
+        .subscription-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .subscription-name {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--gold);
+        }
+
+        .subscription-badge {
+            padding: 8px 20px;
+            background: var(--success);
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .subscription-details {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .sub-detail {
+            text-align: center;
+        }
+
+        .sub-label {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .sub-value {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--gold);
+        }
+
+        .sub-value small {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-gold);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .no-subscription {
+            text-align: center;
+            padding: 40px;
+            background: rgba(200, 169, 126, 0.05);
+            border-radius: 30px;
+            border: 2px dashed var(--gold);
+        }
+
+        .no-subscription i {
+            font-size: 60px;
+            color: var(--gold);
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .no-subscription h3 {
+            font-size: 24px;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .no-subscription p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        /* حقول النموذج */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid var(--glass-border);
+            border-radius: 20px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(200, 169, 126, 0.05);
+        }
+
+        .form-control[readonly] {
+            background: rgba(255, 255, 255, 0.02);
+            border-color: rgba(200, 169, 126, 0.2);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        /* الأزرار */
+        .btn {
+            padding: 15px 30px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            background: var(--gradient-gold);
+            color: var(--dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--gold);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            background: var(--gold);
+            color: var(--dark);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-gold);
+        }
+
+        /* الإشعارات */
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 50px;
+            display: none;
+            z-index: 3000;
+            box-shadow: var(--shadow);
+            border-right: 4px solid white;
+            min-width: 300px;
+            backdrop-filter: blur(10px);
+            animation: slideInLeft 0.3s;
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        .toast.warning {
+            background: var(--warning);
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* أنيميشن */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* استجابة */
+        @media (max-width: 992px) {
+            .subscription-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .profile-email {
+                justify-content: center;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+
+            .subscription-details {
+                grid-template-columns: 1fr;
+            }
+
+            .subscription-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .date-badge {
+                display: none;
+            }
+
+            .page-title span {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+                font-size: 40px;
+            }
+
+            .profile-name {
+                font-size: 24px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+
+            .toast {
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+        }
+
+        /* تأثيرات إضافية */
+        .glow {
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(200, 169, 126, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(200, 169, 126, 0.6); }
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* كوبون الإحالة */
+        .referral-code-box {
+            background: rgba(200, 169, 126, 0.1);
+            border: 2px dashed var(--gold);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .referral-code-box::before {
+            content: '🎁';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 60px;
+            opacity: 0.1;
+            transform: rotate(15deg);
+        }
+
+        .referral-code-label {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .referral-code {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--gold);
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            font-family: monospace;
+        }
+
+        .copy-btn {
+            background: var(--gold);
+            color: var(--dark);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-gold);
+        }
+    </style>
+</head>
+<body>
+    <!-- الشريط العلوي -->
+    <div class="top-bar">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <a href="dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-right"></i>
+            </a>
+            <div class="page-title">
+                <i class="fas fa-user-circle"></i>
+                <span>الملف الشخصي</span>
+            </div>
+        </div>
+
+        <div class="user-info">
+            <div class="date-badge" id="currentDateTime"></div>
+            <div class="user-avatar" id="userAvatar" onclick="toggleUserMenu()">م</div>
+        </div>
+    </div>
+
+    <!-- قائمة المستخدم -->
+    <div class="user-dropdown" id="userDropdown">
+        <div class="user-dropdown-item" onclick="window.location.href='dashboard.html'">
+            <i class="fas fa-tachometer-alt"></i>
+            لوحة التحكم
+        </div>
+        <div class="user-dropdown-item" onclick="window.location.href='chat.html'">
+            <i class="fas fa-comments"></i>
+            الدردشة المباشرة
+        </div>
+        <div class="user-dropdown-item" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            تسجيل الخروج
+        </div>
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <div class="main-content">
+        <!-- رأس الملف الشخصي -->
+        <div class="profile-header fade-in">
+            <div class="profile-avatar-wrapper">
+                <div class="profile-avatar" id="profileAvatar">م</div>
+                <div class="profile-status"></div>
+            </div>
+            <div class="profile-info">
+                <h1 class="profile-name" id="userName">جاري التحميل...</h1>
+                <div class="profile-email">
+                    <i class="fas fa-envelope"></i>
+                    <span id="userEmail">...</span>
+                </div>
+                <span class="profile-badge" id="userStatus">
+                    <i class="fas fa-check-circle"></i> حساب نشط
+                </span>
+            </div>
+        </div>
+
+        <!-- معلومات الاشتراك -->
+        <div class="glass-card" id="subscriptionCard">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <h2 class="card-title">الاشتراك الحالي</h2>
+            </div>
+            <div id="subscriptionInfo">
+                <div class="no-subscription">
+                    <i class="fas fa-crown"></i>
+                    <h3>لا يوجد اشتراك نشط</h3>
+                    <p>اشترك في إحدى باقاتنا المميزة وابدأ جني الأرباح</p>
+                    <button class="btn btn-primary" onclick="goToPackages()">
+                        <i class="fas fa-bolt"></i>
+                        تصفح الباقات
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- المعلومات الشخصية -->
+        <div class="glass-card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <h2 class="card-title">المعلومات الشخصية</h2>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item" data-aos="fade-up">
+                    <div class="info-label">
+                        <i class="fas fa-user"></i>
+                        اسم المستخدم
+                    </div>
+                    <div class="info-value" id="displayUsername">-</div>
+                </div>
+                <div class="info-item" data-aos="fade-up" data-aos-delay="50">
+                    <div class="info-label">
+                        <i class="fas fa-phone"></i>
+                        رقم الهاتف
+                    </div>
+                    <div class="info-value" id="displayPhone">-</div>
+                </div>
+                <div class="info-item" data-aos="fade-up" data-aos-delay="100">
+                    <div class="info-label">
+                        <i class="fas fa-calendar"></i>
+                        تاريخ الانضمام
+                    </div>
+                    <div class="info-value" id="displayJoinDate">-</div>
+                </div>
+                <div class="info-item" data-aos="fade-up" data-aos-delay="150">
+                    <div class="info-label">
+                        <i class="fas fa-clock"></i>
+                        آخر تسجيل دخول
+                    </div>
+                    <div class="info-value" id="displayLastLogin">-</div>
+                </div>
+            </div>
+
+            <!-- كود الإحالة -->
+            <div class="referral-code-box">
+                <div class="referral-code-label">
+                    <i class="fas fa-gift"></i>
+                    كود الإحالة الخاص بك
+                </div>
+                <div class="referral-code" id="referralCodeDisplay">-</div>
+                <button class="copy-btn" onclick="copyReferralCode()">
+                    <i class="fas fa-copy"></i>
+                    نسخ الكود
+                </button>
+            </div>
+        </div>
+
+        <!-- تعديل البيانات -->
+        <div class="glass-card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <h2 class="card-title">تعديل البيانات</h2>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>👤 الاسم الكامل</label>
+                    <input type="text" class="form-control" id="editName" placeholder="أدخل اسمك الكامل">
+                </div>
+                
+                <div class="form-group">
+                    <label>📱 رقم الهاتف</label>
+                    <input type="tel" class="form-control" id="editPhone" placeholder="أدخل رقم هاتفك">
+                </div>
+                
+                <div class="form-group full-width">
+                    <label>💳 عنوان المحفظة (USDT)</label>
+                    <input type="text" class="form-control" id="editWallet" placeholder="أدخل عنوان محفظتك">
+                </div>
+            </div>
+            
+            <button class="btn btn-primary btn-block" onclick="updateProfile()">
+                <i class="fas fa-save"></i>
+                حفظ التغييرات
+            </button>
+        </div>
+
+        <!-- تغيير كلمة المرور -->
+        <div class="glass-card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h2 class="card-title">تغيير كلمة المرور</h2>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>🔐 كلمة المرور الحالية</label>
+                    <input type="password" class="form-control" id="currentPassword" placeholder="********">
+                </div>
+                
+                <div class="form-group">
+                    <label>🔑 كلمة المرور الجديدة</label>
+                    <input type="password" class="form-control" id="newPassword" placeholder="********">
+                </div>
+                
+                <div class="form-group full-width">
+                    <label>✅ تأكيد كلمة المرور الجديدة</label>
+                    <input type="password" class="form-control" id="confirmPassword" placeholder="********">
+                </div>
+            </div>
+            
+            <button class="btn btn-outline btn-block" onclick="changePassword()">
+                <i class="fas fa-key"></i>
+                تغيير كلمة المرور
+            </button>
+        </div>
+    </div>
+
+    <!-- الإشعارات -->
+    <div class="toast" id="toast"></div>
+
+    <!-- AOS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+
+        // متغيرات عامة
+        let currentUser = null;
+        let userSubscription = null;
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkUser();
+            await loadUserData();
+            await loadSubscription();
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+        });
+
+        // تحديث الوقت
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('currentDateTime').textContent = now.toLocaleString('ar-SA', {
+                hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short'
+            });
+        }
+
+        // التحقق من المستخدم
+        async function checkUser() {
+            const savedUser = localStorage.getItem('current_user');
+            if (!savedUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+            currentUser = JSON.parse(savedUser);
+            
+            if (window.supabaseHelpers) {
+                const result = await window.supabaseHelpers.getUserById(currentUser.id);
+                if (result.success && result.data) {
+                    currentUser = result.data;
+                    localStorage.setItem('current_user', JSON.stringify(currentUser));
+                }
+            }
+            
+            // تحديث الصورة الرمزية
+            const initial = currentUser.name?.charAt(0).toUpperCase() || 'م';
+            document.getElementById('userAvatar').textContent = initial;
+            document.getElementById('profileAvatar').textContent = initial;
+        }
+
+        // تحميل بيانات المستخدم
+        async function loadUserData() {
+            document.getElementById('userName').textContent = currentUser.name || 'غير محدد';
+            document.getElementById('userEmail').textContent = currentUser.email || 'غير محدد';
+            document.getElementById('displayUsername').textContent = currentUser.username || 'غير محدد';
+            document.getElementById('displayPhone').textContent = currentUser.phone || 'غير محدد';
+            document.getElementById('referralCodeDisplay').textContent = currentUser.referral_code || '-';
+            
+            // حالة المستخدم
+            const statusEl = document.getElementById('userStatus');
+            if (currentUser.is_suspended) {
+                statusEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> حساب معلق';
+                statusEl.style.background = 'rgba(231, 76, 60, 0.2)';
+                statusEl.style.color = '#e74c3c';
+                statusEl.style.borderColor = '#e74c3c';
+            } else if (currentUser.status === 'banned') {
+                statusEl.innerHTML = '<i class="fas fa-ban"></i> حساب محظور';
+                statusEl.style.background = 'rgba(231, 76, 60, 0.2)';
+                statusEl.style.color = '#e74c3c';
+                statusEl.style.borderColor = '#e74c3c';
+            } else {
+                statusEl.innerHTML = '<i class="fas fa-check-circle"></i> حساب نشط';
+            }
+            
+            if (currentUser.joined_date) {
+                document.getElementById('displayJoinDate').textContent = new Date(currentUser.joined_date).toLocaleDateString('ar-SA', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                });
+            }
+            
+            if (currentUser.last_login) {
+                document.getElementById('displayLastLogin').textContent = new Date(currentUser.last_login).toLocaleString('ar-SA', {
+                    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+            }
+            
+            document.getElementById('editName').value = currentUser.name || '';
+            document.getElementById('editPhone').value = currentUser.phone || '';
+            document.getElementById('editWallet').value = currentUser.wallet_address || '';
+        }
+
+        // تحميل الاشتراك
+        async function loadSubscription() {
+            try {
+                const result = await window.supabaseHelpers.getUserSubscription(currentUser.id);
+                
+                const container = document.getElementById('subscriptionInfo');
+                const card = document.getElementById('subscriptionCard');
+                
+                if (result.success && result.data) {
+                    userSubscription = result.data;
+                    
+                    const startDate = new Date(userSubscription.start_date);
+                    const endDate = new Date(userSubscription.end_date);
+                    const today = new Date();
+                    
+                    // حساب الأيام المتبقية
+                    const diffTime = endDate - today;
+                    const daysLeft = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+                    
+                    // حساب الأيام المنقضية
+                    const diffPassed = today - startDate;
+                    const daysPassed = Math.max(0, Math.ceil(diffPassed / (1000 * 60 * 60 * 24)));
+                    
+                    // المدة الإجمالية
+                    const totalDuration = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+                    
+                    // نسبة التقدم
+                    let progress = ((daysPassed / totalDuration) * 100).toFixed(1);
+                    if (progress > 100) progress = 100;
+                    if (progress < 0) progress = 0;
+                    
+                    container.innerHTML = `
+                        <div class="subscription-card">
+                            <div class="subscription-header">
+                                <h3 class="subscription-name">${userSubscription.package_name}</h3>
+                                <span class="subscription-badge">نشط</span>
+                            </div>
+                            
+                            <div class="subscription-details">
+                                <div class="sub-detail">
+                                    <div class="sub-label">الاستثمار</div>
+                                    <div class="sub-value">${userSubscription.amount}$</div>
+                                </div>
+                                <div class="sub-detail">
+                                    <div class="sub-label">الربح اليومي</div>
+                                    <div class="sub-value" style="color: var(--success);">+${userSubscription.daily_profit}$</div>
+                                </div>
+                                <div class="sub-detail">
+                                    <div class="sub-label">الأيام المتبقية</div>
+                                    <div class="sub-value">${daysLeft}</div>
+                                </div>
+                                <div class="sub-detail">
+                                    <div class="sub-label">تاريخ الانتهاء</div>
+                                    <div class="sub-value"><small>${endDate.toLocaleDateString('ar-SA')}</small></div>
+                                </div>
+                            </div>
+                            
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress}%;"></div>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 13px; margin-top: 10px;">
+                                <span>تاريخ البدء: ${startDate.toLocaleDateString('ar-SA')}</span>
+                                <span>تقدم: ${progress}%</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="no-subscription">
+                            <i class="fas fa-crown"></i>
+                            <h3>لا يوجد اشتراك نشط</h3>
+                            <p>اشترك في إحدى باقاتنا المميزة وابدأ جني الأرباح</p>
+                            <button class="btn btn-primary" onclick="goToPackages()">
+                                <i class="fas fa-bolt"></i>
+                                تصفح الباقات
+                            </button>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('خطأ في تحميل الاشتراك:', error);
+            }
+        }
+
+        // الذهاب لصفحة الباقات
+        function goToPackages() {
+            window.location.href = 'index.html#packages';
+        }
+
+        // تحديث الملف الشخصي
+        async function updateProfile() {
+            const updates = {
+                name: document.getElementById('editName').value.trim(),
+                phone: document.getElementById('editPhone').value.trim(),
+                wallet_address: document.getElementById('editWallet').value.trim()
+            };
+            
+            if (!updates.name) {
+                showToast('الاسم مطلوب', 'error');
+                return;
+            }
+            
+            const result = await window.supabaseHelpers.updateUser(currentUser.id, updates);
+            
+            if (result.success) {
+                showToast('✅ تم تحديث البيانات بنجاح');
+                await checkUser();
+                await loadUserData();
+            } else {
+                showToast('❌ ' + result.error, 'error');
+            }
+        }
+
+        // تغيير كلمة المرور
+        async function changePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showToast('جميع الحقول مطلوبة', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showToast('كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل', 'error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showToast('كلمتا المرور غير متطابقتين', 'error');
+                return;
+            }
+            
+            if (currentPassword !== currentUser.password) {
+                showToast('كلمة المرور الحالية غير صحيحة', 'error');
+                return;
+            }
+            
+            const result = await window.supabaseHelpers.updateUser(currentUser.id, {
+                password: newPassword
+            });
+            
+            if (result.success) {
+                showToast('✅ تم تغيير كلمة المرور بنجاح');
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+            } else {
+                showToast('❌ ' + result.error, 'error');
+            }
+        }
+
+        // نسخ كود الإحالة
+        function copyReferralCode() {
+            if (currentUser.referral_code) {
+                navigator.clipboard.writeText(currentUser.referral_code);
+                showToast('✅ تم نسخ كود الإحالة');
+            }
+        }
+
+        // تبديل قائمة المستخدم
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('active');
+        }
+
+        // تسجيل الخروج
+        function logout() {
+            if (confirm('هل تريد تسجيل الخروج؟')) {
+                localStorage.removeItem('current_user');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // إظهار الإشعار
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + (type === 'error' ? 'error' : type === 'warning' ? 'warning' : '');
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 3000);
+        }
+
+        // إغلاق القائمة عند النقر خارجها
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('userDropdown');
+            const avatar = document.getElementById('userAvatar');
+            if (dropdown && avatar && !avatar.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // تحديث عند العودة للصفحة
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
+</body>
+</html>
