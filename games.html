@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ألعاب الحظ - Elite Capital</title>
+    
+    <!-- منع التخزين المؤقت -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#c8a97e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Elite Capital">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-startup-image" href="/icons/icon-512x512.png">
+    <meta name="msapplication-TileColor" content="#c8a97e">
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #c8a97e;
+            --primary-dark: #b38b5b;
+            --primary-light: #dac09a;
+            --secondary: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --gold: #c8a97e;
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            --shadow-gold: 0 10px 30px rgba(200, 169, 126, 0.3);
+            --gradient-gold: linear-gradient(135deg, #c8a97e, #b38b5b);
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(200, 169, 126, 0.2);
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%23c8a97e" stroke-width="0.5" opacity="0.05"/></svg>') repeat;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* شريط التمرير */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 10px;
+        }
+
+        /* الشريط العلوي */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .back-btn {
+            width: 45px;
+            height: 45px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: var(--gold);
+            color: var(--dark);
+            transform: rotate(90deg);
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-title i {
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .date-badge {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+            backdrop-filter: blur(10px);
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--dark);
+            cursor: pointer;
+            border: 2px solid var(--gold);
+            position: relative;
+        }
+
+        .user-avatar::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 10px;
+            height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            border: 2px solid var(--dark);
+        }
+
+        /* قائمة المستخدم */
+        .user-dropdown {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 250px;
+            background: var(--dark-light);
+            border-radius: 20px;
+            padding: 15px;
+            border: 2px solid var(--gold);
+            display: none;
+            box-shadow: var(--shadow);
+            z-index: 1001;
+        }
+
+        .user-dropdown.active {
+            display: block;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: var(--text);
+            border-radius: 12px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .user-dropdown-item:hover {
+            background: rgba(200, 169, 126, 0.1);
+            color: var(--gold);
+        }
+
+        /* المحتوى الرئيسي */
+        .main-content {
+            margin-top: 80px;
+            padding: 20px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* البطاقات الزجاجية */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card:hover {
+            border-color: var(--gold);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-gold);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .glass-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(200, 169, 126, 0.1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--gold);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gold);
+            flex: 1;
+        }
+
+        /* بطاقة اللعبة */
+        .game-card {
+            background: linear-gradient(135deg, rgba(200, 169, 126, 0.15), rgba(179, 139, 91, 0.15));
+            border: 2px solid var(--gold);
+            border-radius: 40px;
+            padding: 40px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .game-card::before {
+            content: '🎰';
+            position: absolute;
+            bottom: -30px;
+            left: -30px;
+            font-size: 150px;
+            opacity: 0.1;
+            transform: rotate(-15deg);
+        }
+
+        .game-icon {
+            width: 100px;
+            height: 100px;
+            background: rgba(200, 169, 126, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 50px;
+            color: var(--gold);
+            border: 3px solid var(--gold);
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        .game-title {
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+
+        .game-description {
+            color: var(--text-muted);
+            font-size: 18px;
+            margin-bottom: 30px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* خيارات اللعبة */
+        .game-options {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .game-option {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 30px;
+            min-width: 200px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .game-option:hover {
+            border-color: var(--gold);
+            transform: translateY(-5px);
+        }
+
+        .game-option.selected {
+            background: rgba(200, 169, 126, 0.15);
+            border-color: var(--gold);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .game-option-icon {
+            font-size: 48px;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+
+        .game-option-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .game-option-desc {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .game-option-multiplier {
+            display: inline-block;
+            padding: 8px 20px;
+            background: var(--success);
+            border-radius: 30px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* منطقة اللعب */
+        .play-area {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 30px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .number-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .number-box {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--gold), var(--primary-dark));
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--dark);
+            box-shadow: var(--shadow-gold);
+            transform: rotate(0deg);
+            transition: all 0.5s;
+        }
+
+        .number-box.spin {
+            animation: spin 0.5s ease-in-out;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        .number-label {
+            color: var(--text-muted);
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .winning-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--success);
+            margin: 20px 0;
+        }
+
+        /* شريط التقدم (نسبة الفوز) */
+        .win-chance-bar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            height: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .win-chance-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--warning), var(--success));
+            border-radius: 30px;
+            transition: width 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .win-chance-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            z-index: 2;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        /* نموذج الرهان */
+        .bet-form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid var(--glass-border);
+            border-radius: 30px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .form-control:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .play-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--gradient-gold);
+            border: none;
+            border-radius: 30px;
+            color: var(--dark);
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .play-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .play-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* معلومات إضافية */
+        .info-box {
+            background: rgba(52, 152, 219, 0.1);
+            border: 1px solid #3498db;
+            border-radius: 20px;
+            padding: 15px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .info-box i {
+            font-size: 24px;
+            color: #3498db;
+        }
+
+        .info-text {
+            flex: 1;
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* سجل الألعاب */
+        .games-history {
+            margin-top: 20px;
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            transition: all 0.3s;
+        }
+
+        .history-item:hover {
+            background: rgba(200, 169, 126, 0.05);
+            border-color: var(--gold);
+        }
+
+        .history-item.won {
+            border-right: 4px solid var(--success);
+        }
+
+        .history-item.lost {
+            border-right: 4px solid var(--danger);
+        }
+
+        .history-info {
+            flex: 1;
+        }
+
+        .history-numbers {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 5px;
+            flex-wrap: wrap;
+        }
+
+        .history-number {
+            background: rgba(200, 169, 126, 0.1);
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 14px;
+        }
+
+        .history-number.win {
+            color: var(--success);
+        }
+
+        .history-number.lose {
+            color: var(--danger);
+        }
+
+        .history-details {
+            display: flex;
+            gap: 20px;
+            color: var(--text-muted);
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+
+        .history-amount {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .history-amount.won {
+            color: var(--success);
+        }
+
+        .history-amount.lost {
+            color: var(--danger);
+        }
+
+        .history-chance {
+            background: rgba(243, 156, 18, 0.1);
+            padding: 3px 10px;
+            border-radius: 30px;
+            color: var(--warning);
+            font-size: 12px;
+        }
+
+        /* رصيد المستخدم */
+        .balance-card {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.15), rgba(46, 204, 113, 0.15));
+            border: 2px solid var(--success);
+            border-radius: 20px;
+            padding: 15px 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .balance-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(39, 174, 96, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--success);
+        }
+
+        .balance-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .balance-label {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .balance-value {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--success);
+        }
+
+        /* رسالة خطأ */
+        .error-message {
+            background: rgba(231, 76, 60, 0.1);
+            border: 2px solid var(--danger);
+            border-radius: 20px;
+            padding: 15px;
+            color: var(--danger);
+            text-align: center;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* رسالة نجاح */
+        .success-message {
+            background: rgba(39, 174, 96, 0.1);
+            border: 2px solid var(--success);
+            border-radius: 20px;
+            padding: 20px;
+            color: var(--success);
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        /* الإشعارات */
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 50px;
+            display: none;
+            z-index: 3000;
+            box-shadow: var(--shadow);
+            border-right: 4px solid white;
+            min-width: 300px;
+            backdrop-filter: blur(10px);
+            animation: slideInLeft 0.3s;
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        .toast.warning {
+            background: var(--warning);
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* أنيميشن */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        /* استجابة */
+        @media (max-width: 992px) {
+            .game-options {
+                gap: 20px;
+            }
+            
+            .game-option {
+                min-width: 160px;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 28px;
+            }
+
+            .game-description {
+                font-size: 16px;
+            }
+
+            .game-options {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .game-option {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .number-box {
+                width: 80px;
+                height: 80px;
+                font-size: 36px;
+            }
+
+            .date-badge {
+                display: none;
+            }
+
+            .page-title span {
+                display: none;
+            }
+
+            .history-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .game-card {
+                padding: 25px;
+            }
+
+            .game-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 36px;
+            }
+
+            .game-title {
+                font-size: 24px;
+            }
+
+            .balance-value {
+                font-size: 24px;
+            }
+
+            .toast {
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+
+            .number-display {
+                gap: 15px;
+            }
+
+            .number-box {
+                width: 60px;
+                height: 60px;
+                font-size: 28px;
+            }
+        }
+
+        .glow {
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(200, 169, 126, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(200, 169, 126, 0.6); }
+        }
+    </style>
+</head>
+<body>
+    <!-- الشريط العلوي -->
+    <div class="top-bar">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <a href="dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-right"></i>
+            </a>
+            <div class="page-title">
+                <i class="fas fa-dice"></i>
+                <span>ألعاب الحظ</span>
+            </div>
+        </div>
+
+        <div class="user-info">
+            <div class="date-badge" id="currentDateTime"></div>
+            <div class="user-avatar" id="userAvatar" onclick="toggleUserMenu()">م</div>
+        </div>
+    </div>
+
+    <!-- قائمة المستخدم -->
+    <div class="user-dropdown" id="userDropdown">
+        <div class="user-dropdown-item" onclick="window.location.href='dashboard.html'">
+            <i class="fas fa-tachometer-alt"></i>
+            لوحة التحكم
+        </div>
+        <div class="user-dropdown-item" onclick="window.location.href='profile.html'">
+            <i class="fas fa-user"></i>
+            الملف الشخصي
+        </div>
+        <div class="user-dropdown-item" onclick="window.location.href='chat.html'">
+            <i class="fas fa-comments"></i>
+            الدردشة المباشرة
+        </div>
+        <div class="user-dropdown-item" onclick="window.location.href='betting.html'">
+            <i class="fas fa-futbol"></i>
+            ⚽ رهانات كرة القدم
+        </div>
+        <div class="user-dropdown-item" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            تسجيل الخروج
+        </div>
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <div class="main-content">
+        <!-- رصيد المستخدم -->
+        <div class="balance-card fade-in">
+            <div class="balance-icon">
+                <i class="fas fa-wallet"></i>
+            </div>
+            <div class="balance-info">
+                <span class="balance-label">رصيدك الحالي</span>
+                <span class="balance-value" id="userBalance">0$</span>
+            </div>
+        </div>
+
+        <!-- رسالة خطأ -->
+        <div class="error-message" id="errorMessage"></div>
+        
+        <!-- رسالة نجاح -->
+        <div class="success-message" id="successMessage"></div>
+
+        <!-- لعبة تخمين الرقم -->
+        <div class="game-card" data-aos="fade-up">
+            <div class="game-icon floating">
+                <i class="fas fa-dice-d20"></i>
+            </div>
+            <h1 class="game-title">🎲 لعبة تخمين الرقم</h1>
+            <p class="game-description">
+                اختر أعلى أو أقل من الرقم الفائز! كلما زاد مبلغ اللعب، قلت نسبة الفوز
+            </p>
+
+            <div class="game-options">
+                <div class="game-option" onclick="selectGameOption('high')" id="optionHigh">
+                    <div class="game-option-icon">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                    <div class="game-option-title">أعلى</div>
+                    <div class="game-option-desc">الرقم الفائز سيكون أعلى من تخمينك</div>
+                    <span class="game-option-multiplier">x2</span>
+                </div>
+                
+                <div class="game-option" onclick="selectGameOption('low')" id="optionLow">
+                    <div class="game-option-icon">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                    <div class="game-option-title">أقل</div>
+                    <div class="game-option-desc">الرقم الفائز سيكون أقل من تخمينك</div>
+                    <span class="game-option-multiplier">x2</span>
+                </div>
+            </div>
+
+            <div class="play-area">
+                <div class="number-display">
+                    <div>
+                        <div class="number-box" id="userGuessNumber">?</div>
+                        <div class="number-label">تخمينك</div>
+                    </div>
+                    <div>
+                        <div class="number-box" id="winningNumber">?</div>
+                        <div class="number-label">الرقم الفائز</div>
+                    </div>
+                </div>
+
+                <div class="win-chance-bar" id="winChanceBar">
+                    <div class="win-chance-fill" id="winChanceFill" style="width: 50%"></div>
+                    <span class="win-chance-text" id="winChanceText">نسبة الفوز: 50%</span>
+                </div>
+
+                <div class="bet-form">
+                    <div class="form-group">
+                        <label>💰 مبلغ اللعب (1$ فأكثر)</label>
+                        <input type="number" class="form-control" id="gameAmount" min="1" step="1" placeholder="أدخل المبلغ" oninput="updateWinChance()">
+                    </div>
+
+                    <button class="play-btn" onclick="playGame()" id="playBtn">
+                        <i class="fas fa-play"></i>
+                        العب الآن
+                    </button>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <i class="fas fa-info-circle"></i>
+                <div class="info-text">
+                    <strong>معلومة:</strong> نسبة الفوز تتناقص مع زيادة المبلغ. 
+                    ابدأ بمبالغ صغيرة لزيادة فرصك في الفوز!
+                </div>
+            </div>
+        </div>
+
+        <!-- سجل الألعاب -->
+        <div class="glass-card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-history"></i>
+                </div>
+                <h2 class="card-title">سجل الألعاب</h2>
+            </div>
+
+            <div class="games-history" id="gamesHistory">
+                <p style="color: var(--text-muted); text-align: center;">لا توجد ألعاب سابقة</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- الإشعارات -->
+    <div class="toast" id="toast"></div>
+
+    <!-- AOS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+
+        // متغيرات عامة
+        let currentUser = null;
+        let selectedOption = null;
+        let userGames = [];
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkUser();
+            await loadUserData();
+            await loadUserGames();
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            updateWinChance();
+        });
+
+        // تحديث الوقت
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('currentDateTime').textContent = now.toLocaleString('ar-SA', {
+                hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short'
+            });
+        }
+
+        // التحقق من المستخدم
+        async function checkUser() {
+            const savedUser = localStorage.getItem('current_user');
+            if (!savedUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+            currentUser = JSON.parse(savedUser);
+            
+            if (window.supabaseHelpers) {
+                const result = await window.supabaseHelpers.getUserById(currentUser.id);
+                if (result.success && result.data) {
+                    currentUser = result.data;
+                    localStorage.setItem('current_user', JSON.stringify(currentUser));
+                }
+            }
+            
+            // تحديث الصورة الرمزية
+            const initial = currentUser.name?.charAt(0).toUpperCase() || 'م';
+            document.getElementById('userAvatar').textContent = initial;
+        }
+
+        // تحميل بيانات المستخدم
+        async function loadUserData() {
+            document.getElementById('userBalance').textContent = (currentUser.balance || 0) + '$';
+        }
+
+        // تحميل ألعاب المستخدم
+        async function loadUserGames() {
+            if (!window.supabaseHelpers) return;
+            
+            try {
+                const result = await window.supabaseHelpers.getUserGames(currentUser.id);
+                if (result.success && result.data) {
+                    userGames = result.data;
+                    displayGamesHistory();
+                }
+            } catch (error) {
+                console.error('خطأ في تحميل الألعاب:', error);
+            }
+        }
+
+        // عرض سجل الألعاب
+        function displayGamesHistory() {
+            const container = document.getElementById('gamesHistory');
+            
+            if (!userGames || userGames.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">لا توجد ألعاب سابقة</p>';
+                return;
+            }
+
+            let html = '';
+            userGames.slice(0, 10).forEach(game => {
+                const statusClass = game.is_win ? 'won' : 'lost';
+                const statusText = game.is_win ? 'فائز' : 'خاسر';
+                const amount = game.is_win ? game.amount * 2 : game.amount;
+                
+                const date = new Date(game.created_at).toLocaleDateString('ar-SA');
+
+                html += `
+                    <div class="history-item ${statusClass}">
+                        <div class="history-info">
+                            <div class="history-numbers">
+                                <span class="history-number">تخمينك: <strong>${game.user_guess || '?'}</strong></span>
+                                <span class="history-number ${game.is_win ? 'win' : 'lose'}">الرقم الفائز: <strong>${game.winning_number || '?'}</strong></span>
+                            </div>
+                            <div class="history-details">
+                                <span><i class="fas fa-clock"></i> ${date}</span>
+                                <span class="history-chance"><i class="fas fa-chart-line"></i> نسبة الفوز: ${(game.win_chance * 100).toFixed(1)}%</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="history-amount ${statusClass}">${amount}$</div>
+                            <span class="history-status status-${statusClass}">${statusText}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // اختيار خيار اللعبة
+        function selectGameOption(option) {
+            // إزالة التحديد السابق
+            document.getElementById('optionHigh').classList.remove('selected');
+            document.getElementById('optionLow').classList.remove('selected');
+            
+            // تحديد الخيار الجديد
+            event.currentTarget.classList.add('selected');
+            selectedOption = option;
+        }
+
+        // تحديث نسبة الفوز بناءً على المبلغ
+        function updateWinChance() {
+            const amount = parseFloat(document.getElementById('gameAmount').value) || 0;
+            let winChance = 0.5; // 50% أساسي
+            
+            if (amount > 0) {
+                // نسبة الفوز = 50% - (المبلغ / 2000)
+                // تتناقص مع زيادة المبلغ
+                winChance = 0.5 - (amount / 2000);
+                // لا تقل عن 10% ولا تزيد عن 50%
+                winChance = Math.max(0.1, Math.min(0.5, winChance));
+            }
+            
+            const percentage = (winChance * 100).toFixed(1);
+            document.getElementById('winChanceFill').style.width = (winChance * 100) + '%';
+            document.getElementById('winChanceText').textContent = `نسبة الفوز: ${percentage}%`;
+            
+            return winChance;
+        }
+
+        // اللعب
+        async function playGame() {
+            const amount = parseFloat(document.getElementById('gameAmount').value);
+            
+            // التحقق من صحة المدخلات
+            if (!selectedOption) {
+                showToast('❌ يرجى اختيار أعلى أو أقل', 'error');
+                return;
+            }
+
+            if (!amount || amount < 1) {
+                showToast('❌ الحد الأدنى للعب هو 1$', 'error');
+                return;
+            }
+
+            if (amount > (currentUser.balance || 0)) {
+                showToast('❌ الرصيد غير كافي', 'error');
+                return;
+            }
+
+            if (!window.supabaseHelpers) {
+                showToast('❌ النظام غير متصل', 'error');
+                return;
+            }
+
+            try {
+                // تعطيل الزر مؤقتاً
+                const btn = document.getElementById('playBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري اللعب...';
+
+                // إضافة تأثير الدوران للأرقام
+                document.getElementById('userGuessNumber').classList.add('spin');
+                document.getElementById('winningNumber').classList.add('spin');
+
+                // إنشاء اللعبة
+                const result = await window.supabaseHelpers.playGame({
+                    userId: currentUser.id,
+                    amount: amount,
+                    betType: selectedOption // 'high' or 'low'
+                });
+
+                if (result.success) {
+                    // تحديث رصيد المستخدم
+                    currentUser.balance = result.success ? 
+                        (result.data.isWin ? currentUser.balance - amount + (amount * 2) : currentUser.balance - amount) : 
+                        currentUser.balance;
+                    localStorage.setItem('current_user', JSON.stringify(currentUser));
+                    document.getElementById('userBalance').textContent = currentUser.balance + '$';
+                    
+                    // عرض الأرقام
+                    document.getElementById('userGuessNumber').textContent = result.data.userGuess;
+                    document.getElementById('winningNumber').textContent = result.data.winningNumber;
+                    
+                    // عرض رسالة النتيجة
+                    const successMsg = document.getElementById('successMessage');
+                    if (result.data.isWin) {
+                        successMsg.innerHTML = `
+                            <i class="fas fa-trophy"></i>
+                            🎉 مبروك! فزت ب ${result.data.winAmount}$
+                            <br>
+                            <small>الرقم الفائز: ${result.data.winningNumber} | تخمينك: ${result.data.userGuess}</small>
+                        `;
+                        successMsg.style.background = 'rgba(39, 174, 96, 0.2)';
+                        successMsg.style.borderColor = 'var(--success)';
+                        successMsg.style.color = 'var(--success)';
+                    } else {
+                        successMsg.innerHTML = `
+                            <i class="fas fa-times-circle"></i>
+                            😞 للأسف خسرت ${amount}$
+                            <br>
+                            <small>الرقم الفائز: ${result.data.winningNumber} | تخمينك: ${result.data.userGuess}</small>
+                        `;
+                        successMsg.style.background = 'rgba(231, 76, 60, 0.2)';
+                        successMsg.style.borderColor = 'var(--danger)';
+                        successMsg.style.color = 'var(--danger)';
+                    }
+                    successMsg.classList.add('show');
+                    
+                    // إعادة تعيين الحقول بعد 3 ثواني
+                    setTimeout(() => {
+                        document.getElementById('gameAmount').value = '';
+                        document.getElementById('userGuessNumber').textContent = '?';
+                        document.getElementById('winningNumber').textContent = '?';
+                        selectedOption = null;
+                        document.getElementById('optionHigh').classList.remove('selected');
+                        document.getElementById('optionLow').classList.remove('selected');
+                        successMsg.classList.remove('show');
+                        updateWinChance();
+                    }, 3000);
+                    
+                    // تحديث سجل الألعاب
+                    await loadUserGames();
+                } else {
+                    showToast('❌ ' + result.error, 'error');
+                }
+            } catch (error) {
+                console.error('خطأ في اللعب:', error);
+                showToast('❌ حدث خطأ في اللعبة', 'error');
+            } finally {
+                // إعادة تفعيل الزر وإزالة تأثير الدوران
+                setTimeout(() => {
+                    const btn = document.getElementById('playBtn');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-play"></i> العب الآن';
+                    document.getElementById('userGuessNumber').classList.remove('spin');
+                    document.getElementById('winningNumber').classList.remove('spin');
+                }, 500);
+            }
+        }
+
+        // تبديل قائمة المستخدم
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('active');
+        }
+
+        // تسجيل الخروج
+        function logout() {
+            if (confirm('هل تريد تسجيل الخروج؟')) {
+                localStorage.removeItem('current_user');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // إظهار الإشعار
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + (type === 'error' ? 'error' : type === 'warning' ? 'warning' : '');
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 3000);
+        }
+
+        // إغلاق القائمة عند النقر خارجها
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('userDropdown');
+            const avatar = document.getElementById('userAvatar');
+            if (dropdown && avatar && !avatar.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // تحديث عند العودة للصفحة
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
+</body>
+</html>
