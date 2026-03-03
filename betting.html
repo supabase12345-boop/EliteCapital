@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المراهنات - Elite Capital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: #0f172a;
+            color: #fff;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        /* شريط العلوي */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.05);
+            width: 45px;
+            height: 45px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #c8a97e;
+            text-decoration: none;
+            font-size: 22px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #c8a97e;
+            color: #0f172a;
+        }
+
+        .balance {
+            background: rgba(39,174,96,0.1);
+            border: 2px solid #27ae60;
+            border-radius: 40px;
+            padding: 10px 25px;
+            color: #27ae60;
+            font-weight: 700;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* إحصائيات */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(200,169,126,0.2);
+        }
+
+        .stat-num {
+            font-size: 22px;
+            font-weight: 900;
+            color: #c8a97e;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* إرشادات الرهان */
+        .guide {
+            background: rgba(200,169,126,0.1);
+            border: 2px solid #c8a97e;
+            border-radius: 30px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .guide-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .guide-icon {
+            width: 40px;
+            height: 40px;
+            background: #c8a97e;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0f172a;
+        }
+
+        .guide-text h4 {
+            color: #c8a97e;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .guide-text p {
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+        }
+
+        /* بطاقة المباراة */
+        .match-card {
+            background: rgba(255,255,255,0.02);
+            border-radius: 40px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(200,169,126,0.2);
+        }
+
+        /* رأس المباراة */
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .league {
+            background: rgba(200,169,126,0.1);
+            padding: 5px 15px;
+            border-radius: 30px;
+            color: #c8a97e;
+        }
+
+        /* الفرق بشكل أفقي */
+        .teams {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .team {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .team-logo {
+            width: 60px;
+            height: 60px;
+            background: rgba(200,169,126,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #c8a97e;
+            border: 2px solid #c8a97e;
+            margin-bottom: 8px;
+        }
+
+        .team-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .vs {
+            font-size: 18px;
+            color: #c8a97e;
+            font-weight: 900;
+            background: rgba(200,169,126,0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #c8a97e;
+        }
+
+        /* خيارات الرهان */
+        .bet-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .bet-option {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(200,169,126,0.3);
+            border-radius: 25px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .bet-option:hover {
+            border-color: #c8a97e;
+            background: rgba(200,169,126,0.1);
+        }
+
+        .bet-option.selected {
+            background: #c8a97e;
+        }
+
+        .bet-option.selected .bet-label,
+        .bet-option.selected .bet-value {
+            color: #0f172a;
+        }
+
+        .bet-label {
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 5px;
+        }
+
+        .bet-value {
+            font-size: 20px;
+            font-weight: 900;
+            color: #c8a97e;
+        }
+
+        /* ===== النتيجة الدقيقة - الأسماء فوق والخانات تحت ===== */
+        .exact-container {
+            background: rgba(200,169,126,0.05);
+            border: 2px dashed #c8a97e;
+            border-radius: 30px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .exact-title {
+            color: #c8a97e;
+            margin-bottom: 25px;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .exact-title i {
+            color: #c8a97e;
+        }
+
+        .exact-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 10px;
+        }
+
+        .exact-team {
+            text-align: center;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .exact-team .team-name {
+            color: #c8a97e;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            white-space: nowrap;
+        }
+
+        .exact-team input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border: 2px solid #c8a97e;
+            border-radius: 20px;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        /* إزالة الأرقام الافتراضية وجعل الحقل فارغ */
+        .exact-team input::placeholder {
+            color: rgba(255,255,255,0.3);
+            font-size: 16px;
+        }
+
+        .exact-team input:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(200,169,126,0.3);
+        }
+
+        /* إخفاء أزرار الزيادة والنقصان في متصفحات Chrome */
+        .exact-team input[type=number]::-webkit-inner-spin-button,
+        .exact-team input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .exact-team input[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        .exact-vs {
+            font-size: 24px;
+            color: #c8a97e;
+            font-weight: 900;
+            background: rgba(200,169,126,0.1);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #c8a97e;
+        }
+
+        .exact-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #c8a97e;
+            color: #0f172a;
+            padding: 8px 25px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-top: 20px;
+        }
+
+        .exact-badge i {
+            color: #0f172a;
+        }
+
+        /* قسم المبلغ */
+        .amount-section {
+            margin: 20px 0;
+        }
+
+        .amount-label {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 10px;
+        }
+
+        .amount-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border: 2px solid rgba(200,169,126,0.3);
+            border-radius: 20px;
+            color: white;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .amount-input:focus {
+            outline: none;
+            border-color: #c8a97e;
+        }
+
+        .quick-amounts {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .quick-amount {
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(200,169,126,0.3);
+            border-radius: 30px;
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .quick-amount:hover {
+            background: #c8a97e;
+            color: #0f172a;
+        }
+
+        /* الربح المحتمل */
+        .profit-box {
+            background: rgba(39,174,96,0.1);
+            border: 2px solid #27ae60;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .profit-label {
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .profit-amount {
+            font-size: 36px;
+            font-weight: 900;
+            color: #27ae60;
+        }
+
+        /* زر التأكيد */
+        .confirm-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #c8a97e, #b38b5b);
+            border: none;
+            border-radius: 40px;
+            color: #0f172a;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: 0.3s;
+        }
+
+        .confirm-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(200,169,126,0.3);
+        }
+
+        /* سجل النشاطات */
+        .history-section {
+            margin-top: 40px;
+        }
+
+        .history-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .history-title i {
+            color: #c8a97e;
+            font-size: 22px;
+        }
+
+        .history-title h3 {
+            color: #c8a97e;
+            font-size: 18px;
+            flex: 1;
+        }
+
+        .history-list {
+            background: rgba(255,255,255,0.02);
+            border-radius: 30px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .history-icon.won { background: rgba(39,174,96,0.2); color: #27ae60; }
+        .history-icon.lost { background: rgba(231,76,60,0.2); color: #e74c3c; }
+        .history-icon.bet { background: rgba(200,169,126,0.2); color: #c8a97e; }
+
+        .history-info {
+            flex: 1;
+        }
+
+        .history-match {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .history-desc {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 3px;
+        }
+
+        .history-time {
+            font-size: 10px;
+            color: rgba(255,255,255,0.3);
+        }
+
+        /* نافذة التأكيد */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border-radius: 40px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            border: 2px solid #c8a97e;
+        }
+
+        .modal-icon {
+            width: 70px;
+            height: 70px;
+            background: #c8a97e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 30px;
+            color: #0f172a;
+        }
+
+        .modal-title {
+            text-align: center;
+            color: #c8a97e;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .modal-details {
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .modal-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .modal-row:last-child {
+            border-bottom: none;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 15px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 2px solid #c8a97e;
+            color: white;
+        }
+
+        .btn-confirm {
+            background: #c8a97e;
+            color: #0f172a;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* الإشعارات */
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            display: none;
+            z-index: 1000;
+            border-right: 4px solid white;
+        }
+
+        .toast.error {
+            background: #e74c3c;
+        }
+
+        @media (max-width: 700px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .guide {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .exact-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .exact-vs {
+                transform: rotate(90deg);
+            }
+            
+            .exact-team {
+                max-width: 100%;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- الهيدر -->
+    <div class="header">
+        <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-right"></i></a>
+        <div class="balance" id="balanceDisplay">
+            <i class="fas fa-wallet"></i> <span>0.00$</span>
+        </div>
+    </div>
+
+    <!-- الإحصائيات -->
+    <div class="stats">
+        <div class="stat-box">
+            <div class="stat-num" id="totalBets">0</div>
+            <div class="stat-label">رهاناتي</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-num" id="totalAmount">0.00$</div>
+            <div class="stat-label">الإجمالي</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-num" id="totalWins">0.00$</div>
+            <div class="stat-label">أرباحي</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-num" id="netProfit">0.00$</div>
+            <div class="stat-label">صافي</div>
+        </div>
+    </div>
+
+    <!-- إرشادات الرهان -->
+    <div class="guide">
+        <div class="guide-item">
+            <div class="guide-icon"><i class="fas fa-trophy"></i></div>
+            <div class="guide-text">
+                <h4>رهان فوز/تعادل</h4>
+                <p>نسبة الربح x1.6</p>
+            </div>
+        </div>
+        <div class="guide-item">
+            <div class="guide-icon"><i class="fas fa-bullseye"></i></div>
+            <div class="guide-text">
+                <h4>رهان نتيجة دقيقة</h4>
+                <p>نسبة الربح x2.5</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- المباريات -->
+    <div id="matchesContainer"></div>
+
+    <!-- سجل النشاطات -->
+    <div class="history-section">
+        <div class="history-title">
+            <i class="fas fa-history"></i>
+            <h3>سجل النشاطات</h3>
+            <button class="quick-amount" onclick="loadActivities()" style="padding: 8px 20px;">
+                <i class="fas fa-sync-alt"></i> تحديث
+            </button>
+        </div>
+        <div class="history-list" id="activitiesList">
+            <p style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">جاري التحميل...</p>
+        </div>
+    </div>
+
+    <!-- نافذة التأكيد -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-icon"><i class="fas fa-check"></i></div>
+            <h3 class="modal-title">تأكيد الرهان</h3>
+            <div class="modal-details" id="confirmDetails"></div>
+            <div class="modal-buttons">
+                <button class="modal-btn btn-cancel" onclick="closeModal()">إلغاء</button>
+                <button class="modal-btn btn-confirm" onclick="submitBet()">تأكيد</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- الإشعارات -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let currentUser = null;
+        let allMatches = [];
+        let userBets = [];
+        let activities = [];
+        let selectedMatch = null;
+        let selectedBetType = null;
+        let selectedBetValue = null;
+        let selectedOdds = 1.6;
+        let currentBetData = null;
+
+        // بدء التشغيل
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkUser();
+            await loadUserData();
+            await loadMatches();
+            await loadUserBets();
+            await loadActivities();
+        });
+
+        // التحقق من المستخدم
+        async function checkUser() {
+            const saved = localStorage.getItem('current_user');
+            if (!saved) {
+                window.location.href = 'index.html';
+                return;
+            }
+            currentUser = JSON.parse(saved);
+            
+            if (window.supabaseHelpers) {
+                const result = await window.supabaseHelpers.getUserById(currentUser.id);
+                if (result?.success) {
+                    currentUser = result.data;
+                    localStorage.setItem('current_user', JSON.stringify(currentUser));
+                }
+            }
+        }
+
+        // تحميل بيانات المستخدم
+        async function loadUserData() {
+            document.getElementById('balanceDisplay').innerHTML = `
+                <i class="fas fa-wallet"></i> <span>${(currentUser.balance || 0).toFixed(2)}$</span>
+            `;
+        }
+
+        // تحميل المباريات
+        async function loadMatches() {
+            try {
+                const result = await window.supabaseHelpers?.getAllMatches();
+                if (result?.success) {
+                    allMatches = result.data.filter(m => m.status === 'upcoming');
+                    displayMatches();
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // عرض المباريات
+        function displayMatches() {
+            const container = document.getElementById('matchesContainer');
+            
+            if (!allMatches.length) {
+                container.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.5); padding: 40px;">لا توجد مباريات متاحة</p>';
+                return;
+            }
+
+            let html = '';
+            allMatches.forEach(match => {
+                const date = new Date(match.match_date);
+                
+                html += `
+                    <div class="match-card" id="match-${match.id}">
+                        <!-- رأس المباراة -->
+                        <div class="match-header">
+                            <span class="league">${match.league || 'الدوري الإسباني'}</span>
+                            <span>${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}</span>
+                        </div>
+
+                        <!-- الفرق أفقياً -->
+                        <div class="teams">
+                            <div class="team">
+                                <div class="team-logo">${match.team1?.charAt(0) || 'A'}</div>
+                                <div class="team-name">${match.team1}</div>
+                            </div>
+                            <div class="vs">VS</div>
+                            <div class="team">
+                                <div class="team-logo">${match.team2?.charAt(0) || 'B'}</div>
+                                <div class="team-name">${match.team2}</div>
+                            </div>
+                        </div>
+
+                        <!-- خيارات الرهان -->
+                        <div class="bet-options" id="options-${match.id}">
+                            <div class="bet-option" onclick="selectBet(${match.id}, '1', 1.6)">
+                                <div class="bet-label">فوز</div>
+                                <div class="bet-value">1.6</div>
+                            </div>
+                            <div class="bet-option" onclick="selectBet(${match.id}, 'X', 1.6)">
+                                <div class="bet-label">تعادل</div>
+                                <div class="bet-value">1.6</div>
+                            </div>
+                            <div class="bet-option" onclick="selectBet(${match.id}, '2', 1.6)">
+                                <div class="bet-label">فوز</div>
+                                <div class="bet-value">1.6</div>
+                            </div>
+                        </div>
+
+                        <!-- النتيجة الدقيقة - الأسماء فوق والخانات تحت (خانات فارغة) -->
+                        <div class="exact-container">
+                            <div class="exact-title">
+                                <i class="fas fa-bullseye"></i>
+                                إجمالي الأهداف المتوقعة:
+                            </div>
+                            
+                            <div class="exact-row">
+                                <div class="exact-team">
+                                    <div class="team-name">${match.team1}</div>
+                                    <input type="number" id="score1-${match.id}" min="0" max="10" placeholder=" " oninput="updateExact(${match.id})">
+                                </div>
+                                
+                                <div class="exact-vs">VS</div>
+                                
+                                <div class="exact-team">
+                                    <div class="team-name">${match.team2}</div>
+                                    <input type="number" id="score2-${match.id}" min="0" max="10" placeholder=" " oninput="updateExact(${match.id})">
+                                </div>
+                            </div>
+                            
+                            <div class="exact-badge">
+                                <i class="fas fa-star"></i> نتيجة دقيقة x2.5
+                            </div>
+                        </div>
+
+                        <!-- قسم المبلغ (مخفي في البداية) -->
+                        <div id="amount-section-${match.id}" style="display: none;">
+                            <div class="amount-label">
+                                <span>💰 مبلغ الرهان</span>
+                                <span>${(currentUser.balance || 0).toFixed(2)}$</span>
+                            </div>
+                            <input type="number" class="amount-input" id="amount-${match.id}" placeholder="أدخل المبلغ" min="5" oninput="updateProfit(${match.id})">
+                            
+                            <div class="quick-amounts">
+                                <span class="quick-amount" onclick="setAmount(${match.id}, 10)">10$</span>
+                                <span class="quick-amount" onclick="setAmount(${match.id}, 25)">25$</span>
+                                <span class="quick-amount" onclick="setAmount(${match.id}, 50)">50$</span>
+                                <span class="quick-amount" onclick="setAmount(${match.id}, 100)">100$</span>
+                            </div>
+
+                            <div class="profit-box" id="profit-${match.id}">
+                                <div class="profit-label">الربح المحتمل</div>
+                                <div class="profit-amount" id="profit-amount-${match.id}">0.00$</div>
+                            </div>
+
+                            <button class="confirm-btn" onclick="openModal(${match.id})">
+                                <i class="fas fa-check-circle"></i> تأكيد الرهان
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // اختيار رهان عادي
+        function selectBet(matchId, value, odds) {
+            document.querySelectorAll(`#options-${matchId} .bet-option`).forEach(opt => opt.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            
+            selectedMatch = allMatches.find(m => m.id == matchId);
+            selectedBetType = 'simple';
+            selectedBetValue = value;
+            selectedOdds = odds;
+            
+            document.getElementById(`amount-section-${matchId}`).style.display = 'block';
+            document.getElementById(`score1-${matchId}`).value = '';
+            document.getElementById(`score2-${matchId}`).value = '';
+        }
+
+        // تحديث النتيجة الدقيقة
+        function updateExact(matchId) {
+            const s1 = document.getElementById(`score1-${matchId}`).value;
+            const s2 = document.getElementById(`score2-${matchId}`).value;
+            
+            if (s1 || s2) {
+                document.querySelectorAll(`#options-${matchId} .bet-option`).forEach(opt => opt.classList.remove('selected'));
+                
+                selectedMatch = allMatches.find(m => m.id == matchId);
+                selectedBetType = 'exact';
+                selectedBetValue = `${s1 || 0}-${s2 || 0}`;
+                selectedOdds = 2.5;
+                
+                document.getElementById(`amount-section-${matchId}`).style.display = 'block';
+                
+                const amount = document.getElementById(`amount-${matchId}`).value;
+                if (amount) updateProfit(matchId);
+            }
+        }
+
+        // تحديث الربح
+        function updateProfit(matchId) {
+            const amount = parseFloat(document.getElementById(`amount-${matchId}`).value) || 0;
+            const s1 = document.getElementById(`score1-${matchId}`).value;
+            const s2 = document.getElementById(`score2-${matchId}`).value;
+            
+            let odds = selectedOdds || 1.6;
+            if (s1 || s2) odds = 2.5;
+            
+            const profit = amount * odds;
+            document.getElementById(`profit-amount-${matchId}`).textContent = profit.toFixed(2) + '$';
+        }
+
+        // تعيين مبلغ سريع
+        function setAmount(matchId, amount) {
+            document.getElementById(`amount-${matchId}`).value = amount;
+            updateProfit(matchId);
+        }
+
+        // فتح نافذة التأكيد
+        function openModal(matchId) {
+            const amount = parseFloat(document.getElementById(`amount-${matchId}`).value);
+            const s1 = document.getElementById(`score1-${matchId}`).value;
+            const s2 = document.getElementById(`score2-${matchId}`).value;
+            
+            if (!amount || amount < 5) {
+                showToast('الحد الأدنى للرهان 5$', 'error');
+                return;
+            }
+            
+            if (amount > currentUser.balance) {
+                showToast('الرصيد غير كافي', 'error');
+                return;
+            }
+
+            let betText = '';
+            let odds = 1.6;
+            
+            if (s1 || s2) {
+                betText = `${s1 || 0} - ${s2 || 0}`;
+                odds = 2.5;
+            } else if (selectedBetValue === '1') betText = selectedMatch.team1;
+            else if (selectedBetValue === 'X') betText = 'تعادل';
+            else if (selectedBetValue === '2') betText = selectedMatch.team2;
+            else {
+                showToast('اختر توقعك أولاً', 'error');
+                return;
+            }
+
+            const profit = amount * odds;
+
+            document.getElementById('confirmDetails').innerHTML = `
+                <div class="modal-row"><span>المباراة</span><span>${selectedMatch.team1} vs ${selectedMatch.team2}</span></div>
+                <div class="modal-row"><span>توقعك</span><span>${betText}</span></div>
+                <div class="modal-row"><span>نسبة الربح</span><span style="color: ${odds === 2.5 ? '#c8a97e' : '#27ae60'};">x${odds}</span></div>
+                <div class="modal-row"><span>المبلغ</span><span>${amount}$</span></div>
+                <div class="modal-row"><span>الربح المحتمل</span><span style="color: #27ae60;">${profit.toFixed(2)}$</span></div>
+            `;
+
+            currentBetData = {
+                matchId, amount, odds,
+                betType: s1 || s2 ? 'exact' : 'simple',
+                betValue: s1 || s2 ? `${s1 || 0}-${s2 || 0}` : selectedBetValue
+            };
+
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+        }
+
+        async function submitBet() {
+            if (!currentBetData) return;
+
+            const result = await window.supabaseHelpers?.placeBet({
+                userId: currentUser.id,
+                matchId: currentBetData.matchId,
+                betType: currentBetData.betType,
+                betValue: currentBetData.betValue,
+                amount: currentBetData.amount,
+                odds: currentBetData.odds
+            });
+
+            if (result?.success) {
+                closeModal();
+                showToast('✅ تم تقديم الرهان بنجاح');
+                await checkUser();
+                await loadUserData();
+                await loadUserBets();
+                await loadMatches();
+                await loadActivities();
+            } else {
+                showToast('❌ ' + (result?.error || 'فشل'), 'error');
+            }
+        }
+
+        // تحميل رهانات المستخدم
+        async function loadUserBets() {
+            try {
+                const result = await window.supabaseHelpers?.getUserBets(currentUser.id);
+                if (result?.success) {
+                    userBets = result.data;
+                    updateStats();
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // تحديث الإحصائيات
+        function updateStats() {
+            const total = userBets.length;
+            const amount = userBets.reduce((s, b) => s + b.amount, 0);
+            const won = userBets.filter(b => b.status === 'won').reduce((s, b) => s + (b.paid_amount || 0), 0);
+            
+            document.getElementById('totalBets').textContent = total;
+            document.getElementById('totalAmount').textContent = amount.toFixed(2) + '$';
+            document.getElementById('totalWins').textContent = won.toFixed(2) + '$';
+            document.getElementById('netProfit').textContent = (won - amount).toFixed(2) + '$';
+        }
+
+        // تحميل سجل النشاطات
+        async function loadActivities() {
+            try {
+                if (!window.supabaseClient) return;
+                
+                const { data, error } = await supabaseClient
+                    .from('activity_log')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false })
+                    .limit(20);
+
+                if (error) throw error;
+                activities = data || [];
+                displayActivities();
+            } catch (error) {
+                console.error('خطأ في تحميل النشاطات:', error);
+            }
+        }
+
+        // عرض سجل النشاطات
+        function displayActivities() {
+            const list = document.getElementById('activitiesList');
+            
+            if (!activities.length) {
+                list.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">لا توجد نشاطات</p>';
+                return;
+            }
+
+            let html = '';
+            activities.forEach(act => {
+                let iconClass = 'bet';
+                let icon = 'fa-clock';
+                
+                if (act.type === 'profit') {
+                    iconClass = 'won';
+                    icon = 'fa-coins';
+                } else if (act.type === 'bet') {
+                    iconClass = 'bet';
+                    icon = 'fa-futbol';
+                } else if (act.type === 'withdrawal') {
+                    iconClass = 'lost';
+                    icon = 'fa-money-bill-wave';
+                }
+
+                const date = new Date(act.created_at).toLocaleDateString('ar-SA');
+                
+                html += `
+                    <div class="history-item">
+                        <div class="history-icon ${iconClass}">
+                            <i class="fas ${icon}"></i>
+                        </div>
+                        <div class="history-info">
+                            <div class="history-match">${act.title || 'نشاط'}</div>
+                            <div class="history-desc">${act.description || ''}</div>
+                            <div class="history-time"><i class="far fa-calendar"></i> ${date}</div>
+                        </div>
+                        ${act.amount ? `<div style="color: ${act.type === 'profit' ? '#27ae60' : '#e74c3c'};">${act.amount > 0 ? '+' : ''}${act.amount}$</div>` : ''}
+                    </div>
+                `;
+            });
+
+            list.innerHTML = html;
+        }
+
+        // إظهار الإشعارات
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = 'toast ' + type;
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 3000);
+        }
+    </script>
+</body>
+</html>
