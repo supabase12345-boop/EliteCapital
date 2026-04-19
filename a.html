@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحليل موقع الصورة</title>
+    
+    <!-- تحميل مكتبة Leaflet للخرائط -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        input[type="file"] {
+            padding: 10px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            width: 100%;
+            margin: 15px 0;
+            cursor: pointer;
+        }
+        
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin: 10px 0;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        #result {
+            padding: 15px;
+            margin: 15px 0;
+            background: #e8f5e9;
+            border-radius: 8px;
+            border-right: 4px solid #4CAF50;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+        }
+        
+        .preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        
+        .error {
+            background: #ffebee;
+            border-right-color: #f44336;
+            color: #c62828;
+        }
+        
+        .loading {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📍 تحليل موقع الصورة</h2>
+    
+    <input type="file" id="imageInput" accept="image/*">
+    <img id="preview" class="preview" style="display:none;">
+    
+    <br>
+    <button onclick="analyze()" id="analyzeBtn">تحليل الموقع</button>
+    
+    <p id="result"></p>
+    <div id="map"></div>
+</div>
+
+<script>
+// ⚠️ تنبيه: استبدل هذا المفتاح بمفتاحك الخاص
+// لا تشارك المفتاح الحقيقي في كود عام أبداً
+const API_KEY = "‏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";
+
+let map = null;
+let marker = null;
+
+// تهيئة الخريطة عند تحميل الصفحة
+function initMap(lat = 30, lon = 45, zoom = 2) {
+    if (map) {
+        map.remove();
+    }
+    
+    map = L.map('map').setView([lat, lon], zoom);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+}
+
+// تهيئة الخريطة الافتراضية (الشرق الأوسط)
+initMap();
+
+// تحويل الصورة إلى Base64
+function toBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            // استخراج الجزء base64 فقط بدون prefix
+            const base64 = reader.result.split(',')[1];
+            resolve(base64);
+        };
+        reader.onerror = error => reject(error);
+    });
+}
+
+// عرض معاينة الصورة
+function showPreview(file) {
+    const preview = document.getElementById('preview');
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+// الحصول على إحداثيات المكان باستخدام Nominatim
+async function getCoordinates(placeName) {
+    try {
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(placeName)}&limit=1`
+        );
+        const data = await response.json();
+        
+        if (data && data.length > 0) {
+            return {
+                lat: parseFloat(data[0].lat),
+                lon: parseFloat(data[0].lon),
+                displayName: data[0].display_name
+            };
+        }
+        return null;
+    } catch (error) {
+        console.error('خطأ في البحث عن الإحداثيات:', error);
+        return null;
+    }
+}
+
+// تحديث الخريطة بالموقع الجديد
+async function updateMap(placeName) {
+    const coords = await getCoordinates(placeName);
+    
+    if (coords) {
+        // تحديث موقع الخريطة
+        map.setView([coords.lat, coords.lon], 12);
+        
+        // إزالة العلامة القديمة إن وجدت
+        if (marker) {
+            map.removeLayer(marker);
+        }
+        
+        // إضافة علامة جديدة
+        marker = L.marker([coords.lat, coords.lon])
+            .addTo(map)
+            .bindPopup(`<b>${placeName}</b><br>${coords.displayName}`)
+            .openPopup();
+            
+        return coords;
+    } else {
+        // إذا لم نجد الإحداثيات، نعرض المنطقة العامة
+        map.setView([30, 45], 2);
+        return null;
+    }
+}
+
+// الوظيفة الرئيسية للتحليل
+async function analyze() {
+    const fileInput = document.getElementById('imageInput');
+    const file = fileInput.files[0];
+    const resultDiv = document.getElementById('result');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    
+    // التحقق من وجود صورة
+    if (!file) {
+        resultDiv.innerHTML = '⚠️ الرجاء اختيار صورة أولاً';
+        resultDiv.className = 'error';
+        return;
+    }
+    
+    // التحقق من وجود مفتاح API
+    if (API_KEY === "‏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") {
+        resultDiv.innerHTML = '⚠️ الرجاء إضافة مفتاح API الخاص بك في الكود';
+        resultDiv.className = 'error';
+        return;
+    }
+    
+    // عرض المعاينة
+    showPreview(file);
+    
+    // تعطيل الزر أثناء المعالجة
+    analyzeBtn.disabled = true;
+    resultDiv.innerHTML = '🔄 جاري تحليل الصورة... يرجى الانتظار';
+    resultDiv.className = 'loading';
+    
+    try {
+        // تحويل الصورة إلى Base64
+        const base64 = await toBase64(file);
+        
+        // إرسال الطلب إلى OpenAI
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + API_KEY
+            },
+            body: JSON.stringify({
+                model: "gpt-4o-mini",
+                messages: [{
+                    role: "user",
+                    content: [
+                        { 
+                            type: "text", 
+                            text: "حلل هذه الصورة وحدد المدينة والدولة التي التقطت فيها. أجب فقط باسم المدينة والدولة (مثال: 'دبي، الإمارات العربية المتحدة' أو 'باريس، فرنسا'). إذا لم تستطع التحديد، قل 'غير معروف'." 
+                        },
+                        { 
+                            type: "image_url", 
+                            image_url: { 
+                                url: `data:image/jpeg;base64,${base64}` 
+                            } 
+                        }
+                    ]
+                }],
+                max_tokens: 50,
+                temperature: 0.3
+            })
+        });
+        
+        const data = await response.json();
+        
+        // التحقق من وجود خطأ في الاستجابة
+        if (data.error) {
+            throw new Error(data.error.message);
+        }
+        
+        // استخراج اسم المكان
+        const place = data.choices[0].message.content.trim();
+        
+        // تحديث النتيجة
+        if (place && place !== 'غير معروف') {
+            resultDiv.innerHTML = `📍 المكان المتوقع: ${place}`;
+            resultDiv.className = '';
+            
+            // تحديث الخريطة
+            const coords = await updateMap(place);
+            
+            if (coords) {
+                resultDiv.innerHTML += `<br>🗺️ الإحداثيات: ${coords.lat.toFixed(4)}, ${coords.lon.toFixed(4)}`;
+            } else {
+                resultDiv.innerHTML += '<br>⚠️ لم نتمكن من تحديد الإحداثيات الدقيقة على الخريطة';
+            }
+        } else {
+            resultDiv.innerHTML = '❓ لم نتمكن من تحديد الموقع في هذه الصورة';
+            resultDiv.className = 'error';
+            initMap();
+        }
+        
+    } catch (error) {
+        console.error('خطأ:', error);
+        resultDiv.innerHTML = `❌ حدث خطأ: ${error.message}`;
+        resultDiv.className = 'error';
+        initMap();
+    } finally {
+        // إعادة تفعيل الزر
+        analyzeBtn.disabled = false;
+    }
+}
+
+// معاينة الصورة عند الاختيار
+document.getElementById('imageInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        showPreview(file);
+        document.getElementById('result').innerHTML = '';
+    }
+});
+
+</script>
+
+</body>
+</html>
