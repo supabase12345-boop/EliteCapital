@@ -1,5 +1,5 @@
 // ===================================
-// supabase.js - Elite Capital (نسخة محدثة مع نظام صناديق الحظ)
+// supabase.js - Elite Capital (نسخة محدثة بالكامل مع نظام المخالفات الجديد)
 // ===================================
 
 const SUPABASE_URL = 'https://macbjaiunubocfyhvbvd.supabase.co';
@@ -28,13 +28,18 @@ let supabaseClient = null;
 })();
 
 // ========== دوال مساعدة للوقت ==========
+
+// دالة لتحويل التوقيت المحلي إلى توقيت UTC (للحفظ في قاعدة البيانات)
 function convertToUTC(dateString) {
     const localDate = new Date(dateString);
+    // نطرح فرق التوقيت المحلي للحصول على UTC
     return new Date(localDate.getTime() - (localDate.getTimezoneOffset() * 60000));
 }
 
+// دالة لعرض الوقت حسب المنطقة المحلية (للعرض في الواجهة)
 function formatLocalTime(dateString) {
     const date = new Date(dateString);
+    // نضيف فرق التوقيت المحلي
     const localDate = new Date(date.getTime() + (date.getTimezoneOffset() * 60000));
     
     const day = localDate.getDate().toString().padStart(2, '0');
@@ -51,9 +56,12 @@ function formatLocalTime(dateString) {
     return `${year}/${month}/${day} ${hours}:${minutes} ${ampm}`;
 }
 
+// دالة لحساب الوقت المتبقي للمباراة (مع مراعاة فرق التوقيت)
 function getMatchTimeRemaining(matchDateString) {
     const matchDate = new Date(matchDateString);
     const now = new Date();
+    
+    // الفرق بالدقائق
     const diffMinutes = (matchDate - now) / (1000 * 60);
     
     return {
@@ -182,10 +190,12 @@ async function loginUser(usernameOrEmail, password) {
         if (!user) throw new Error('المستخدم غير موجود');
         if (user.password !== password) throw new Error('كلمة المرور غير صحيحة');
         
+        // التحقق من حالة التعليق
         if (user.is_suspended) {
             if (user.suspended_until && new Date(user.suspended_until) > new Date()) {
                 throw new Error(`حسابك معلق حتى ${new Date(user.suspended_until).toLocaleDateString('ar-SA')}`);
             } else {
+                // إعادة تنشيط الحساب إذا انتهت مدة التعليق
                 await supabaseClient
                     .from('users')
                     .update({ 
@@ -283,9 +293,10 @@ async function updateUserStatus(id, status, reason = null) {
     }
 }
 
-// ========== نظام مخالفات المطالبة المزدوجة ==========
+// ========== نظام مخالفات المطالبة المزدوجة (محدث) ==========
 async function handleDoubleClaimViolation(userId) {
     try {
+        // جلب المستخدم
         const { data: user } = await supabaseClient
             .from('users')
             .select('violation_count, is_suspended')
@@ -294,14 +305,17 @@ async function handleDoubleClaimViolation(userId) {
         
         const newViolationCount = (user.violation_count || 0) + 1;
         
-        let suspendDays = 3;
+        // تحديد مدة التعليق حسب عدد المخالفات
+        let suspendDays = 3; // المرة الأولى: 3 أيام
         if (newViolationCount >= 2) {
-            suspendDays = 7;
+            suspendDays = 7; // المرة الثانية: 7 أيام
         }
         
+        // تعليق الحساب
         const suspendUntil = new Date();
         suspendUntil.setDate(suspendUntil.getDate() + suspendDays);
         
+        // تحديث حالة المستخدم
         await supabaseClient
             .from('users')
             .update({
@@ -313,6 +327,7 @@ async function handleDoubleClaimViolation(userId) {
             })
             .eq('id', userId);
         
+        // تسجيل النشاط
         await addActivity({
             userId: userId,
             type: 'violation',
@@ -608,9 +623,10 @@ async function rejectPendingPackage(id, reason, adminId) {
     }
 }
 
-// ========== نظام المطالبة بالأرباح اليومية ==========
+// ========== نظام المطالبة بالأرباح اليومية (محدث) ==========
 async function claimDailyProfit(userId) {
     try {
+        // التحقق من حالة المستخدم
         const { data: user } = await supabaseClient
             .from('users')
             .select('is_suspended, violation_count, suspended_until')
@@ -653,8 +669,12 @@ async function claimDailyProfit(userId) {
         if (lastClaim) {
             const hoursSinceLastClaim = (now - lastClaim) / (1000 * 60 * 60);
             
+            // إذا حاول المستخدم المطالبة قبل 24 ساعة
             if (hoursSinceLastClaim < 24) {
+                // تسجيل مخالفة
                 const violationResult = await handleDoubleClaimViolation(userId);
+                
+                // تحديد مدة التعليق حسب عدد المخالفات
                 const suspendDays = violationResult.data?.suspend_days || 3;
                 
                 throw new Error(`⚠️ تم تسجيل مخالفة! لا يمكنك المطالبة إلا مرة واحدة كل 24 ساعة. تم تعليق حسابك لمدة ${suspendDays} أيام`);
@@ -684,7 +704,7 @@ async function claimDailyProfit(userId) {
             })
             .eq('id', subscription.id);
         
-        await supabaseClient
+        const { data: profit } = await supabaseClient
             .from('daily_profits')
             .insert([{
                 user_id: userId,
@@ -1204,429 +1224,6 @@ async function getAllGifts() {
         
         if (error) throw error;
         return { success: true, data };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
-}
-
-// ========== نظام صناديق الحظ 🎰 ==========
-
-// إنشاء صندوق حظ جديد
-async function createLuckyBox(boxData) {
-    try {
-        const { data, error } = await supabaseClient
-            .from('lucky_boxes')
-            .insert([{
-                name: boxData.name,
-                description: boxData.description,
-                price: boxData.price,
-                image_url: boxData.image_url || null,
-                status: 'active',
-                created_by: boxData.createdBy,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            }])
-            .select()
-            .single();
-        
-        if (error) throw error;
-        return { success: true, data };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
-}
-
-// تحديث صندوق حظ
-async function updateLuckyBox(boxId, updates) {
-    try {
-        const { error } = await supabaseClient
-            .from('lucky_boxes')
-            .update({
-                ...updates,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', boxId);
-        
-        if (error) throw error;
-        return { success: true };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
-}
-
-// حذف صندوق حظ
-async function deleteLuckyBox(boxId) {
-    try {
-        // حذف الجوائز المرتبطة
-        await supabaseClient.from('lucky_box_prizes').delete().eq('box_id', boxId);
-        // حذف الصندوق
-        await supabaseClient.from('lucky_boxes').delete().eq('id', boxId);
-        return { success: true };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
-}
-
-// إضافة جائزة لصندوق حظ
-async function addPrizeToBox(prizeData) {
-    try {
-        const { data, error } = await supabaseClient
-            .from('lucky_box_prizes')
-            .insert([{
-                box_id: prizeData.boxId,
-                name: prizeData.name,
-                description: prizeData.description,
-                type: prizeData.type, // 'cash', 'item', 'subscription' 
-                value: prizeData.value,
-                currency: prizeData.currency || 'USD',
-                win_chance: prizeData.winChance, // نسبة الفوز %
-                image_url: prizeData.image_url || null,
-                created_at: new Date().toISOString()
-            }])
-            .select()
-            .single();
-        
-        if (error) throw error;
-        return { success: true, data };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
-}
-
-// تحديث جائزة
-async function updatePrize(prizeId, updates) {
-    try {
-        const { error } = await supabaseClient
-            .from('lucky_box_prizes')
-            .update({
-                ...updates,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', prizeId);
-        
-        if (error) throw error;
-        return { success: true };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
-}
-
-// حذف جائزة
-async function deletePrize(prizeId) {
-    try {
-        const { error } = await supabaseClient
-            .from('lucky_box_prizes')
-            .delete()
-            .eq('id', prizeId);
-        
-        if (error) throw error;
-        return { success: true };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
-}
-
-// جلب جميع صناديق الحظ
-async function getAllLuckyBoxes() {
-    try {
-        const { data, error } = await supabaseClient
-            .from('lucky_boxes')
-            .select(`
-                *,
-                prizes:lucky_box_prizes(*)
-            `)
-            .order('created_at', { ascending: false });
-        
-        if (error) throw error;
-        return { success: true, data };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
-}
-
-// جلب صندوق حظ محدد مع جوائزه
-async function getLuckyBoxWithPrizes(boxId) {
-    try {
-        const { data, error } = await supabaseClient
-            .from('lucky_boxes')
-            .select(`
-                *,
-                prizes:lucky_box_prizes(*)
-            `)
-            .eq('id', boxId)
-            .single();
-        
-        if (error) throw error;
-        return { success: true, data };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
-}
-
-// شراء صندوق حظ
-async function buyLuckyBox(userId, boxId) {
-    try {
-        // جلب معلومات الصندوق
-        const { data: box } = await supabaseClient
-            .from('lucky_boxes')
-            .select('*, prizes:lucky_box_prizes(*)')
-            .eq('id', boxId)
-            .single();
-        
-        if (!box) throw new Error('الصندوق غير موجود');
-        if (box.status !== 'active') throw new Error('الصندوق غير متاح');
-        
-        // التحقق من رصيد المستخدم
-        const { data: user } = await supabaseClient
-            .from('users')
-            .select('balance')
-            .eq('id', userId)
-            .single();
-        
-        if (!user || user.balance < box.price) {
-            throw new Error('الرصيد غير كافي لشراء الصندوق');
-        }
-        
-        // خصم المبلغ
-        await supabaseClient
-            .from('users')
-            .update({ 
-                balance: user.balance - box.price,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', userId);
-        
-        // اختيار جائزة عشوائية بناءً على النسب
-        const prizes = box.prizes || [];
-        if (prizes.length === 0) throw new Error('لا توجد جوائز في هذا الصندوق');
-        
-        // حساب الجائزة بناءً على النسب
-        let selectedPrize = null;
-        const random = Math.random() * 100;
-        let cumulativeChance = 0;
-        
-        for (const prize of prizes) {
-            cumulativeChance += (prize.win_chance || 0);
-            if (random <= cumulativeChance) {
-                selectedPrize = prize;
-                break;
-            }
-        }
-        
-        // إذا لم يتم اختيار جائزة، اختر الأخيرة
-        if (!selectedPrize && prizes.length > 0) {
-            selectedPrize = prizes[prizes.length - 1];
-        }
-        
-        // معالجة الجائزة
-        let prizeProcessed = false;
-        let prizeValue = 0;
-        
-        if (selectedPrize.type === 'cash') {
-            prizeValue = selectedPrize.value || 0;
-            
-            // إضافة الجائزة للرصيد
-            const { data: currentUser } = await supabaseClient
-                .from('users')
-                .select('balance')
-                .eq('id', userId)
-                .single();
-            
-            await supabaseClient
-                .from('users')
-                .update({ 
-                    balance: (currentUser.balance || 0) + prizeValue,
-                    total_earned: (currentUser.total_earned || 0) + prizeValue
-                })
-                .eq('id', userId);
-            
-            prizeProcessed = true;
-        } else if (selectedPrize.type === 'subscription') {
-            // منح اشتراك
-            const startDate = new Date();
-            const endDate = new Date();
-            endDate.setDate(endDate.getDate() + (selectedPrize.value || 30));
-            
-            await supabaseClient
-                .from('subscriptions')
-                .insert([{
-                    user_id: userId,
-                    package_id: null,
-                    package_name: selectedPrize.name || 'جائزة اشتراك',
-                    package_category: 'standard',
-                    amount: 0,
-                    daily_profit: selectedPrize.daily_profit || 5,
-                    start_date: startDate.toISOString(),
-                    end_date: endDate.toISOString(),
-                    status: 'active',
-                    created_at: new Date().toISOString()
-                }]);
-            
-            prizeValue = selectedPrize.value || 30;
-            prizeProcessed = true;
-        }
-        
-        // تسجيل عملية الشراء
-        await supabaseClient
-            .from('lucky_box_opens')
-            .insert([{
-                user_id: userId,
-                box_id: boxId,
-                prize_id: selectedPrize.id,
-                prize_name: selectedPrize.name,
-                prize_type: selectedPrize.type,
-                prize_value: prizeValue,
-                box_price: box.price,
-                created_at: new Date().toISOString()
-            }]);
-        
-        // تسجيل المعاملة
-        await supabaseClient
-            .from('transactions')
-            .insert([{
-                user_id: userId,
-                type: 'صندوق حظ',
-                amount: -box.price,
-                description: `شراء صندوق ${box.name} - ربح: ${selectedPrize.name}`,
-                status: 'completed',
-                created_at: new Date().toISOString()
-            }]);
-        
-        // تسجيل النشاط
-        await addActivity({
-            userId: userId,
-            type: 'profit',
-            title: '🎰 صندوق حظ',
-            description: `فتح صندوق ${box.name} وربح ${selectedPrize.name}`,
-            amount: prizeValue,
-            status: 'completed'
-        });
-        
-        return { 
-            success: true, 
-            data: {
-                box: box,
-                prize: selectedPrize,
-                prizeValue: prizeValue
-            }
-        };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
-}
-
-// جلب سجل فتح الصناديق لمستخدم
-async function getUserBoxOpens(userId) {
-    try {
-        const { data, error } = await supabaseClient
-            .from('lucky_box_opens')
-            .select(`
-                *,
-                box:box_id(name, image_url),
-                prize:prize_id(name, type, image_url)
-            `)
-            .eq('user_id', userId)
-            .order('created_at', { ascending: false })
-            .limit(20);
-        
-        if (error) throw error;
-        return { success: true, data };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
-}
-
-// إرسال صندوق هدية لمستخدم
-async function sendBoxGift(boxId, userId, adminId) {
-    try {
-        const { data: box } = await supabaseClient
-            .from('lucky_boxes')
-            .select('*')
-            .eq('id', boxId)
-            .single();
-        
-        if (!box) throw new Error('الصندوق غير موجود');
-        
-        // إنشاء هدية الصندوق
-        const { data, error } = await supabaseClient
-            .from('lucky_box_gifts')
-            .insert([{
-                box_id: boxId,
-                user_id: userId,
-                sent_by: adminId,
-                status: 'pending',
-                created_at: new Date().toISOString()
-            }])
-            .select()
-            .single();
-        
-        if (error) throw error;
-        
-        // إرسال إشعار للمستخدم
-        await sendGift({
-            title: `🎁 صندوق ${box.name} هدية`,
-            message: `تم إرسال صندوق ${box.name} كهدية لك! افتحه الآن واربح جوائز رائعة`,
-            amount: box.price,
-            type: 'info',
-            targetType: 'single',
-            targetUserId: userId,
-            createdBy: adminId
-        });
-        
-        return { success: true, data };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
-}
-
-// جلب صناديق الهدايا للمستخدم
-async function getUserBoxGifts(userId) {
-    try {
-        const { data, error } = await supabaseClient
-            .from('lucky_box_gifts')
-            .select(`
-                *,
-                box:box_id(*)
-            `)
-            .eq('user_id', userId)
-            .eq('status', 'pending')
-            .order('created_at', { ascending: false });
-        
-        if (error) throw error;
-        return { success: true, data };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
-}
-
-// فتح صندوق هدية
-async function openBoxGift(giftId, userId) {
-    try {
-        const { data: gift } = await supabaseClient
-            .from('lucky_box_gifts')
-            .select('*, box:box_id(*)')
-            .eq('id', giftId)
-            .eq('user_id', userId)
-            .eq('status', 'pending')
-            .single();
-        
-        if (!gift) throw new Error('الهدية غير موجودة أو تم استخدامها');
-        
-        // فتح الصندوق
-        const result = await buyLuckyBox(userId, gift.box_id);
-        
-        if (result.success) {
-            // تحديث حالة الهدية
-            await supabaseClient
-                .from('lucky_box_gifts')
-                .update({ 
-                    status: 'opened',
-                    opened_at: new Date().toISOString()
-                })
-                .eq('id', giftId);
-        }
-        
-        return result;
     } catch (error) {
         return { success: false, error: error.message };
     }
@@ -2192,7 +1789,9 @@ async function deleteAlert(alertId) {
     }
 }
 
-// ========== نظام المراهنات ==========
+// ========== نظام المراهنات (محدث ومصحح) ==========
+
+// الحصول على جميع المباريات
 async function getAllMatches() {
     try {
         const { data, error } = await supabaseClient
@@ -2209,6 +1808,7 @@ async function getAllMatches() {
     }
 }
 
+// إضافة مباراة جديدة
 async function addMatch(matchData) {
     try {
         const matchDate = new Date(matchData.match_date);
@@ -2233,6 +1833,7 @@ async function addMatch(matchData) {
     }
 }
 
+// إضافة مباريات تجريبية
 async function addSampleMatches() {
     try {
         const now = new Date();
@@ -2268,10 +1869,12 @@ async function addSampleMatches() {
     }
 }
 
+// تقديم رهان جديد
 async function placeBet(betData) {
     try {
         console.log('تقديم رهان جديد:', betData);
         
+        // التحقق من المباراة
         const { data: match, error: matchError } = await supabaseClient
             .from('matches')
             .select('*')
@@ -2280,6 +1883,7 @@ async function placeBet(betData) {
         
         if (matchError || !match) throw new Error('المباراة غير موجودة');
         
+        // التحقق من وقت المباراة
         const now = new Date();
         const matchTime = new Date(match.match_date);
         const diffMinutes = (matchTime - now) / (1000 * 60);
@@ -2288,6 +1892,7 @@ async function placeBet(betData) {
             throw new Error('لا يمكن الرهان قبل 5 دقائق من المباراة');
         }
         
+        // التحقق من رصيد المستخدم
         const { data: user, error: userError } = await supabaseClient
             .from('users')
             .select('balance')
@@ -2302,6 +1907,7 @@ async function placeBet(betData) {
         
         const possibleWin = betData.amount * betData.odds;
         
+        // إنشاء الرهان
         const { data: bet, error: betError } = await supabaseClient
             .from('bets')
             .insert([{
@@ -2322,6 +1928,7 @@ async function placeBet(betData) {
             throw betError;
         }
         
+        // خصم المبلغ من رصيد المستخدم
         await supabaseClient
             .from('users')
             .update({
@@ -2330,6 +1937,7 @@ async function placeBet(betData) {
             })
             .eq('id', betData.userId);
         
+        // تسجيل النشاط
         await supabaseClient
             .from('activity_log')
             .insert([{
@@ -2348,6 +1956,7 @@ async function placeBet(betData) {
     }
 }
 
+// الحصول على رهانات المستخدم
 async function getUserBets(userId) {
     try {
         const { data, error } = await supabaseClient
@@ -2368,10 +1977,12 @@ async function getUserBets(userId) {
     }
 }
 
+// الحصول على جميع الرهانات (للمشرف) - نسخة مصححة
 async function getAllBets() {
     try {
         console.log('جاري جلب جميع الرهانات...');
         
+        // جلب الرهانات مع معلومات المستخدم والمباراة
         const { data, error } = await supabaseClient
             .from('bets')
             .select(`
@@ -2407,10 +2018,12 @@ async function getAllBets() {
     }
 }
 
+// تحديث نتيجة مباراة ومعالجة الرهانات
 async function updateMatchResult(matchId, resultTeam1, resultTeam2) {
     try {
         console.log('تحديث نتيجة المباراة:', matchId, resultTeam1, resultTeam2);
         
+        // جلب المباراة
         const { data: match, error: matchError } = await supabaseClient
             .from('matches')
             .select('*')
@@ -2419,6 +2032,7 @@ async function updateMatchResult(matchId, resultTeam1, resultTeam2) {
         
         if (matchError) throw matchError;
         
+        // تحديث حالة المباراة
         const { error: updateError } = await supabaseClient
             .from('matches')
             .update({
@@ -2431,6 +2045,7 @@ async function updateMatchResult(matchId, resultTeam1, resultTeam2) {
         
         if (updateError) throw updateError;
         
+        // جلب جميع الرهانات لهذه المباراة
         const { data: bets, error: betsError } = await supabaseClient
             .from('bets')
             .select('*, users:user_id(id, balance)')
@@ -2446,15 +2061,18 @@ async function updateMatchResult(matchId, resultTeam1, resultTeam2) {
         if (resultTeam1 > resultTeam2) winner = '1';
         else if (resultTeam2 > resultTeam1) winner = '2';
         
+        // معالجة كل رهان
         for (const bet of bets || []) {
             let betStatus = 'lost';
             let paidAmount = 0;
             
+            // التحقق من الفوز
             if (bet.bet_value === winner || bet.bet_value === result) {
                 betStatus = 'won';
                 paidAmount = bet.amount * bet.odds;
             }
             
+            // تحديث الرهان
             await supabaseClient
                 .from('bets')
                 .update({
@@ -2465,6 +2083,7 @@ async function updateMatchResult(matchId, resultTeam1, resultTeam2) {
                 .eq('id', bet.id);
             
             if (betStatus === 'won' && paidAmount > 0) {
+                // إضافة الأرباح للمستخدم
                 const { data: user } = await supabaseClient
                     .from('users')
                     .select('balance')
@@ -2480,6 +2099,7 @@ async function updateMatchResult(matchId, resultTeam1, resultTeam2) {
                     })
                     .eq('id', bet.user_id);
                 
+                // تسجيل النشاط
                 await supabaseClient
                     .from('activity_log')
                     .insert([{
@@ -2534,7 +2154,7 @@ window.supabaseHelpers = {
     // الاشتراكات
     getUserSubscription,
     
-    // نظام المطالبة بالأرباح
+    // نظام المطالبة بالأرباح (محدث)
     claimDailyProfit,
     getClaimStatus,
     handleDoubleClaimViolation,
@@ -2555,21 +2175,6 @@ window.supabaseHelpers = {
     getUserGifts,
     claimGift,
     getAllGifts,
-    
-    // صناديق الحظ 🎰
-    createLuckyBox,
-    updateLuckyBox,
-    deleteLuckyBox,
-    addPrizeToBox,
-    updatePrize,
-    deletePrize,
-    getAllLuckyBoxes,
-    getLuckyBoxWithPrizes,
-    buyLuckyBox,
-    getUserBoxOpens,
-    sendBoxGift,
-    getUserBoxGifts,
-    openBoxGift,
     
     // الإحصائيات
     getDashboardStats,
@@ -2604,7 +2209,7 @@ window.supabaseHelpers = {
     disableAlert,
     deleteAlert,
     
-    // نظام المراهنات
+    // نظام المراهنات (محدث)
     getAllMatches,
     addMatch,
     addSampleMatches,
@@ -2619,4 +2224,4 @@ window.supabaseHelpers = {
     convertToUTC
 };
 
-console.log('✅ تم تحميل جميع دوال Supabase مع نظام صناديق الحظ 🎰');
+console.log('✅ تم تحميل جميع دوال Supabase مع نظام المخالفات المحدث (3 أيام أول مرة، 7 أيام ثاني مرة)');
