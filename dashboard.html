@@ -125,6 +125,7 @@
             transition: all 0.2s;
             font-size: 16px;
             position: relative;
+            text-decoration: none;
         }
         .nav-btn:hover { color: var(--gold); border-color: var(--gold); }
         .nav-btn .badge {
@@ -141,6 +142,10 @@
             font-weight: 700;
         }
 
+        /* ========== USER AVATAR & DROPDOWN ========== */
+        .user-avatar-wrapper {
+            position: relative;
+        }
         .user-avatar {
             width: 38px; height: 38px;
             background: var(--gradient-gold);
@@ -152,6 +157,122 @@
             font-size: 16px;
             color: #000;
             cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        .user-avatar:hover {
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(200,169,126,0.4);
+        }
+
+        /* القائمة المنسدلة */
+        .user-dropdown {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            width: 260px;
+            background: var(--dark-2);
+            border-radius: var(--radius);
+            padding: 8px;
+            border: 2px solid var(--gold);
+            box-shadow: var(--shadow-lg), 0 0 30px rgba(200,169,126,0.15);
+            display: none;
+            z-index: 1100;
+            animation: dropdownIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        .user-dropdown.active {
+            display: block;
+        }
+        @keyframes dropdownIn {
+            from { opacity: 0; transform: translateY(-10px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .dropdown-header {
+            padding: 16px;
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 4px;
+        }
+        .dropdown-avatar {
+            width: 56px; height: 56px;
+            background: var(--gradient-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #000;
+            margin: 0 auto 10px;
+            border: 2px solid var(--gold);
+        }
+        .dropdown-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+        .dropdown-email {
+            font-size: 11px;
+            color: var(--text-3);
+        }
+        .dropdown-balance {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 4px 12px;
+            background: rgba(16,185,129,0.1);
+            border: 1px solid rgba(16,185,129,0.3);
+            border-radius: 20px;
+            color: var(--success);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-2);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .dropdown-item:hover {
+            background: rgba(200,169,126,0.1);
+            color: var(--gold);
+        }
+        .dropdown-item i {
+            width: 20px;
+            font-size: 16px;
+            text-align: center;
+        }
+        .dropdown-divider {
+            height: 1px;
+            background: var(--glass-border);
+            margin: 4px 8px;
+        }
+        .dropdown-item.danger {
+            color: var(--danger);
+        }
+        .dropdown-item.danger:hover {
+            background: rgba(239,68,68,0.1);
+        }
+        .dropdown-item .item-badge {
+            margin-right: auto;
+            background: var(--danger);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        .dropdown-item .item-badge.green {
+            background: var(--success);
         }
 
         /* ========== MAIN CONTENT ========== */
@@ -333,13 +454,20 @@
             font-size: 14px;
         }
 
+        /* ========== CONTENT GRID (Withdrawal + Activities) ========== */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
         /* ========== SECTION CARDS ========== */
         .section-card {
             background: var(--glass);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
             padding: 20px;
-            margin-bottom: 16px;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
         }
@@ -347,15 +475,29 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .section-title {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
             color: var(--gold);
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+        .section-link {
+            font-size: 12px;
+            color: var(--gold);
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 4px 10px;
+            border: 1px solid rgba(200,169,126,0.3);
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+        .section-link:hover {
+            background: rgba(200,169,126,0.1);
         }
 
         /* ========== REFERRAL ========== */
@@ -363,13 +505,14 @@
             background: rgba(0,0,0,0.3);
             border: 2px dashed var(--gold);
             border-radius: var(--radius);
-            padding: 16px;
+            padding: 14px;
             text-align: center;
-            font-size: 28px;
+            font-size: 22px;
             font-weight: 900;
             color: var(--gold);
-            letter-spacing: 4px;
+            letter-spacing: 3px;
             margin-bottom: 12px;
+            font-family: monospace;
         }
         .ref-stats {
             display: grid;
@@ -383,7 +526,7 @@
             border-radius: var(--radius-sm);
         }
         .ref-stat-val {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 800;
             color: var(--gold);
         }
@@ -392,7 +535,72 @@
             color: var(--text-3);
         }
 
-        /* ========== TASKS / GIFTS / PROFIT ========== */
+        /* ========== ACTIVITIES LIST ========== */
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.02);
+            border-radius: var(--radius-sm);
+            margin-bottom: 6px;
+            border-right: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .activity-item:hover { background: rgba(255,255,255,0.05); }
+        .activity-item.type-profit { border-right-color: var(--success); }
+        .activity-item.type-withdrawal { border-right-color: var(--warning); }
+        .activity-item.type-subscription { border-right-color: var(--info); }
+        .activity-item.type-login { border-right-color: #8b5cf6; }
+        .activity-item.type-violation { border-right-color: var(--danger); }
+        .activity-item.type-bet { border-right-color: var(--gold); }
+        .activity-item.type-game { border-right-color: #ec4899; }
+        .activity-icon {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .activity-content { flex: 1; min-width: 0; }
+        .activity-title { font-size: 13px; font-weight: 600; color: var(--text); }
+        .activity-desc { font-size: 10px; color: var(--text-3); }
+        .activity-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2px;
+            font-size: 10px;
+            color: var(--text-3);
+        }
+        .activity-amount {
+            font-weight: 700;
+            font-size: 12px;
+        }
+        .activity-amount.profit { color: var(--success); }
+        .activity-amount.loss { color: var(--danger); }
+
+        /* ========== WITHDRAWALS LIST ========== */
+        .withdrawal-item {
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.02);
+            border-radius: var(--radius-sm);
+            margin-bottom: 6px;
+        }
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .status-pending { color: var(--warning); background: rgba(245,158,11,0.15); }
+        .status-completed { color: var(--success); background: rgba(16,185,129,0.15); }
+        .status-rejected { color: var(--danger); background: rgba(239,68,68,0.15); }
+
+        /* ========== TASKS PAGE ========== */
         .gift-card {
             background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(245,158,11,0.1));
             border: 2px solid #fbbf24;
@@ -421,50 +629,6 @@
             font-weight: 900;
             color: var(--success);
         }
-
-        /* ========== ACTIVITIES ========== */
-        .activity-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: rgba(255,255,255,0.02);
-            border-radius: var(--radius-sm);
-            margin-bottom: 8px;
-            border-right: 3px solid transparent;
-            transition: all 0.2s;
-        }
-        .activity-item:hover { background: rgba(255,255,255,0.05); }
-        .activity-item.type-profit { border-right-color: var(--success); }
-        .activity-item.type-withdrawal { border-right-color: var(--warning); }
-        .activity-item.type-subscription { border-right-color: var(--info); }
-        .activity-item.type-login { border-right-color: #8b5cf6; }
-        .activity-item.type-violation { border-right-color: var(--danger); }
-        .activity-icon {
-            width: 40px; height: 40px;
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-        .activity-content { flex: 1; min-width: 0; }
-        .activity-title { font-size: 14px; font-weight: 600; }
-        .activity-desc { font-size: 11px; color: var(--text-3); }
-        .activity-time { font-size: 10px; color: var(--text-3); }
-
-        /* ========== WITHDRAWALS ========== */
-        .withdrawal-item {
-            padding: 12px;
-            background: rgba(255,255,255,0.02);
-            border-radius: var(--radius-sm);
-            margin-bottom: 8px;
-        }
-        .status-pending { color: var(--warning); background: rgba(245,158,11,0.1); padding: 2px 10px; border-radius: 12px; font-size: 11px; }
-        .status-completed { color: var(--success); background: rgba(16,185,129,0.1); padding: 2px 10px; border-radius: 12px; font-size: 11px; }
-        .status-rejected { color: var(--danger); background: rgba(239,68,68,0.1); padding: 2px 10px; border-radius: 12px; font-size: 11px; }
-        .status-suspended { color: #f97316; background: rgba(249,115,22,0.1); padding: 2px 10px; border-radius: 12px; font-size: 11px; }
 
         /* ========== BUTTONS ========== */
         .btn {
@@ -696,6 +860,11 @@
         }
 
         /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
         @media (max-width: 600px) {
             .balance-row { grid-template-columns: 1fr; }
             .quick-actions { grid-template-columns: repeat(3, 1fr); }
@@ -767,11 +936,60 @@
             <div class="nav-title">ELITE CAPITAL</div>
         </div>
         <div class="nav-actions">
-            <button class="nav-btn" onclick="refreshAll()"><i class="fas fa-sync-alt"></i></button>
-            <button class="nav-btn" onclick="window.location.href='chat.html'">
+            <button class="nav-btn" onclick="refreshAll()" title="تحديث"><i class="fas fa-sync-alt"></i></button>
+            <a href="chat.html" class="nav-btn" title="الدردشة">
                 <i class="fas fa-comments"></i>
-            </button>
-            <div class="user-avatar" id="userAvatar" onclick="logout()">م</div>
+                <span class="badge" id="chatBadge" style="display:none;">!</span>
+            </a>
+            
+            <!-- ===== USER AVATAR WITH DROPDOWN ===== -->
+            <div class="user-avatar-wrapper" id="avatarWrapper">
+                <div class="user-avatar" id="userAvatar" onclick="toggleDropdown(event)">م</div>
+                
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="dropdown-header">
+                        <div class="dropdown-avatar" id="dropdownAvatar">م</div>
+                        <div class="dropdown-name" id="dropdownName">المستخدم</div>
+                        <div class="dropdown-email" id="dropdownEmail">user@email.com</div>
+                        <div class="dropdown-balance" id="dropdownBalance">💰 0.00$</div>
+                    </div>
+                    
+                    <a class="dropdown-item" href="profile.html">
+                        <i class="fas fa-user-circle"></i>
+                        <span>الملف الشخصي</span>
+                    </a>
+                    
+                    <a class="dropdown-item" href="chat.html">
+                        <i class="fas fa-comments"></i>
+                        <span>الدردشة المباشرة</span>
+                    </a>
+                    
+                    <a class="dropdown-item" href="games.html">
+                        <i class="fas fa-gamepad"></i>
+                        <span>ألعاب الحظ</span>
+                    </a>
+                    
+                    <div class="dropdown-divider"></div>
+                    
+                    <div class="dropdown-item" onclick="showPage('tasks')">
+                        <i class="fas fa-gift"></i>
+                        <span>المهام والهدايا</span>
+                        <span class="item-badge green" id="giftsBadge" style="display:none;">0</span>
+                    </div>
+                    
+                    <div class="dropdown-item" onclick="showPage('withdrawals')">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>طلبات السحب</span>
+                    </div>
+                    
+                    <div class="dropdown-divider"></div>
+                    
+                    <div class="dropdown-item danger" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>تسجيل الخروج</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -800,7 +1018,7 @@
                     <i class="fas fa-gift"></i>
                     <span>الهدايا</span>
                 </button>
-                <button class="action-btn" onclick="showPage('withdrawals')">
+                <button class="action-btn" onclick="openModal('withdrawalModal')">
                     <i class="fas fa-money-bill-wave"></i>
                     <span>السحب</span>
                 </button>
@@ -816,6 +1034,31 @@
 
             <!-- Subscription -->
             <div id="subscriptionSection"></div>
+
+            <!-- CONTENT GRID: Withdrawals + Activities -->
+            <div class="content-grid">
+                <!-- Withdrawals Summary -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-title"><i class="fas fa-money-bill-wave"></i> السحوبات</div>
+                        <span class="section-link" onclick="showPage('withdrawals')">عرض الكل</span>
+                    </div>
+                    <div id="withdrawalsSummary" style="max-height: 300px; overflow-y: auto;">
+                        <p style="color:var(--text-3);text-align:center;font-size:13px;">لا توجد طلبات</p>
+                    </div>
+                </div>
+
+                <!-- Activities Log -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-title"><i class="fas fa-history"></i> سجل النشاطات</div>
+                        <span class="section-link" onclick="showPage('activities')">عرض الكل</span>
+                    </div>
+                    <div id="activitiesLog" style="max-height: 300px; overflow-y: auto;">
+                        <p style="color:var(--text-3);text-align:center;font-size:13px;">جاري التحميل...</p>
+                    </div>
+                </div>
+            </div>
 
             <!-- Referral -->
             <div class="section-card">
@@ -841,24 +1084,12 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Recent Activities -->
-            <div class="section-card">
-                <div class="section-header">
-                    <div class="section-title"><i class="fas fa-history"></i> آخر النشاطات</div>
-                    <button class="btn btn-sm btn-outline" onclick="showPage('activities')">عرض الكل</button>
-                </div>
-                <div id="recentActivities">
-                    <p style="color:var(--text-3);text-align:center;">جاري التحميل...</p>
-                </div>
-            </div>
         </div>
 
         <!-- TASKS PAGE -->
         <div class="page" id="tasksPage">
             <h2 style="color:var(--gold);text-align:center;margin-bottom:16px;">🎯 المهام والهدايا</h2>
             
-            <!-- Gifts -->
             <div class="section-card">
                 <div class="section-header">
                     <div class="section-title"><i class="fas fa-gift"></i> الهدايا المتاحة</div>
@@ -868,7 +1099,6 @@
                 </div>
             </div>
 
-            <!-- Daily Profit -->
             <div class="profit-section">
                 <div style="font-size:14px;color:var(--text-2);margin-bottom:4px;">الربح اليومي</div>
                 <div class="profit-amount" id="profitAmount">0$</div>
@@ -892,7 +1122,7 @@
                         <span style="font-size:22px;font-weight:900;color:var(--success);" id="withdrawableBalance">0$</span>
                     </div>
                 </div>
-                <div id="withdrawalsList">
+                <div id="withdrawalsList" style="max-height: 400px; overflow-y: auto;">
                     <p style="color:var(--text-3);text-align:center;">لا توجد طلبات</p>
                 </div>
             </div>
@@ -905,7 +1135,7 @@
                     <div class="section-title"><i class="fas fa-history"></i> جميع النشاطات</div>
                     <button class="btn btn-sm btn-outline" onclick="showPage('home')">رجوع</button>
                 </div>
-                <div id="allActivities">
+                <div id="allActivities" style="max-height: 500px; overflow-y: auto;">
                     <p style="color:var(--text-3);text-align:center;">جاري التحميل...</p>
                 </div>
             </div>
@@ -946,7 +1176,6 @@
         <div class="nav-item" onclick="showPage('tasks')">
             <i class="fas fa-gift"></i>
             <span>المهام</span>
-            <span class="nav-badge" id="tasksBadge" style="display:none;">!</span>
         </div>
         <div class="nav-item" onclick="window.location.href='games.html'">
             <i class="fas fa-gamepad"></i>
@@ -991,15 +1220,39 @@
                 }
             }
             
-            document.getElementById('userAvatar').textContent = (user.name || 'م').charAt(0).toUpperCase();
+            // تحديث الأفاتار في كل المكان
+            const initial = (user.name || 'م').charAt(0).toUpperCase();
+            document.getElementById('userAvatar').textContent = initial;
+            document.getElementById('dropdownAvatar').textContent = initial;
+            document.getElementById('dropdownName').textContent = user.name || 'مستخدم';
+            document.getElementById('dropdownEmail').textContent = user.email || '';
+            document.getElementById('dropdownBalance').textContent = '💰 ' + (user.balance || 0).toFixed(2) + '$';
             
             await loadAll();
             checkViolation();
             
-            // Refresh every 30s
             setInterval(async () => {
                 if (document.visibilityState === 'visible') await loadAll();
             }, 30000);
+        });
+
+        // ==================== DROPDOWN TOGGLE ====================
+        function toggleDropdown(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('active');
+            
+            // تحديث بيانات القائمة
+            document.getElementById('dropdownBalance').textContent = '💰 ' + (user?.balance || 0).toFixed(2) + '$';
+        }
+
+        // إغلاق القائمة عند النقر خارجها
+        document.addEventListener('click', function(e) {
+            const wrapper = document.getElementById('avatarWrapper');
+            const dropdown = document.getElementById('userDropdown');
+            if (wrapper && dropdown && !wrapper.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
         });
 
         // ==================== LOAD ALL ====================
@@ -1010,8 +1263,10 @@
             await loadGifts();
             await loadClaimStatus();
             await loadActivities();
-            await loadWithdrawals();
+            await loadWithdrawalsSummary();
+            await loadAllWithdrawals();
             updateStatsPage();
+            updateDropdownBalance();
         }
 
         async function refreshAll() {
@@ -1023,9 +1278,22 @@
                     localStorage.setItem('current_user', JSON.stringify(user));
                 }
             }
+            updateAvatarDisplay();
             await loadAll();
             checkViolation();
             showToast('✅ تم التحديث');
+        }
+
+        function updateAvatarDisplay() {
+            const initial = (user?.name || 'م').charAt(0).toUpperCase();
+            document.getElementById('userAvatar').textContent = initial;
+            document.getElementById('dropdownAvatar').textContent = initial;
+            document.getElementById('dropdownName').textContent = user?.name || 'مستخدم';
+            document.getElementById('dropdownEmail').textContent = user?.email || '';
+        }
+
+        function updateDropdownBalance() {
+            document.getElementById('dropdownBalance').textContent = '💰 ' + (user?.balance || 0).toFixed(2) + '$';
         }
 
         function updateBalanceDisplay() {
@@ -1112,7 +1380,7 @@
             try {
                 const r = await window.supabaseHelpers.getUserGifts(user.id);
                 const container = document.getElementById('giftsContainer');
-                const badge = document.getElementById('tasksBadge');
+                const badge = document.getElementById('giftsBadge');
                 if (r.success && r.data && r.data.length > 0) {
                     let html = '';
                     r.data.forEach(g => {
@@ -1125,11 +1393,10 @@
                         </div>`;
                     });
                     container.innerHTML = html;
-                    badge.style.display = 'block';
-                    badge.textContent = r.data.length;
+                    if (badge) { badge.style.display = 'inline'; badge.textContent = r.data.length; }
                 } else {
                     container.innerHTML = '<p style="color:var(--text-3);text-align:center;">لا توجد هدايا</p>';
-                    badge.style.display = 'none';
+                    if (badge) badge.style.display = 'none';
                 }
             } catch(e) {}
         }
@@ -1206,7 +1473,6 @@
                     document.getElementById('violationTimer').textContent = '⏳ ينتهي التعليق بعد: ' + timeLeft;
                     document.getElementById('violationModal').classList.add('active');
                     
-                    // Update stats page
                     const vi = document.getElementById('violationInfo');
                     if (vi) {
                         vi.style.display = 'block';
@@ -1224,20 +1490,44 @@
         }
 
         // ==================== WITHDRAWALS ====================
-        async function loadWithdrawals() {
+        async function loadWithdrawalsSummary() {
+            try {
+                const r = await window.supabaseHelpers.getUserWithdrawals(user.id);
+                const container = document.getElementById('withdrawalsSummary');
+                if (r.success && r.data && r.data.length > 0) {
+                    let html = '';
+                    r.data.slice(0, 5).forEach(w => {
+                        const sc = w.status === 'completed' ? 'status-completed' : w.status === 'rejected' ? 'status-rejected' : 'status-pending';
+                        const st = w.status === 'completed' ? 'مكتمل' : w.status === 'rejected' ? 'مرفوض' : 'معلق';
+                        html += `<div class="withdrawal-item">
+                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                <strong style="font-size:14px;">${w.amount}$</strong>
+                                <span class="status-badge ${sc}">${st}</span>
+                            </div>
+                            <small style="color:var(--text-3);">${w.network||'TRC20'}</small>
+                        </div>`;
+                    });
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<p style="color:var(--text-3);text-align:center;font-size:13px;">لا توجد طلبات</p>';
+                }
+            } catch(e) {}
+        }
+
+        async function loadAllWithdrawals() {
             try {
                 const r = await window.supabaseHelpers.getUserWithdrawals(user.id);
                 const container = document.getElementById('withdrawalsList');
                 if (r.success && r.data && r.data.length > 0) {
                     let html = '';
-                    r.data.slice(0, 10).forEach(w => {
-                        const statusClass = w.status === 'completed' ? 'status-completed' : w.status === 'rejected' ? 'status-rejected' : 'status-pending';
-                        const statusText = w.status === 'completed' ? 'مكتمل' : w.status === 'rejected' ? 'مرفوض' : 'معلق';
+                    r.data.forEach(w => {
+                        const sc = w.status === 'completed' ? 'status-completed' : w.status === 'rejected' ? 'status-rejected' : 'status-pending';
+                        const st = w.status === 'completed' ? 'مكتمل' : w.status === 'rejected' ? 'مرفوض' : 'معلق';
                         const date = w.created_at ? new Date(w.created_at).toLocaleDateString('ar-SA') : '';
                         html += `<div class="withdrawal-item">
                             <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
                                 <strong>${w.amount}$</strong>
-                                <span class="${statusClass}">${statusText}</span>
+                                <span class="status-badge ${sc}">${st}</span>
                             </div>
                             <small style="color:var(--text-3);">${date} | ${w.network||'TRC20'}</small>
                         </div>`;
@@ -1305,41 +1595,53 @@
         // ==================== ACTIVITIES ====================
         async function loadActivities() {
             try {
-                const r = await window.supabaseHelpers.getUserActivities(user.id, 10);
-                const container = document.getElementById('recentActivities');
+                const r = await window.supabaseHelpers.getUserActivities(user.id, 50);
+                const logContainer = document.getElementById('activitiesLog');
                 const allContainer = document.getElementById('allActivities');
                 
                 if (r.success && r.data && r.data.length > 0) {
-                    const html = buildActivitiesHTML(r.data);
-                    container.innerHTML = html;
-                    if (allContainer) allContainer.innerHTML = html;
+                    const html = buildActivitiesHTML(r.data.slice(0, 8));
+                    const allHtml = buildActivitiesHTML(r.data);
+                    if (logContainer) logContainer.innerHTML = html;
+                    if (allContainer) allContainer.innerHTML = allHtml;
                 } else {
-                    container.innerHTML = '<p style="color:var(--text-3);text-align:center;">لا توجد نشاطات</p>';
-                    if (allContainer) allContainer.innerHTML = '<p style="color:var(--text-3);text-align:center;">لا توجد نشاطات</p>';
+                    const empty = '<p style="color:var(--text-3);text-align:center;font-size:13px;">لا توجد نشاطات</p>';
+                    if (logContainer) logContainer.innerHTML = empty;
+                    if (allContainer) allContainer.innerHTML = empty;
                 }
             } catch(e) {}
         }
 
         function buildActivitiesHTML(activities) {
             const icons = {
-                profit: { icon: 'fa-coins', color: 'rgba(16,185,129,0.15)', textColor: '#10b981' },
-                withdrawal: { icon: 'fa-arrow-up', color: 'rgba(245,158,11,0.15)', textColor: '#f59e0b' },
-                subscription: { icon: 'fa-crown', color: 'rgba(59,130,246,0.15)', textColor: '#3b82f6' },
-                login: { icon: 'fa-right-to-bracket', color: 'rgba(139,92,246,0.15)', textColor: '#8b5cf6' },
-                violation: { icon: 'fa-triangle-exclamation', color: 'rgba(239,68,68,0.15)', textColor: '#ef4444' }
+                profit: { icon: 'fa-coins', bg: 'rgba(16,185,129,0.15)', color: '#10b981' },
+                withdrawal: { icon: 'fa-arrow-up', bg: 'rgba(245,158,11,0.15)', color: '#f59e0b' },
+                subscription: { icon: 'fa-crown', bg: 'rgba(59,130,246,0.15)', color: '#3b82f6' },
+                login: { icon: 'fa-right-to-bracket', bg: 'rgba(139,92,246,0.15)', color: '#8b5cf6' },
+                violation: { icon: 'fa-triangle-exclamation', bg: 'rgba(239,68,68,0.15)', color: '#ef4444' },
+                bet: { icon: 'fa-ticket', bg: 'rgba(200,169,126,0.15)', color: '#c8a97e' },
+                game: { icon: 'fa-gamepad', bg: 'rgba(236,72,153,0.15)', color: '#ec4899' }
             };
             
             return activities.map(a => {
-                const iconData = icons[a.type] || { icon: 'fa-circle', color: 'rgba(255,255,255,0.1)', textColor: '#fff' };
-                const date = new Date(a.created_at).toLocaleString('ar-SA', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+                const iconData = icons[a.type] || { icon: 'fa-circle', bg: 'rgba(255,255,255,0.1)', color: '#fff' };
+                const date = new Date(a.created_at);
+                const dateStr = date.toLocaleDateString('ar-SA', { month:'short', day:'numeric' });
+                const timeStr = date.toLocaleTimeString('ar-SA', { hour:'2-digit', minute:'2-digit' });
+                const isPositive = a.type === 'profit' || a.type === 'subscription';
+                const amountClass = (a.type === 'profit' || (a.amount > 0)) ? 'profit' : 'loss';
+                
                 return `<div class="activity-item type-${a.type}">
-                    <div class="activity-icon" style="background:${iconData.color};color:${iconData.textColor};">
+                    <div class="activity-icon" style="background:${iconData.bg};color:${iconData.color};">
                         <i class="fas ${iconData.icon}"></i>
                     </div>
                     <div class="activity-content">
                         <div class="activity-title">${a.title}</div>
                         <div class="activity-desc">${a.description}</div>
-                        <div class="activity-time">${date} ${a.amount ? '| ' + a.amount + '$' : ''}</div>
+                        <div class="activity-meta">
+                            <span>${dateStr} ${timeStr}</span>
+                            ${a.amount ? `<span class="activity-amount ${amountClass}">${a.amount > 0 ? '+' : ''}${a.amount}$</span>` : ''}
+                        </div>
                     </div>
                 </div>`;
             }).join('');
@@ -1368,8 +1670,11 @@
             const idx = navMap[pageName];
             if (idx !== undefined) document.querySelectorAll('.bottom-nav .nav-item')[idx].classList.add('active');
             
+            // إغلاق القائمة المنسدلة
+            document.getElementById('userDropdown').classList.remove('active');
+            
             if (pageName === 'activities') loadActivities();
-            if (pageName === 'withdrawals') loadWithdrawals();
+            if (pageName === 'withdrawals') loadAllWithdrawals();
             if (pageName === 'tasks') { loadGifts(); loadClaimStatus(); }
         }
 
@@ -1385,13 +1690,14 @@
 
         // ==================== LOGOUT ====================
         function logout() {
-            if (confirm('تسجيل الخروج؟')) {
+            document.getElementById('userDropdown').classList.remove('active');
+            if (confirm('هل تريد تسجيل الخروج؟')) {
                 localStorage.removeItem('current_user');
                 window.location.href = 'index.html';
             }
         }
 
-        // ==================== CLOSE MODALS ON OUTSIDE CLICK ====================
+        // ==================== CLOSE MODALS ====================
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('modal-overlay')) {
                 e.target.classList.remove('active');
