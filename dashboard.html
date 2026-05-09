@@ -1279,9 +1279,23 @@
         }
 
         async function claimGift(id) {
-            const r = await window.supabaseHelpers.claimGift(id);
-            if (r.success) { showToast('✅ تم استلام ' + r.data.amount + '$'); await refreshAll(); }
-            else { showToast('❌ ' + r.error, 'error'); }
+            if (isClaimingGift) {
+                showToast('⚠️ جاري استلام الهدية...', 'warning');
+                return;
+            }
+            isClaimingGift = true;
+            try {
+                const r = await window.supabaseHelpers.claimGift(id);
+                if (r.success) {
+                    showToast('✅ تم استلام ' + r.data.amount + '$');
+                    await refreshAll();
+                } else {
+                    showToast('❌ ' + r.error, 'error');
+                }
+            } catch(e) {
+                showToast('❌ حدث خطأ', 'error');
+            }
+            setTimeout(() => { isClaimingGift = false; }, 2000);
         }
 
         async function loadClaimStatus() {
