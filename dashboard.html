@@ -45,10 +45,10 @@
             --shadow-md: 0 8px 32px rgba(0,0,0,0.3);
             --shadow-lg: 0 16px 48px rgba(0,0,0,0.4);
             --shadow-gold: 0 8px 32px rgba(200,169,126,0.2);
-            --radius-sm: 12px;
-            --radius: 20px;
-            --radius-lg: 28px;
-            --radius-xl: 36px;
+            --radius-sm: 10px;
+            --radius: 18px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -64,7 +64,7 @@
                 radial-gradient(ellipse at 80% 80%, rgba(200,169,126,0.02) 0%, transparent 50%);
         }
 
-        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 10px; }
 
@@ -73,34 +73,35 @@
             position: fixed;
             top: 0; left: 0; right: 0;
             z-index: 1000;
-            background: rgba(10,15,26,0.9);
+            background: rgba(10,15,26,0.92);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--glass-border);
-            padding: 10px 16px;
+            padding: 8px 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            height: 56px;
         }
 
         .nav-brand {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             cursor: pointer;
         }
         .nav-logo {
-            width: 38px; height: 38px;
+            width: 34px; height: 34px;
             background: var(--gradient-gold);
-            border-radius: var(--radius-sm);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 18px;
             color: #000;
         }
         .nav-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 900;
             background: var(--gradient-gold);
             -webkit-background-clip: text;
@@ -110,51 +111,37 @@
         .nav-actions {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         .nav-btn {
-            width: 38px; height: 38px;
+            width: 34px; height: 34px;
             background: var(--glass);
             border: 1px solid var(--glass-border);
-            border-radius: var(--radius-sm);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-2);
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 16px;
-            position: relative;
+            font-size: 15px;
             text-decoration: none;
         }
         .nav-btn:hover { color: var(--gold); border-color: var(--gold); }
-        .nav-btn .badge {
-            position: absolute;
-            top: -4px; right: -4px;
-            width: 18px; height: 18px;
-            background: var(--danger);
-            border-radius: 50%;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-weight: 700;
-        }
 
         /* ========== USER AVATAR & DROPDOWN ========== */
         .user-avatar-wrapper {
             position: relative;
         }
         .user-avatar {
-            width: 38px; height: 38px;
+            width: 34px; height: 34px;
             background: var(--gradient-gold);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 15px;
             color: #000;
             cursor: pointer;
             border: 2px solid transparent;
@@ -162,23 +149,23 @@
         }
         .user-avatar:hover {
             border-color: #fff;
-            box-shadow: 0 0 15px rgba(200,169,126,0.5);
+            box-shadow: 0 0 12px rgba(200,169,126,0.5);
         }
 
         /* القائمة المنسدلة */
         .user-dropdown {
-            position: absolute;
-            top: 50px;
-            right: 0;
-            left: auto;
-            width: 260px;
+            position: fixed;
+            top: 60px;
+            right: 10px;
+            width: 240px;
+            max-width: calc(100vw - 20px);
             background: #111827;
-            border-radius: 16px;
-            padding: 8px;
-            border: 2px solid #c8a97e;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(200,169,126,0.2);
+            border-radius: 14px;
+            border: 2px solid var(--gold);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(200,169,126,0.2);
             display: none;
             z-index: 1100;
+            overflow: hidden;
         }
 
         .user-dropdown.show {
@@ -186,86 +173,106 @@
         }
 
         .dropdown-header {
-            padding: 16px;
+            padding: 14px 12px;
             text-align: center;
             border-bottom: 1px solid rgba(200,169,126,0.2);
-            margin-bottom: 6px;
         }
         .dropdown-avatar {
-            width: 50px; height: 50px;
+            width: 44px; height: 44px;
             background: linear-gradient(135deg, #c8a97e, #b38b5b);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
             color: #000;
-            margin: 0 auto 10px;
+            margin: 0 auto 8px;
             border: 2px solid #c8a97e;
         }
         .dropdown-name {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             color: #fff;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .dropdown-email {
-            font-size: 12px;
+            font-size: 11px;
             color: #94a3b8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .dropdown-balance {
             display: inline-block;
-            margin-top: 8px;
-            padding: 4px 14px;
+            margin-top: 6px;
+            padding: 3px 12px;
             background: rgba(16,185,129,0.15);
             border: 1px solid rgba(16,185,129,0.3);
-            border-radius: 20px;
+            border-radius: 16px;
             color: #10b981;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
+        }
+
+        .dropdown-list {
+            padding: 4px;
         }
 
         .dropdown-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            color: #94a3b8;
-            border-radius: 10px;
+            gap: 8px;
+            padding: 10px 12px;
+            color: #cbd5e1;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 14px;
+            transition: all 0.15s;
+            font-size: 13px;
             font-weight: 500;
             text-decoration: none;
+            white-space: nowrap;
         }
         .dropdown-item:hover {
-            background: rgba(200,169,126,0.1);
+            background: rgba(200,169,126,0.12);
             color: #c8a97e;
         }
         .dropdown-item i {
-            width: 22px;
-            font-size: 16px;
+            width: 18px;
+            font-size: 14px;
             text-align: center;
+            flex-shrink: 0;
         }
+        .dropdown-item span {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
         .dropdown-divider {
             height: 1px;
-            background: rgba(200,169,126,0.15);
-            margin: 6px 10px;
+            background: rgba(200,169,126,0.12);
+            margin: 4px 8px;
         }
+        
         .dropdown-item.danger {
-            color: #ef4444;
+            color: #f87171;
         }
         .dropdown-item.danger:hover {
-            background: rgba(239,68,68,0.1);
+            background: rgba(239,68,68,0.12);
+            color: #ef4444;
         }
 
         /* ========== MAIN CONTENT ========== */
         .main-content {
-            margin-top: 70px;
-            padding: 16px;
-            padding-bottom: 110px;
-            max-width: 800px;
+            margin-top: 64px;
+            padding: 14px;
+            padding-bottom: 100px;
+            max-width: 700px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -274,15 +281,15 @@
         .balance-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
+            gap: 10px;
+            margin-bottom: 14px;
         }
 
         .balance-card {
             background: var(--gradient-dark);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius);
-            padding: 20px;
+            padding: 16px;
             position: relative;
             overflow: hidden;
         }
@@ -294,54 +301,51 @@
             background: var(--gradient-gold);
         }
         .balance-label {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-3);
-            margin-bottom: 4px;
-            font-weight: 500;
+            margin-bottom: 3px;
         }
         .balance-value {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 900;
             color: var(--gold);
         }
         .balance-icon {
             position: absolute;
-            bottom: 12px; left: 16px;
-            font-size: 40px;
-            opacity: 0.08;
+            bottom: 10px; left: 14px;
+            font-size: 32px;
+            opacity: 0.06;
         }
 
         /* ========== QUICK ACTIONS ========== */
         .quick-actions {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            margin-bottom: 16px;
+            gap: 6px;
+            margin-bottom: 14px;
         }
         .action-btn {
             background: var(--glass);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius);
-            padding: 14px 6px;
+            padding: 12px 4px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.25s;
+            transition: all 0.2s;
             text-decoration: none;
             color: var(--text);
         }
-        .action-btn:hover {
-            border-color: var(--gold);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-gold);
+        .action-btn:active {
+            transform: scale(0.96);
         }
         .action-btn i {
-            font-size: 20px;
+            font-size: 18px;
             color: var(--gold);
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             display: block;
         }
         .action-btn span {
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-2);
             font-weight: 600;
         }
@@ -351,8 +355,8 @@
             background: var(--gradient-dark);
             border: 2px solid var(--gold);
             border-radius: var(--radius-lg);
-            padding: 24px;
-            margin-bottom: 16px;
+            padding: 20px;
+            margin-bottom: 14px;
             position: relative;
             overflow: hidden;
         }
@@ -360,83 +364,84 @@
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0;
-            height: 4px;
+            height: 3px;
             background: var(--gradient-gold);
         }
         .sub-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .sub-name {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 900;
             color: var(--gold);
         }
         .sub-badge {
-            padding: 6px 16px;
+            padding: 5px 14px;
             background: rgba(16,185,129,0.15);
             border: 1px solid var(--success);
-            border-radius: 30px;
+            border-radius: 24px;
             color: var(--success);
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
         }
         .sub-details {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 16px;
+            gap: 10px;
+            margin-bottom: 14px;
         }
         .sub-detail {
             text-align: center;
         }
         .sub-detail-value {
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 800;
             color: var(--gold);
         }
         .sub-detail-label {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-3);
         }
         .progress-bar {
             width: 100%;
-            height: 6px;
+            height: 5px;
             background: rgba(255,255,255,0.08);
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
         }
         .progress-fill {
             height: 100%;
             background: var(--gradient-gold);
-            border-radius: 10px;
+            border-radius: 8px;
             transition: width 0.5s;
         }
 
         .no-subscription {
             text-align: center;
-            padding: 40px 20px;
+            padding: 32px 16px;
             background: var(--glass);
             border: 2px dashed rgba(200,169,126,0.3);
             border-radius: var(--radius-lg);
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .no-subscription i {
-            font-size: 60px;
+            font-size: 48px;
             color: var(--gold);
             opacity: 0.3;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         .no-subscription h3 {
             color: var(--gold);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            font-size: 18px;
         }
         .no-subscription p {
             color: var(--text-3);
-            margin-bottom: 16px;
-            font-size: 14px;
+            margin-bottom: 14px;
+            font-size: 13px;
         }
 
         /* ========== SECTION CARDS ========== */
@@ -444,8 +449,8 @@
             background: var(--glass);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
-            padding: 20px;
-            margin-bottom: 16px;
+            padding: 18px;
+            margin-bottom: 14px;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
         }
@@ -453,15 +458,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .section-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             color: var(--gold);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
         }
 
         /* ========== REFERRAL ========== */
@@ -469,32 +474,33 @@
             background: rgba(0,0,0,0.3);
             border: 2px dashed var(--gold);
             border-radius: var(--radius);
-            padding: 16px;
+            padding: 14px;
             text-align: center;
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 900;
             color: var(--gold);
-            letter-spacing: 4px;
-            margin-bottom: 12px;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            font-family: monospace;
         }
         .ref-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            gap: 6px;
         }
         .ref-stat {
             text-align: center;
-            padding: 10px;
+            padding: 8px;
             background: rgba(0,0,0,0.2);
             border-radius: var(--radius-sm);
         }
         .ref-stat-val {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 800;
             color: var(--gold);
         }
         .ref-stat-lbl {
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-3);
         }
 
@@ -503,27 +509,27 @@
             background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(245,158,11,0.1));
             border: 2px solid #fbbf24;
             border-radius: var(--radius);
-            padding: 16px;
-            margin-bottom: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .gift-amount {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 900;
             color: #fbbf24;
         }
         .profit-section {
             text-align: center;
-            padding: 24px;
+            padding: 20px;
             background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.1));
             border: 2px solid var(--success);
             border-radius: var(--radius-lg);
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .profit-amount {
-            font-size: 48px;
+            font-size: 40px;
             font-weight: 900;
             color: var(--success);
         }
@@ -532,63 +538,61 @@
         .activity-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px;
+            gap: 10px;
+            padding: 10px;
             background: rgba(255,255,255,0.02);
             border-radius: var(--radius-sm);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             border-right: 3px solid transparent;
             transition: all 0.2s;
         }
-        .activity-item:hover { background: rgba(255,255,255,0.05); }
         .activity-item.type-profit { border-right-color: var(--success); }
         .activity-item.type-withdrawal { border-right-color: var(--warning); }
         .activity-item.type-subscription { border-right-color: var(--info); }
         .activity-item.type-login { border-right-color: #8b5cf6; }
         .activity-item.type-violation { border-right-color: var(--danger); }
         .activity-icon {
-            width: 40px; height: 40px;
-            border-radius: var(--radius-sm);
+            width: 34px; height: 34px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 15px;
             flex-shrink: 0;
         }
         .activity-content { flex: 1; min-width: 0; }
-        .activity-title { font-size: 14px; font-weight: 600; }
-        .activity-desc { font-size: 11px; color: var(--text-3); }
-        .activity-time { font-size: 10px; color: var(--text-3); }
+        .activity-title { font-size: 13px; font-weight: 600; }
+        .activity-desc { font-size: 10px; color: var(--text-3); }
+        .activity-time { font-size: 9px; color: var(--text-3); }
 
         /* ========== WITHDRAWALS ========== */
         .withdrawal-item {
-            padding: 12px;
+            padding: 10px;
             background: rgba(255,255,255,0.02);
             border-radius: var(--radius-sm);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
-        .status-pending { color: var(--warning); background: rgba(245,158,11,0.1); padding: 2px 10px; border-radius: 12px; font-size: 11px; }
-        .status-completed { color: var(--success); background: rgba(16,185,129,0.1); padding: 2px 10px; border-radius: 12px; font-size: 11px; }
-        .status-rejected { color: var(--danger); background: rgba(239,68,68,0.1); padding: 2px 10px; border-radius: 12px; font-size: 11px; }
+        .status-pending { color: var(--warning); background: rgba(245,158,11,0.1); padding: 2px 8px; border-radius: 10px; font-size: 10px; }
+        .status-completed { color: var(--success); background: rgba(16,185,129,0.1); padding: 2px 8px; border-radius: 10px; font-size: 10px; }
+        .status-rejected { color: var(--danger); background: rgba(239,68,68,0.1); padding: 2px 8px; border-radius: 10px; font-size: 10px; }
 
         /* ========== BUTTONS ========== */
         .btn {
-            padding: 10px 20px;
-            border-radius: 30px;
+            padding: 9px 18px;
+            border-radius: 24px;
             border: none;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
-            transition: all 0.25s;
+            transition: all 0.2s;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             font-family: 'Tajawal', sans-serif;
         }
-        .btn-sm { padding: 7px 14px; font-size: 12px; }
+        .btn-sm { padding: 6px 12px; font-size: 11px; }
         .btn-block { width: 100%; justify-content: center; }
         .btn-gold { background: var(--gradient-gold); color: #000; }
-        .btn-gold:hover { box-shadow: var(--shadow-gold); transform: translateY(-1px); }
         .btn-success { background: var(--success); color: #fff; }
         .btn-outline { background: transparent; border: 1.5px solid var(--gold); color: var(--gold); }
         .btn-outline:hover { background: rgba(200,169,126,0.1); }
@@ -597,16 +601,16 @@
         /* ========== BOTTOM NAV ========== */
         .bottom-nav {
             position: fixed;
-            bottom: 16px;
+            bottom: 12px;
             left: 50%;
             transform: translateX(-50%);
-            width: calc(100% - 32px);
-            max-width: 600px;
+            width: calc(100% - 20px);
+            max-width: 500px;
             background: rgba(15,23,42,0.95);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-radius: var(--radius-xl);
-            padding: 8px 12px;
+            padding: 6px 8px;
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -623,23 +627,23 @@
             transition: all 0.2s;
             cursor: pointer;
             position: relative;
-            padding: 6px 10px;
+            padding: 4px 8px;
             border-radius: var(--radius-sm);
-            min-width: 50px;
+            min-width: 45px;
         }
         .nav-item.active {
             color: var(--gold);
             background: rgba(200,169,126,0.1);
         }
-        .nav-item i { font-size: 20px; margin-bottom: 2px; }
-        .nav-item span { font-size: 10px; font-weight: 600; }
+        .nav-item i { font-size: 18px; margin-bottom: 1px; }
+        .nav-item span { font-size: 9px; font-weight: 600; }
         .nav-badge {
             position: absolute;
-            top: 0; right: 4px;
-            width: 16px; height: 16px;
+            top: -2px; right: 2px;
+            width: 14px; height: 14px;
             background: var(--danger);
             border-radius: 50%;
-            font-size: 9px;
+            font-size: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -658,59 +662,53 @@
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 16px;
         }
         .modal-overlay.active { display: flex; }
         .modal-dialog {
             background: var(--gradient-dark);
             border-radius: var(--radius-lg);
-            padding: 28px 24px;
+            padding: 24px 20px;
             width: 100%;
-            max-width: 450px;
+            max-width: 400px;
             border: 2px solid var(--gold);
             max-height: 85vh;
             overflow-y: auto;
-            animation: modalIn 0.3s ease;
-        }
-        @keyframes modalIn {
-            from { opacity: 0; transform: translateY(30px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
         }
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
         .modal-title {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 900;
             color: var(--gold);
         }
         .modal-close {
             background: none; border: none;
-            color: var(--text-2); font-size: 24px;
-            cursor: pointer; transition: all 0.2s;
+            color: var(--text-2); font-size: 22px;
+            cursor: pointer;
         }
         .modal-close:hover { color: var(--danger); }
-        .form-group { margin-bottom: 16px; }
+        .form-group { margin-bottom: 14px; }
         .form-group label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
             color: var(--text-2);
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
         }
         .form-input {
             width: 100%;
-            padding: 12px 16px;
+            padding: 11px 14px;
             background: rgba(255,255,255,0.04);
             border: 1.5px solid var(--glass-border);
             border-radius: var(--radius);
             color: #fff;
-            font-size: 14px;
+            font-size: 13px;
             font-family: 'Tajawal', sans-serif;
-            transition: all 0.2s;
         }
         .form-input:focus {
             outline: none;
@@ -728,62 +726,63 @@
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 16px;
         }
         .violation-modal.active { display: flex; }
         .violation-content {
             background: var(--gradient-dark);
             border-radius: var(--radius-lg);
-            padding: 36px 24px;
-            max-width: 420px;
+            padding: 30px 20px;
+            max-width: 380px;
             width: 100%;
             border: 3px solid var(--danger);
             text-align: center;
         }
         .violation-icon {
-            width: 80px; height: 80px;
+            width: 64px; height: 64px;
             background: rgba(239,68,68,0.15);
             border: 3px solid var(--danger);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 40px;
+            margin: 0 auto 16px;
+            font-size: 32px;
             color: var(--danger);
         }
         .violation-title {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 900;
             color: var(--danger);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         .violation-msg {
             color: var(--text-2);
-            margin-bottom: 20px;
-            line-height: 1.7;
+            margin-bottom: 16px;
+            line-height: 1.6;
+            font-size: 14px;
         }
         .violation-timer {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: var(--warning);
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         /* ========== TOAST ========== */
         .toast {
             position: fixed;
-            top: 80px;
+            top: 70px;
             left: 50%;
             transform: translateX(-50%);
             background: var(--success);
             color: #fff;
-            padding: 14px 28px;
-            border-radius: 30px;
+            padding: 12px 24px;
+            border-radius: 24px;
             display: none;
             z-index: 4000;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             white-space: nowrap;
             box-shadow: var(--shadow-md);
             border: 2px solid rgba(255,255,255,0.2);
@@ -794,29 +793,20 @@
 
         /* ========== PAGE SYSTEM ========== */
         .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .page.active { display: block; }
 
         /* ========== RESPONSIVE ========== */
-        @media (max-width: 600px) {
+        @media (max-width: 500px) {
             .balance-row { grid-template-columns: 1fr; }
-            .quick-actions { grid-template-columns: repeat(3, 1fr); }
-            .sub-details { grid-template-columns: repeat(3, 1fr); }
-            .ref-stats { grid-template-columns: repeat(3, 1fr); }
-            .balance-value { font-size: 24px; }
-            .profit-amount { font-size: 36px; }
-            .user-dropdown { width: 230px; right: -10px; }
-        }
-        @media (max-width: 400px) {
-            .quick-actions { grid-template-columns: repeat(3, 1fr); }
-            .bottom-nav { padding: 6px 8px; }
-            .nav-item { min-width: 40px; padding: 4px 6px; }
-            .nav-item i { font-size: 17px; }
-            .nav-item span { font-size: 9px; }
-            .user-dropdown { width: 210px; }
+            .quick-actions { grid-template-columns: repeat(3, 1fr); gap: 5px; }
+            .sub-details { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+            .ref-stats { grid-template-columns: repeat(3, 1fr); gap: 4px; }
+            .balance-value { font-size: 22px; }
+            .profit-amount { font-size: 32px; }
+            .sub-detail-value { font-size: 16px; }
+            .action-btn { padding: 10px 2px; }
+            .action-btn i { font-size: 16px; }
+            .action-btn span { font-size: 8px; }
         }
     </style>
 </head>
@@ -846,21 +836,21 @@
             </div>
             <div class="form-group">
                 <label>عنوان المحفظة USDT</label>
-                <input type="text" id="withdrawWallet" class="form-input" placeholder="TH7am2Vu7jTyxSYTSo9tUS4NC11KVxDuVi">
+                <input type="text" id="withdrawWallet" class="form-input" placeholder="أدخل عنوان المحفظة">
             </div>
             <div class="form-group">
                 <label>الشبكة</label>
-                <div style="display:flex;gap:8px;">
+                <div style="display:flex;gap:6px;">
                     <button class="btn btn-sm btn-gold network-btn active" onclick="setNetwork('TRC20', this)">TRC20</button>
                     <button class="btn btn-sm btn-outline network-btn" onclick="setNetwork('ERC20', this)">ERC20</button>
                     <button class="btn btn-sm btn-outline network-btn" onclick="setNetwork('BEP20', this)">BEP20</button>
                 </div>
             </div>
-            <div style="background:rgba(251,191,36,0.1);border:1px solid #fbbf24;border-radius:16px;padding:14px;margin-bottom:16px;">
-                <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>الرسوم:</span><span id="feeDisplay">5$</span></div>
-                <div style="display:flex;justify-content:space-between;font-weight:700;"><span>الإجمالي:</span><span id="totalDisplay">0$</span></div>
+            <div style="background:rgba(251,191,36,0.1);border:1px solid #fbbf24;border-radius:14px;padding:12px;margin-bottom:14px;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:13px;"><span>الرسوم:</span><span id="feeDisplay">5$</span></div>
+                <div style="display:flex;justify-content:space-between;font-weight:700;font-size:14px;"><span>الإجمالي:</span><span id="totalDisplay">0$</span></div>
             </div>
-            <div style="display:flex;gap:10px;">
+            <div style="display:flex;gap:8px;">
                 <button class="btn btn-outline" style="flex:1;" onclick="closeModal('withdrawalModal')">إلغاء</button>
                 <button class="btn btn-gold" style="flex:2;" onclick="submitWithdrawal()">تأكيد السحب</button>
             </div>
@@ -875,11 +865,8 @@
         </div>
         <div class="nav-actions">
             <button class="nav-btn" onclick="refreshAll()" title="تحديث"><i class="fas fa-sync-alt"></i></button>
-            <a href="chat.html" class="nav-btn" title="الدردشة">
-                <i class="fas fa-comments"></i>
-            </a>
+            <a href="chat.html" class="nav-btn" title="الدردشة"><i class="fas fa-comments"></i></a>
             
-            <!-- ===== USER AVATAR WITH DROPDOWN ===== -->
             <div class="user-avatar-wrapper" id="avatarWrapper">
                 <div class="user-avatar" id="userAvatar" onclick="toggleDropdown(event)">م</div>
                 
@@ -891,43 +878,45 @@
                         <div class="dropdown-balance" id="dropdownBalance">💰 0.00$</div>
                     </div>
                     
-                    <a class="dropdown-item" href="profile.html">
-                        <i class="fas fa-user-circle"></i>
-                        👤 الملف الشخصي
-                    </a>
-                    
-                    <a class="dropdown-item" href="chat.html">
-                        <i class="fas fa-comments"></i>
-                        💬 الدردشة المباشرة
-                    </a>
-                    
-                    <a class="dropdown-item" href="games.html">
-                        <i class="fas fa-gamepad"></i>
-                        🎰 ألعاب الحظ
-                    </a>
-                    
-                    <div class="dropdown-divider"></div>
-                    
-                    <div class="dropdown-item" onclick="showPage('tasks'); toggleDropdown(event);">
-                        <i class="fas fa-gift"></i>
-                        🎁 المهام والهدايا
-                    </div>
-                    
-                    <div class="dropdown-item" onclick="showPage('withdrawals'); toggleDropdown(event);">
-                        <i class="fas fa-money-bill-wave"></i>
-                        💳 طلبات السحب
-                    </div>
+                    <div class="dropdown-list">
+                        <a class="dropdown-item" href="profile.html">
+                            <i class="fas fa-user-circle"></i>
+                            <span>الملف الشخصي</span>
+                        </a>
+                        
+                        <a class="dropdown-item" href="chat.html">
+                            <i class="fas fa-comments"></i>
+                            <span>الدردشة المباشرة</span>
+                        </a>
+                        
+                        <a class="dropdown-item" href="games.html">
+                            <i class="fas fa-gamepad"></i>
+                            <span>ألعاب الحظ</span>
+                        </a>
+                        
+                        <div class="dropdown-divider"></div>
+                        
+                        <div class="dropdown-item" onclick="navigateFromDropdown('tasks')">
+                            <i class="fas fa-gift"></i>
+                            <span>المهام والهدايا</span>
+                        </div>
+                        
+                        <div class="dropdown-item" onclick="navigateFromDropdown('withdrawals')">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>طلبات السحب</span>
+                        </div>
 
-                    <div class="dropdown-item" onclick="showPage('activities'); toggleDropdown(event);">
-                        <i class="fas fa-history"></i>
-                        📋 سجل النشاطات
-                    </div>
-                    
-                    <div class="dropdown-divider"></div>
-                    
-                    <div class="dropdown-item danger" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i>
-                        🚪 تسجيل الخروج
+                        <div class="dropdown-item" onclick="navigateFromDropdown('activities')">
+                            <i class="fas fa-history"></i>
+                            <span>سجل النشاطات</span>
+                        </div>
+                        
+                        <div class="dropdown-divider"></div>
+                        
+                        <div class="dropdown-item danger" onclick="handleLogout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>تسجيل الخروج</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -939,7 +928,6 @@
 
         <!-- HOME PAGE -->
         <div class="page active" id="homePage">
-            <!-- Balance Row -->
             <div class="balance-row">
                 <div class="balance-card">
                     <div class="balance-label">💰 الرصيد الحالي</div>
@@ -953,34 +941,26 @@
                 </div>
             </div>
 
-            <!-- Quick Actions (5 buttons) -->
             <div class="quick-actions">
                 <button class="action-btn" onclick="showPage('tasks')">
-                    <i class="fas fa-gift"></i>
-                    <span>الهدايا</span>
+                    <i class="fas fa-gift"></i><span>الهدايا</span>
                 </button>
                 <button class="action-btn" onclick="showPage('withdrawals')">
-                    <i class="fas fa-money-bill-wave"></i>
-                    <span>السحب</span>
+                    <i class="fas fa-money-bill-wave"></i><span>السحب</span>
                 </button>
                 <button class="action-btn" onclick="window.location.href='games.html'">
-                    <i class="fas fa-gamepad"></i>
-                    <span>الألعاب</span>
+                    <i class="fas fa-gamepad"></i><span>الألعاب</span>
                 </button>
                 <button class="action-btn" onclick="copyReferral()">
-                    <i class="fas fa-share-alt"></i>
-                    <span>الإحالة</span>
+                    <i class="fas fa-share-alt"></i><span>الإحالة</span>
                 </button>
                 <button class="action-btn" onclick="showPage('activities')">
-                    <i class="fas fa-history"></i>
-                    <span>النشاطات</span>
+                    <i class="fas fa-history"></i><span>النشاطات</span>
                 </button>
             </div>
 
-            <!-- Subscription -->
             <div id="subscriptionSection"></div>
 
-            <!-- Referral -->
             <div class="section-card">
                 <div class="section-header">
                     <div class="section-title"><i class="fas fa-users"></i> نظام الإحالة</div>
@@ -989,7 +969,7 @@
                 <button class="btn btn-gold btn-block btn-sm" onclick="copyReferral()">
                     <i class="fas fa-copy"></i> نسخ كود الإحالة
                 </button>
-                <div class="ref-stats" style="margin-top:12px;">
+                <div class="ref-stats" style="margin-top:10px;">
                     <div class="ref-stat">
                         <div class="ref-stat-val" id="refCount">0</div>
                         <div class="ref-stat-lbl">إجمالي</div>
@@ -1005,38 +985,37 @@
                 </div>
             </div>
 
-            <!-- Recent Activities -->
             <div class="section-card">
                 <div class="section-header">
                     <div class="section-title"><i class="fas fa-history"></i> آخر النشاطات</div>
                     <button class="btn btn-sm btn-outline" onclick="showPage('activities')">عرض الكل</button>
                 </div>
                 <div id="recentActivities">
-                    <p style="color:var(--text-3);text-align:center;">جاري التحميل...</p>
+                    <p style="color:var(--text-3);text-align:center;font-size:13px;">جاري التحميل...</p>
                 </div>
             </div>
         </div>
 
         <!-- TASKS PAGE -->
         <div class="page" id="tasksPage">
-            <h2 style="color:var(--gold);text-align:center;margin-bottom:16px;">🎯 المهام والهدايا</h2>
+            <h2 style="color:var(--gold);text-align:center;margin-bottom:14px;font-size:22px;">🎯 المهام والهدايا</h2>
             
             <div class="section-card">
                 <div class="section-header">
                     <div class="section-title"><i class="fas fa-gift"></i> الهدايا المتاحة</div>
                 </div>
                 <div id="giftsContainer">
-                    <p style="color:var(--text-3);text-align:center;">لا توجد هدايا حالياً</p>
+                    <p style="color:var(--text-3);text-align:center;font-size:13px;">لا توجد هدايا حالياً</p>
                 </div>
             </div>
 
             <div class="profit-section">
-                <div style="font-size:14px;color:var(--text-2);margin-bottom:4px;">الربح اليومي</div>
+                <div style="font-size:13px;color:var(--text-2);margin-bottom:3px;">الربح اليومي</div>
                 <div class="profit-amount" id="profitAmount">0$</div>
-                <button class="btn btn-success btn-block" id="profitBtn" onclick="claimProfit()" style="margin-top:12px;">
+                <button class="btn btn-success btn-block" id="profitBtn" onclick="claimProfit()" style="margin-top:10px;">
                     <i class="fas fa-gem"></i> المطالبة بالأرباح
                 </button>
-                <div id="profitTimer" style="display:none;margin-top:8px;color:var(--warning);font-size:13px;"></div>
+                <div id="profitTimer" style="display:none;margin-top:6px;color:var(--warning);font-size:12px;"></div>
             </div>
         </div>
 
@@ -1047,14 +1026,14 @@
                     <div class="section-title"><i class="fas fa-money-bill-wave"></i> طلبات السحب</div>
                     <button class="btn btn-sm btn-gold" onclick="openModal('withdrawalModal')">+ طلب جديد</button>
                 </div>
-                <div style="background:rgba(16,185,129,0.1);border:1px solid var(--success);border-radius:16px;padding:16px;margin-bottom:16px;">
+                <div style="background:rgba(16,185,129,0.1);border:1px solid var(--success);border-radius:14px;padding:14px;margin-bottom:14px;">
                     <div style="display:flex;justify-content:space-between;">
-                        <span>الرصيد القابل للسحب:</span>
-                        <span style="font-size:22px;font-weight:900;color:var(--success);" id="withdrawableBalance">0$</span>
+                        <span style="font-size:13px;">الرصيد القابل للسحب:</span>
+                        <span style="font-size:20px;font-weight:900;color:var(--success);" id="withdrawableBalance">0$</span>
                     </div>
                 </div>
                 <div id="withdrawalsList">
-                    <p style="color:var(--text-3);text-align:center;">لا توجد طلبات</p>
+                    <p style="color:var(--text-3);text-align:center;font-size:13px;">لا توجد طلبات</p>
                 </div>
             </div>
         </div>
@@ -1066,8 +1045,8 @@
                     <div class="section-title"><i class="fas fa-history"></i> جميع النشاطات</div>
                     <button class="btn btn-sm btn-outline" onclick="showPage('home')">رجوع</button>
                 </div>
-                <div id="allActivities" style="max-height: 500px; overflow-y: auto;">
-                    <p style="color:var(--text-3);text-align:center;">جاري التحميل...</p>
+                <div id="allActivities" style="max-height: 450px; overflow-y: auto;">
+                    <p style="color:var(--text-3);text-align:center;font-size:13px;">جاري التحميل...</p>
                 </div>
             </div>
         </div>
@@ -1078,22 +1057,19 @@
                 <div class="section-header">
                     <div class="section-title"><i class="fas fa-chart-pie"></i> الإحصائيات</div>
                 </div>
-                <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--glass-border);">
+                <div style="padding:8px 0;border-bottom:1px solid var(--glass-border);display:flex;justify-content:space-between;font-size:13px;">
                     <span>إجمالي الأرباح</span><span style="color:var(--success);" id="sTotalEarned">0$</span>
                 </div>
-                <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--glass-border);">
+                <div style="padding:8px 0;border-bottom:1px solid var(--glass-border);display:flex;justify-content:space-between;font-size:13px;">
                     <span>إجمالي المسحوبات</span><span style="color:var(--danger);" id="sTotalWithdrawn">0$</span>
                 </div>
-                <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--glass-border);">
+                <div style="padding:8px 0;border-bottom:1px solid var(--glass-border);display:flex;justify-content:space-between;font-size:13px;">
                     <span>صافي الأرباح</span><span style="color:var(--gold);" id="sNetProfit">0$</span>
                 </div>
-                <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--glass-border);">
-                    <span>عدد الإحالات</span><span id="sRefCount">0</span>
-                </div>
-                <div style="display:flex;justify-content:space-between;padding:10px 0;">
+                <div style="padding:8px 0;display:flex;justify-content:space-between;font-size:13px;">
                     <span>تاريخ الانضمام</span><span id="sJoinDate">-</span>
                 </div>
-                <div id="violationInfo" style="display:none;margin-top:12px;"></div>
+                <div id="violationInfo" style="display:none;margin-top:10px;"></div>
             </div>
         </div>
     </div>
@@ -1101,45 +1077,37 @@
     <!-- ==================== BOTTOM NAV ==================== -->
     <div class="bottom-nav">
         <div class="nav-item active" onclick="showPage('home')">
-            <i class="fas fa-home"></i>
-            <span>الرئيسية</span>
+            <i class="fas fa-home"></i><span>الرئيسية</span>
         </div>
         <div class="nav-item" onclick="showPage('tasks')">
-            <i class="fas fa-gift"></i>
-            <span>المهام</span>
+            <i class="fas fa-gift"></i><span>المهام</span>
             <span class="nav-badge" id="tasksBadge" style="display:none;">!</span>
         </div>
         <div class="nav-item" onclick="window.location.href='games.html'">
-            <i class="fas fa-gamepad"></i>
-            <span>ألعاب</span>
+            <i class="fas fa-gamepad"></i><span>ألعاب</span>
         </div>
         <div class="nav-item" onclick="showPage('withdrawals')">
-            <i class="fas fa-wallet"></i>
-            <span>السحب</span>
+            <i class="fas fa-wallet"></i><span>السحب</span>
         </div>
         <div class="nav-item" onclick="showPage('stats')">
-            <i class="fas fa-chart-bar"></i>
-            <span>حسابي</span>
+            <i class="fas fa-chart-bar"></i><span>حسابي</span>
         </div>
     </div>
 
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <!-- Scripts -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // ==================== INIT ====================
         let user = null;
         let subscription = null;
         let claimStatus = null;
         const fees = { TRC20: 5, ERC20: 15, BEP20: 3 };
         let currentNetwork = 'TRC20';
         
-        AOS.init({ duration: 600, once: true });
+        AOS.init({ duration: 500, once: true });
 
         document.addEventListener('DOMContentLoaded', async () => {
-            console.log('🚀 تحميل لوحة التحكم...');
             const saved = localStorage.getItem('current_user');
             if (!saved) { window.location.href = 'index.html'; return; }
             user = JSON.parse(saved);
@@ -1161,52 +1129,51 @@
             }, 30000);
         });
 
-        // ==================== DROPDOWN FUNCTIONS ====================
+        // ==================== DROPDOWN ====================
         function toggleDropdown(e) {
             e.stopPropagation();
-            e.preventDefault();
-            const dropdown = document.getElementById('userDropdown');
-            
-            if (dropdown.classList.contains('show')) {
-                dropdown.classList.remove('show');
+            const dd = document.getElementById('userDropdown');
+            if (dd.classList.contains('show')) {
+                dd.classList.remove('show');
             } else {
-                // Update info before showing
                 document.getElementById('dropdownAvatar').textContent = (user?.name || 'م').charAt(0).toUpperCase();
                 document.getElementById('dropdownName').textContent = user?.name || 'مستخدم';
                 document.getElementById('dropdownEmail').textContent = user?.email || '';
                 document.getElementById('dropdownBalance').textContent = '💰 ' + (user?.balance || 0).toFixed(2) + '$';
-                dropdown.classList.add('show');
+                dd.classList.add('show');
+            }
+        }
+
+        function navigateFromDropdown(page) {
+            document.getElementById('userDropdown').classList.remove('show');
+            showPage(page);
+        }
+
+        function handleLogout() {
+            document.getElementById('userDropdown').classList.remove('show');
+            if (confirm('هل تريد تسجيل الخروج؟')) {
+                localStorage.removeItem('current_user');
+                window.location.href = 'index.html';
             }
         }
 
         function updateAvatarDisplay() {
             const initial = (user?.name || 'م').charAt(0).toUpperCase();
-            const avatarEl = document.getElementById('userAvatar');
-            const dropdownAvatarEl = document.getElementById('dropdownAvatar');
-            if (avatarEl) avatarEl.textContent = initial;
-            if (dropdownAvatarEl) dropdownAvatarEl.textContent = initial;
+            const a = document.getElementById('userAvatar');
+            const da = document.getElementById('dropdownAvatar');
+            if (a) a.textContent = initial;
+            if (da) da.textContent = initial;
         }
 
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            const wrapper = document.getElementById('avatarWrapper');
-            const dropdown = document.getElementById('userDropdown');
-            if (dropdown && dropdown.classList.contains('show')) {
-                if (wrapper && !wrapper.contains(e.target)) {
-                    dropdown.classList.remove('show');
-                }
+        document.addEventListener('click', (e) => {
+            const w = document.getElementById('avatarWrapper');
+            const d = document.getElementById('userDropdown');
+            if (d && d.classList.contains('show') && w && !w.contains(e.target)) {
+                d.classList.remove('show');
             }
         });
 
-        // Close dropdown on Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                const dropdown = document.getElementById('userDropdown');
-                if (dropdown) dropdown.classList.remove('show');
-            }
-        });
-
-        // ==================== LOAD ALL ====================
+        // ==================== LOAD ====================
         async function loadAll() {
             updateBalanceDisplay();
             await loadSubscription();
@@ -1240,59 +1207,25 @@
             document.getElementById('withdrawableBalance').textContent = (user.balance || 0).toFixed(2) + '$';
         }
 
-        // ==================== SUBSCRIPTION ====================
         async function loadSubscription() {
-            const container = document.getElementById('subscriptionSection');
+            const c = document.getElementById('subscriptionSection');
             try {
                 const r = await window.supabaseHelpers.getUserSubscription(user.id);
                 if (r.success && r.data) {
                     subscription = r.data;
-                    const start = new Date(subscription.start_date);
-                    const end = new Date(subscription.end_date);
-                    const now = new Date();
-                    const daysLeft = Math.max(0, Math.ceil((end - now) / (1000*60*60*24)));
-                    const total = Math.ceil((end - start) / (1000*60*60*24));
-                    const passed = Math.max(0, Math.ceil((now - start) / (1000*60*60*24)));
-                    const progress = Math.min(100, (passed / total) * 100);
-                    
-                    container.innerHTML = `
-                        <div class="subscription-card">
-                            <div class="sub-header">
-                                <div class="sub-name">${subscription.package_name}</div>
-                                <div class="sub-badge">✅ نشط</div>
-                            </div>
-                            <div class="sub-details">
-                                <div class="sub-detail">
-                                    <div class="sub-detail-value">${subscription.amount}$</div>
-                                    <div class="sub-detail-label">الاستثمار</div>
-                                </div>
-                                <div class="sub-detail">
-                                    <div class="sub-detail-value" style="color:var(--success);">+${subscription.daily_profit}$</div>
-                                    <div class="sub-detail-label">ربح يومي</div>
-                                </div>
-                                <div class="sub-detail">
-                                    <div class="sub-detail-value">${daysLeft}</div>
-                                    <div class="sub-detail-label">يوم متبقي</div>
-                                </div>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width:${progress}%;"></div>
-                            </div>
-                        </div>`;
+                    const s = new Date(subscription.start_date), e = new Date(subscription.end_date), n = new Date();
+                    const dl = Math.max(0, Math.ceil((e - n) / 86400000));
+                    const tt = Math.ceil((e - s) / 86400000);
+                    const pd = Math.max(0, Math.ceil((n - s) / 86400000));
+                    const pg = Math.min(100, (pd / tt) * 100);
+                    c.innerHTML = `<div class="subscription-card"><div class="sub-header"><div class="sub-name">${subscription.package_name}</div><div class="sub-badge">✅ نشط</div></div><div class="sub-details"><div class="sub-detail"><div class="sub-detail-value">${subscription.amount}$</div><div class="sub-detail-label">الاستثمار</div></div><div class="sub-detail"><div class="sub-detail-value" style="color:var(--success);">+${subscription.daily_profit}$</div><div class="sub-detail-label">ربح يومي</div></div><div class="sub-detail"><div class="sub-detail-value">${dl}</div><div class="sub-detail-label">يوم متبقي</div></div></div><div class="progress-bar"><div class="progress-fill" style="width:${pg}%;"></div></div></div>`;
                 } else {
                     subscription = null;
-                    container.innerHTML = `
-                        <div class="no-subscription">
-                            <i class="fas fa-crown"></i>
-                            <h3>لا يوجد اشتراك نشط</h3>
-                            <p>اشترك في باقة وابدأ الربح</p>
-                            <button class="btn btn-gold" onclick="window.location.href='index.html#packages'">اشترك الآن</button>
-                        </div>`;
+                    c.innerHTML = `<div class="no-subscription"><i class="fas fa-crown"></i><h3>لا يوجد اشتراك نشط</h3><p>اشترك في باقة وابدأ الربح</p><button class="btn btn-gold" onclick="window.location.href='index.html#packages'">اشترك الآن</button></div>`;
                 }
-            } catch(e) { container.innerHTML = '<div class="no-subscription"><p>تعذر تحميل الاشتراك</p></div>'; }
+            } catch(e) { c.innerHTML = '<div class="no-subscription"><p>تعذر تحميل الاشتراك</p></div>'; }
         }
 
-        // ==================== REFERRAL ====================
         async function loadReferral() {
             try {
                 const r = await window.supabaseHelpers.getReferralStats(user.id);
@@ -1313,255 +1246,150 @@
             }
         }
 
-        // ==================== GIFTS ====================
         async function loadGifts() {
             try {
                 const r = await window.supabaseHelpers.getUserGifts(user.id);
-                const container = document.getElementById('giftsContainer');
-                const badge = document.getElementById('tasksBadge');
+                const c = document.getElementById('giftsContainer');
+                const b = document.getElementById('tasksBadge');
                 if (r.success && r.data && r.data.length > 0) {
-                    let html = '';
-                    r.data.forEach(g => {
-                        html += `<div class="gift-card">
-                            <div><strong>${g.gifts.title}</strong><br><small style="color:var(--text-3);">${g.gifts.message}</small></div>
-                            <div style="text-align:center;">
-                                <div class="gift-amount">${g.gifts.amount}$</div>
-                                <button class="btn btn-sm btn-gold" onclick="claimGift(${g.id})">استلام</button>
-                            </div>
-                        </div>`;
-                    });
-                    container.innerHTML = html;
-                    badge.style.display = 'block';
-                    badge.textContent = r.data.length;
+                    let h = '';
+                    r.data.forEach(g => { h += `<div class="gift-card"><div><strong>${g.gifts.title}</strong><br><small style="color:var(--text-3);">${g.gifts.message}</small></div><div style="text-align:center;"><div class="gift-amount">${g.gifts.amount}$</div><button class="btn btn-sm btn-gold" onclick="claimGift(${g.id})">استلام</button></div></div>`; });
+                    c.innerHTML = h;
+                    b.style.display = 'block'; b.textContent = r.data.length;
                 } else {
-                    container.innerHTML = '<p style="color:var(--text-3);text-align:center;">لا توجد هدايا</p>';
-                    badge.style.display = 'none';
+                    c.innerHTML = '<p style="color:var(--text-3);text-align:center;">لا توجد هدايا</p>';
+                    b.style.display = 'none';
                 }
             } catch(e) {}
         }
 
         async function claimGift(id) {
             const r = await window.supabaseHelpers.claimGift(id);
-            if (r.success) {
-                showToast('✅ تم استلام ' + r.data.amount + '$');
-                await refreshAll();
-            } else {
-                showToast('❌ ' + r.error, 'error');
-            }
+            if (r.success) { showToast('✅ تم استلام ' + r.data.amount + '$'); await refreshAll(); }
+            else { showToast('❌ ' + r.error, 'error'); }
         }
 
-        // ==================== DAILY PROFIT ====================
         async function loadClaimStatus() {
             try {
                 const r = await window.supabaseHelpers.getClaimStatus(user.id);
                 if (r.success) {
                     claimStatus = r.data;
-                    const btn = document.getElementById('profitBtn');
-                    const timer = document.getElementById('profitTimer');
+                    const btn = document.getElementById('profitBtn'), t = document.getElementById('profitTimer');
                     document.getElementById('profitAmount').textContent = (claimStatus.dailyProfit || 0) + '$';
-                    
                     if (claimStatus.canClaim) {
-                        btn.disabled = false;
-                        btn.innerHTML = '<i class="fas fa-gem"></i> المطالبة الآن';
-                        timer.style.display = 'none';
+                        btn.disabled = false; btn.innerHTML = '<i class="fas fa-gem"></i> المطالبة الآن'; t.style.display = 'none';
                     } else {
                         btn.disabled = true;
-                        if (claimStatus.reason === 'no_subscription') {
-                            btn.innerHTML = '<i class="fas fa-lock"></i> تحتاج اشتراك';
-                        } else if (claimStatus.hoursLeft) {
-                            btn.innerHTML = '<i class="fas fa-hourglass"></i> غير متاح';
-                            timer.style.display = 'block';
-                            timer.textContent = '⏳ متبقي ' + claimStatus.hoursLeft + ' ساعة';
-                        }
+                        if (claimStatus.reason === 'no_subscription') { btn.innerHTML = '<i class="fas fa-lock"></i> تحتاج اشتراك'; }
+                        else if (claimStatus.hoursLeft) { btn.innerHTML = '<i class="fas fa-hourglass"></i> غير متاح'; t.style.display = 'block'; t.textContent = '⏳ متبقي ' + claimStatus.hoursLeft + ' ساعة'; }
                     }
                 }
             } catch(e) {}
         }
 
         async function claimProfit() {
-            if (!claimStatus || !claimStatus.canClaim) return;
+            if (!claimStatus?.canClaim) return;
             const btn = document.getElementById('profitBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري...';
-            
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري...';
             const r = await window.supabaseHelpers.claimDailyProfit(user.id);
-            if (r.success) {
-                showToast('✅ تم إضافة ' + r.data.amount + '$');
-                await refreshAll();
-                checkViolation();
-            } else {
-                showToast('❌ ' + r.error, 'error');
-                await refreshAll();
-                checkViolation();
-            }
+            if (r.success) { showToast('✅ تم إضافة ' + r.data.amount + '$'); await refreshAll(); checkViolation(); }
+            else { showToast('❌ ' + r.error, 'error'); await refreshAll(); checkViolation(); }
         }
 
-        // ==================== VIOLATION CHECK ====================
         function checkViolation() {
-            if (user.is_suspended) {
-                const until = new Date(user.suspended_until);
-                const now = new Date();
+            if (user?.is_suspended) {
+                const until = new Date(user.suspended_until), now = new Date();
                 if (until > now) {
-                    const diff = until - now;
-                    const hours = Math.ceil(diff / (1000*60*60));
-                    const days = Math.floor(hours / 24);
-                    const timeLeft = days > 0 ? days + ' يوم' : hours + ' ساعة';
-                    
+                    const diff = until - now, hours = Math.ceil(diff / 3600000), days = Math.floor(hours / 24);
+                    const tl = days > 0 ? days + ' يوم' : hours + ' ساعة';
                     document.getElementById('violationTitle').textContent = '⚠️ حسابك معلق (مخالفة رقم ' + (user.violation_count||1) + ')';
                     document.getElementById('violationMsg').textContent = user.suspension_reason || 'محاولة مطالبة مزدوجة';
-                    document.getElementById('violationTimer').textContent = '⏳ ينتهي التعليق بعد: ' + timeLeft;
+                    document.getElementById('violationTimer').textContent = '⏳ ينتهي بعد: ' + tl;
                     document.getElementById('violationModal').classList.add('active');
-                    
                     const vi = document.getElementById('violationInfo');
-                    if (vi) {
-                        vi.style.display = 'block';
-                        vi.innerHTML = `<div style="background:rgba(239,68,68,0.1);border:1px solid var(--danger);border-radius:12px;padding:12px;">
-                            <p style="color:var(--danger);"><i class="fas fa-exclamation-triangle"></i> حساب معلق - ${user.suspension_reason}</p>
-                            <p style="font-size:12px;color:var(--warning);">ينتهي بعد: ${timeLeft}</p>
-                        </div>`;
-                    }
+                    if (vi) { vi.style.display = 'block'; vi.innerHTML = `<div style="background:rgba(239,68,68,0.1);border:1px solid var(--danger);border-radius:10px;padding:10px;"><p style="color:var(--danger);font-size:13px;"><i class="fas fa-exclamation-triangle"></i> حساب معلق</p><p style="font-size:11px;color:var(--warning);">ينتهي بعد: ${tl}</p></div>`; }
                 }
             }
         }
 
-        function closeViolation() {
-            document.getElementById('violationModal').classList.remove('active');
-        }
+        function closeViolation() { document.getElementById('violationModal').classList.remove('active'); }
 
-        // ==================== WITHDRAWALS ====================
         async function loadWithdrawals() {
             try {
                 const r = await window.supabaseHelpers.getUserWithdrawals(user.id);
-                const container = document.getElementById('withdrawalsList');
+                const c = document.getElementById('withdrawalsList');
                 if (r.success && r.data && r.data.length > 0) {
-                    let html = '';
+                    let h = '';
                     r.data.slice(0, 10).forEach(w => {
-                        const statusClass = w.status === 'completed' ? 'status-completed' : w.status === 'rejected' ? 'status-rejected' : 'status-pending';
-                        const statusText = w.status === 'completed' ? 'مكتمل' : w.status === 'rejected' ? 'مرفوض' : 'معلق';
-                        const date = w.created_at ? new Date(w.created_at).toLocaleDateString('ar-SA') : '';
-                        html += `<div class="withdrawal-item">
-                            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-                                <strong>${w.amount}$</strong>
-                                <span class="${statusClass}">${statusText}</span>
-                            </div>
-                            <small style="color:var(--text-3);">${date} | ${w.network||'TRC20'}</small>
-                        </div>`;
+                        const sc = w.status === 'completed' ? 'status-completed' : w.status === 'rejected' ? 'status-rejected' : 'status-pending';
+                        const st = w.status === 'completed' ? 'مكتمل' : w.status === 'rejected' ? 'مرفوض' : 'معلق';
+                        const d = w.created_at ? new Date(w.created_at).toLocaleDateString('ar-SA') : '';
+                        h += `<div class="withdrawal-item"><div style="display:flex;justify-content:space-between;margin-bottom:3px;"><strong>${w.amount}$</strong><span class="${sc}">${st}</span></div><small style="color:var(--text-3);">${d} | ${w.network||'TRC20'}</small></div>`;
                     });
-                    container.innerHTML = html;
-                } else {
-                    container.innerHTML = '<p style="color:var(--text-3);text-align:center;">لا توجد طلبات سحب</p>';
-                }
+                    c.innerHTML = h;
+                } else { c.innerHTML = '<p style="color:var(--text-3);text-align:center;">لا توجد طلبات سحب</p>'; }
             } catch(e) {}
         }
 
         function openModal(id) {
-            if (id === 'withdrawalModal' && user.is_suspended) {
-                showToast('❌ حسابك معلق - لا يمكنك السحب', 'error');
-                return;
-            }
+            if (id === 'withdrawalModal' && user?.is_suspended) { showToast('❌ حسابك معلق', 'error'); return; }
             document.getElementById(id).classList.add('active');
-            if (id === 'withdrawalModal') {
-                document.getElementById('withdrawWallet').value = user.wallet_address || '';
-                updateFeeDisplay();
-            }
+            if (id === 'withdrawalModal') { document.getElementById('withdrawWallet').value = user.wallet_address || ''; updateFeeDisplay(); }
         }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
         function setNetwork(net, el) {
             currentNetwork = net;
-            document.querySelectorAll('.network-btn').forEach(b => {
-                b.className = 'btn btn-sm ' + (b === el ? 'btn-gold' : 'btn-outline') + ' network-btn';
-            });
+            document.querySelectorAll('.network-btn').forEach(b => { b.className = 'btn btn-sm ' + (b === el ? 'btn-gold' : 'btn-outline') + ' network-btn'; });
             updateFeeDisplay();
         }
 
         function updateFeeDisplay() {
-            const amount = parseFloat(document.getElementById('withdrawAmount')?.value) || 0;
-            const fee = fees[currentNetwork];
-            document.getElementById('feeDisplay').textContent = fee + '$';
-            document.getElementById('totalDisplay').textContent = (amount + fee).toFixed(2) + '$';
+            const a = parseFloat(document.getElementById('withdrawAmount')?.value) || 0;
+            const f = fees[currentNetwork];
+            document.getElementById('feeDisplay').textContent = f + '$';
+            document.getElementById('totalDisplay').textContent = (a + f).toFixed(2) + '$';
         }
 
-        document.addEventListener('input', (e) => {
-            if (e.target.id === 'withdrawAmount') updateFeeDisplay();
-        });
+        document.addEventListener('input', (e) => { if (e.target.id === 'withdrawAmount') updateFeeDisplay(); });
 
         async function submitWithdrawal() {
-            const amount = parseFloat(document.getElementById('withdrawAmount').value);
-            const wallet = document.getElementById('withdrawWallet').value.trim();
-            
-            if (!amount || amount < 50) { showToast('❌ الحد الأدنى 50$', 'error'); return; }
-            if (amount > (user.balance||0)) { showToast('❌ رصيد غير كافي', 'error'); return; }
-            if (!wallet) { showToast('❌ أدخل عنوان المحفظة', 'error'); return; }
-            
-            const r = await window.supabaseHelpers.createWithdrawal({
-                userId: user.id, amount, wallet, network: currentNetwork, fee: fees[currentNetwork]
-            });
-            
-            if (r.success) {
-                closeModal('withdrawalModal');
-                showToast('✅ تم تقديم طلب السحب');
-                await refreshAll();
-            } else {
-                showToast('❌ ' + r.error, 'error');
-            }
+            const a = parseFloat(document.getElementById('withdrawAmount').value);
+            const w = document.getElementById('withdrawWallet').value.trim();
+            if (!a || a < 50) { showToast('❌ الحد الأدنى 50$', 'error'); return; }
+            if (a > (user.balance||0)) { showToast('❌ رصيد غير كافي', 'error'); return; }
+            if (!w) { showToast('❌ أدخل عنوان المحفظة', 'error'); return; }
+            const r = await window.supabaseHelpers.createWithdrawal({ userId: user.id, amount: a, wallet: w, network: currentNetwork, fee: fees[currentNetwork] });
+            if (r.success) { closeModal('withdrawalModal'); showToast('✅ تم تقديم طلب السحب'); await refreshAll(); }
+            else { showToast('❌ ' + r.error, 'error'); }
         }
 
-        // ==================== ACTIVITIES ====================
         async function loadActivities() {
             try {
                 const r = await window.supabaseHelpers.getUserActivities(user.id, 10);
-                const container = document.getElementById('recentActivities');
-                
-                if (r.success && r.data && r.data.length > 0) {
-                    container.innerHTML = buildActivitiesHTML(r.data.slice(0, 7));
-                } else {
-                    container.innerHTML = '<p style="color:var(--text-3);text-align:center;">لا توجد نشاطات</p>';
-                }
+                const c = document.getElementById('recentActivities');
+                if (r.success && r.data && r.data.length > 0) { c.innerHTML = buildActivitiesHTML(r.data.slice(0, 6)); }
+                else { c.innerHTML = '<p style="color:var(--text-3);text-align:center;">لا توجد نشاطات</p>'; }
             } catch(e) {}
         }
 
         async function loadAllActivitiesForPage() {
             try {
                 const r = await window.supabaseHelpers.getUserActivities(user.id, 50);
-                const container = document.getElementById('allActivities');
-                
-                if (container) {
-                    if (r.success && r.data && r.data.length > 0) {
-                        container.innerHTML = buildActivitiesHTML(r.data);
-                    } else {
-                        container.innerHTML = '<p style="color:var(--text-3);text-align:center;">لا توجد نشاطات</p>';
-                    }
-                }
+                const c = document.getElementById('allActivities');
+                if (c) { c.innerHTML = (r.success && r.data && r.data.length > 0) ? buildActivitiesHTML(r.data) : '<p style="color:var(--text-3);text-align:center;">لا توجد نشاطات</p>'; }
             } catch(e) {}
         }
 
-        function buildActivitiesHTML(activities) {
-            const icons = {
-                profit: { icon: 'fa-coins', color: 'rgba(16,185,129,0.15)', textColor: '#10b981' },
-                withdrawal: { icon: 'fa-arrow-up', color: 'rgba(245,158,11,0.15)', textColor: '#f59e0b' },
-                subscription: { icon: 'fa-crown', color: 'rgba(59,130,246,0.15)', textColor: '#3b82f6' },
-                login: { icon: 'fa-right-to-bracket', color: 'rgba(139,92,246,0.15)', textColor: '#8b5cf6' },
-                violation: { icon: 'fa-triangle-exclamation', color: 'rgba(239,68,68,0.15)', textColor: '#ef4444' }
-            };
-            
-            return activities.map(a => {
-                const iconData = icons[a.type] || { icon: 'fa-circle', color: 'rgba(255,255,255,0.1)', textColor: '#fff' };
-                const date = new Date(a.created_at).toLocaleString('ar-SA', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
-                return `<div class="activity-item type-${a.type}">
-                    <div class="activity-icon" style="background:${iconData.color};color:${iconData.textColor};">
-                        <i class="fas ${iconData.icon}"></i>
-                    </div>
-                    <div class="activity-content">
-                        <div class="activity-title">${a.title}</div>
-                        <div class="activity-desc">${a.description}</div>
-                        <div class="activity-time">${date} ${a.amount ? '| ' + a.amount + '$' : ''}</div>
-                    </div>
-                </div>`;
+        function buildActivitiesHTML(arr) {
+            const icons = { profit: { i: 'fa-coins', bg: 'rgba(16,185,129,0.15)', cl: '#10b981' }, withdrawal: { i: 'fa-arrow-up', bg: 'rgba(245,158,11,0.15)', cl: '#f59e0b' }, subscription: { i: 'fa-crown', bg: 'rgba(59,130,246,0.15)', cl: '#3b82f6' }, login: { i: 'fa-right-to-bracket', bg: 'rgba(139,92,246,0.15)', cl: '#8b5cf6' }, violation: { i: 'fa-triangle-exclamation', bg: 'rgba(239,68,68,0.15)', cl: '#ef4444' } };
+            return arr.map(a => {
+                const ic = icons[a.type] || { i: 'fa-circle', bg: 'rgba(255,255,255,0.1)', cl: '#fff' };
+                const d = new Date(a.created_at).toLocaleString('ar-SA', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+                return `<div class="activity-item type-${a.type}"><div class="activity-icon" style="background:${ic.bg};color:${ic.cl};"><i class="fas ${ic.i}"></i></div><div class="activity-content"><div class="activity-title">${a.title}</div><div class="activity-desc">${a.description}</div><div class="activity-time">${d} ${a.amount ? '| '+a.amount+'$' : ''}</div></div></div>`;
             }).join('');
         }
 
-        // ==================== STATS ====================
         function updateStatsPage() {
             document.getElementById('sTotalEarned').textContent = (user.total_earned || 0).toFixed(2) + '$';
             document.getElementById('sTotalWithdrawn').textContent = (user.total_withdrawn || 0).toFixed(2) + '$';
@@ -1569,56 +1397,28 @@
             document.getElementById('sJoinDate').textContent = user.joined_date ? new Date(user.joined_date).toLocaleDateString('ar-SA') : '-';
         }
 
-        // ==================== PAGE NAVIGATION ====================
-        function showPage(pageName) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            const pageMap = {
-                home: 'homePage', tasks: 'tasksPage', withdrawals: 'withdrawalsPage',
-                activities: 'activitiesPage', stats: 'statsPage'
-            };
-            const pageId = pageMap[pageName];
-            if (pageId) document.getElementById(pageId).classList.add('active');
-            
-            document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
-            const navMap = { home: 0, tasks: 1, withdrawals: 3, stats: 4 };
-            const idx = navMap[pageName];
+        function showPage(p) {
+            document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+            const map = { home:'homePage', tasks:'tasksPage', withdrawals:'withdrawalsPage', activities:'activitiesPage', stats:'statsPage' };
+            const id = map[p];
+            if (id) document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(x => x.classList.remove('active'));
+            const nm = { home:0, tasks:1, withdrawals:3, stats:4 };
+            const idx = nm[p];
             if (idx !== undefined) document.querySelectorAll('.bottom-nav .nav-item')[idx].classList.add('active');
-            
-            // Close dropdown
-            const dropdown = document.getElementById('userDropdown');
-            if (dropdown) dropdown.classList.remove('show');
-            
-            if (pageName === 'activities') loadAllActivitiesForPage();
-            if (pageName === 'withdrawals') loadWithdrawals();
-            if (pageName === 'tasks') { loadGifts(); loadClaimStatus(); }
+            document.getElementById('userDropdown').classList.remove('show');
+            if (p === 'activities') loadAllActivitiesForPage();
+            if (p === 'withdrawals') loadWithdrawals();
+            if (p === 'tasks') { loadGifts(); loadClaimStatus(); }
         }
 
-        // ==================== TOAST ====================
         function showToast(msg, type = 'success') {
             const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.className = 'toast ' + type;
-            t.style.display = 'block';
-            clearTimeout(t._timer);
-            t._timer = setTimeout(() => t.style.display = 'none', 3000);
+            t.textContent = msg; t.className = 'toast ' + type; t.style.display = 'block';
+            clearTimeout(t._t); t._t = setTimeout(() => t.style.display = 'none', 2500);
         }
 
-        // ==================== LOGOUT ====================
-        function logout() {
-            const dropdown = document.getElementById('userDropdown');
-            if (dropdown) dropdown.classList.remove('show');
-            if (confirm('هل تريد تسجيل الخروج؟')) {
-                localStorage.removeItem('current_user');
-                window.location.href = 'index.html';
-            }
-        }
-
-        // ==================== CLOSE MODALS ON OUTSIDE CLICK ====================
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal-overlay')) {
-                e.target.classList.remove('active');
-            }
-        });
+        document.addEventListener('click', (e) => { if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('active'); });
     </script>
 </body>
 </html>
