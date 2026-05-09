@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ألعاب الحظ - Elite Capital</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --gold: #c8a97e;
+            --gold-dark: #b38b5b;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --dark: #0f172a;
+            --dark-card: rgba(30, 41, 59, 0.85);
+            --text: #ffffff;
+            --muted: rgba(255,255,255,0.65);
+            --gradient-gold: linear-gradient(135deg, #c8a97e, #b38b5b);
+            --shadow-gold: 0 10px 30px rgba(200, 169, 126, 0.3);
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 100px;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(ellipse at top, rgba(200,169,126,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(200,169,126,0.05) 0%, transparent 50%);
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+
+        /* ========== HEADER ========== */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(15,23,42,0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(200,169,126,0.25);
+        }
+        .back-btn {
+            width: 40px; height: 40px;
+            background: rgba(200,169,126,0.1);
+            border: 1.5px solid rgba(200,169,126,0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            font-size: 17px;
+            cursor: pointer;
+            text-decoration: none;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--gold); color: var(--dark); }
+        .header h1 {
+            flex: 1;
+            font-size: 21px;
+            color: var(--gold);
+            text-align: center;
+            font-weight: 900;
+        }
+        .balance-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(39,174,96,0.12);
+            border: 1.5px solid rgba(39,174,96,0.4);
+            padding: 7px 16px;
+            border-radius: 30px;
+            color: var(--success);
+            font-weight: 700;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        /* ========== MAIN ========== */
+        .main {
+            padding: 20px 16px;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        /* ========== GAMES GRID ========== */
+        .games-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 420px) { .games-grid { grid-template-columns: 1fr; max-width: 320px; margin: 0 auto 20px; } }
+
+        .game-card {
+            background: var(--dark-card);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 28px 16px 22px;
+            text-align: center;
+            border: 1.5px solid rgba(200,169,126,0.2);
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+            position: relative;
+            overflow: hidden;
+        }
+        .game-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--gradient-gold);
+        }
+        .game-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--gold);
+            box-shadow: var(--shadow-gold);
+        }
+        .game-card:active { transform: scale(0.97); }
+        .game-icon {
+            width: 64px; height: 64px;
+            background: rgba(200,169,126,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 32px;
+            border: 2px solid rgba(200,169,126,0.35);
+            transition: all 0.3s;
+        }
+        .game-card:hover .game-icon {
+            background: rgba(200,169,126,0.2);
+            border-color: var(--gold);
+            transform: scale(1.08);
+        }
+        .game-name {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+        .game-desc {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        .game-odds {
+            display: inline-block;
+            padding: 5px 14px;
+            background: rgba(243,156,18,0.12);
+            border: 1px solid rgba(243,156,18,0.3);
+            border-radius: 20px;
+            color: #f0a500;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* ========== GAME SECTIONS ========== */
+        .game-section {
+            display: none;
+            background: var(--dark-card);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 28px 18px 22px;
+            border: 1.5px solid rgba(200,169,126,0.25);
+            margin-bottom: 18px;
+            animation: fadeSlideIn 0.35s ease;
+        }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .game-section.active { display: block; }
+
+        .game-title {
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--gold);
+            margin-bottom: 22px;
+            text-align: center;
+        }
+
+        /* ========== RESULT AREA ========== */
+        .result-area {
+            background: rgba(0,0,0,0.35);
+            border-radius: 22px;
+            padding: 28px 18px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 2px solid rgba(200,169,126,0.3);
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s;
+            position: relative;
+            overflow: hidden;
+        }
+        .result-area.win-glow {
+            border-color: var(--success);
+            box-shadow: 0 0 30px rgba(39,174,96,0.3), inset 0 0 20px rgba(39,174,96,0.05);
+        }
+        .result-area.lose-glow {
+            border-color: var(--danger);
+            box-shadow: 0 0 30px rgba(231,76,60,0.25), inset 0 0 20px rgba(231,76,60,0.03);
+        }
+
+        /* ========== SLOT MACHINE ========== */
+        .slot-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .slot-reel {
+            width: 80px; height: 80px;
+            background: linear-gradient(180deg, rgba(200,169,126,0.15) 0%, rgba(0,0,0,0.3) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            border: 2px solid rgba(200,169,126,0.4);
+            transition: all 0.08s;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
+        }
+        @keyframes reelBlur {
+            0%,100% { filter: blur(0); }
+            50% { filter: blur(2px); }
+        }
+        .slot-reel.spinning { animation: reelBlur 0.08s ease-in-out infinite; }
+        .slot-reel.win-reel {
+            border-color: var(--success) !important;
+            box-shadow: 0 0 20px rgba(39,174,96,0.5) !important;
+        }
+
+        /* ========== DICE ========== */
+        .dice-wrap {
+            perspective: 600px;
+            margin-bottom: 12px;
+        }
+        .dice-cube {
+            width: 90px; height: 90px;
+            background: linear-gradient(145deg, #ffffff, #e8e8e8);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 46px;
+            margin: 0 auto;
+            border: 3px solid rgba(200,169,126,0.5);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3), inset 0 2px 6px rgba(255,255,255,0.5);
+            transition: transform 0.1s;
+        }
+        @keyframes diceShake {
+            0%{transform:rotateX(0)rotateY(0)rotateZ(0)}
+            25%{transform:rotateX(120deg)rotateY(60deg)rotateZ(30deg)}
+            50%{transform:rotateX(240deg)rotateY(120deg)rotateZ(-20deg)}
+            75%{transform:rotateX(300deg)rotateY(200deg)rotateZ(10deg)}
+            100%{transform:rotateX(360deg)rotateY(360deg)rotateZ(0)}
+        }
+        .dice-cube.rolling { animation: diceShake 0.1s linear infinite; }
+        .dice-cube.win-dice {
+            border-color: var(--success) !important;
+            box-shadow: 0 0 25px rgba(39,174,96,0.5), inset 0 2px 6px rgba(255,255,255,0.5) !important;
+        }
+
+        /* ========== CARD ========== */
+        .card-stage {
+            perspective: 800px;
+            margin-bottom: 12px;
+        }
+        .playing-card {
+            width: 85px; height: 120px;
+            background: linear-gradient(145deg, #ffffff, #f5f5f5);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 44px;
+            font-weight: 900;
+            margin: 0 auto;
+            border: 3px solid rgba(200,169,126,0.5);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+            transform-style: preserve-3d;
+        }
+        @keyframes cardFlip {
+            0%{transform:rotateY(0)}
+            100%{transform:rotateY(720deg)}
+        }
+        .playing-card.flipping { animation: cardFlip 0.8s ease-in-out; }
+        .playing-card.red { color: #e74c3c; }
+        .playing-card.win-card {
+            border-color: var(--success) !important;
+            box-shadow: 0 0 25px rgba(39,174,96,0.5) !important;
+        }
+
+        /* ========== WHEEL ========== */
+        .wheel-frame {
+            position: relative;
+            width: 200px; height: 200px;
+            margin: 0 auto 10px;
+        }
+        .wheel-outer {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            border: 5px solid var(--gold);
+            background: conic-gradient(
+                #27ae60 0deg 54deg,
+                #e74c3c 54deg 108deg,
+                #27ae60 108deg 162deg,
+                #e74c3c 162deg 216deg,
+                #27ae60 216deg 270deg,
+                #e74c3c 270deg 324deg,
+                #27ae60 324deg 360deg
+            );
+            box-shadow: 0 0 30px rgba(200,169,126,0.25), inset 0 0 30px rgba(0,0,0,0.4);
+            transition: transform 4s cubic-bezier(0.2, 0.8, 0.3, 1);
+            position: relative;
+        }
+        .wheel-center {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px; height: 40px;
+            background: var(--gradient-gold);
+            border-radius: 50%;
+            border: 3px solid var(--dark);
+            z-index: 2;
+            box-shadow: 0 0 15px rgba(200,169,126,0.5);
+        }
+        .wheel-pointer {
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            font-size: 28px;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5));
+        }
+        .wheel-labels {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* ========== RESULT MESSAGE ========== */
+        .result-msg {
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 8px;
+            transition: all 0.3s;
+        }
+        .result-msg.win-msg { color: #2ecc71; }
+        .result-msg.lose-msg { color: #e74c3c; }
+
+        /* ========== BET CONTROLS ========== */
+        .bet-box {
+            background: rgba(200,169,126,0.06);
+            border-radius: 20px;
+            padding: 16px 14px;
+            border: 1px solid rgba(200,169,126,0.2);
+            margin-bottom: 18px;
+        }
+        .bet-box h4 {
+            color: var(--gold);
+            margin-bottom: 12px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .bet-chips {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .chip {
+            padding: 9px 16px;
+            background: rgba(200,169,126,0.1);
+            border: 2px solid rgba(200,169,126,0.35);
+            border-radius: 25px;
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.25s;
+            user-select: none;
+        }
+        .chip:hover { background: rgba(200,169,126,0.25); }
+        .chip.active {
+            background: var(--gradient-gold);
+            color: var(--dark);
+            border-color: var(--gold);
+            box-shadow: 0 4px 15px rgba(200,169,126,0.35);
+        }
+        .custom-row {
+            display: flex;
+            gap: 8px;
+        }
+        .custom-row input {
+            flex: 1;
+            padding: 11px 14px;
+            background: rgba(255,255,255,0.04);
+            border: 2px solid rgba(200,169,126,0.35);
+            border-radius: 25px;
+            color: #fff;
+            font-size: 14px;
+            text-align: center;
+            font-family: 'Tajawal', sans-serif;
+        }
+        .custom-row input:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(200,169,126,0.08);
+        }
+
+        /* ========== BUTTONS ========== */
+        .btn {
+            padding: 14px 30px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 700;
+            font-size: 17px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-play {
+            background: var(--gradient-gold);
+            color: var(--dark);
+            font-size: 20px;
+            padding: 16px 44px;
+            box-shadow: var(--shadow-gold);
+            letter-spacing: 0.5px;
+        }
+        .btn-play:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(200,169,126,0.45); }
+        .btn-play:active { transform: scale(0.96); }
+        .btn-play:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-back {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            padding: 13px;
+            background: transparent;
+            border: 2px solid rgba(200,169,126,0.4);
+            color: var(--gold);
+            border-radius: 25px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-back:hover { background: rgba(200,169,126,0.1); border-color: var(--gold); }
+
+        /* ========== CONFETTI ========== */
+        .confetti-holder {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        .confetti-dot {
+            position: absolute;
+            width: 10px; height: 10px;
+            border-radius: 3px;
+            animation: confettiFall 2.8s ease-out forwards;
+        }
+        @keyframes confettiFall {
+            0% { transform: translateY(-120px) rotate(0deg) scale(1); opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(105vh) rotate(900deg) scale(0.3); opacity: 0; }
+        }
+
+        /* ========== HISTORY ========== */
+        .history-card {
+            background: var(--dark-card);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 22px;
+            padding: 20px 16px;
+            border: 1px solid rgba(200,169,126,0.2);
+            margin-top: 18px;
+        }
+        .history-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .history-list { max-height: 240px; overflow-y: auto; padding-left: 2px; }
+        .h-item {
+            background: rgba(255,255,255,0.025);
+            border-radius: 12px;
+            padding: 11px 14px;
+            margin-bottom: 7px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-right: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .h-item:hover { background: rgba(255,255,255,0.06); }
+        .h-item.h-win { border-right-color: var(--success); }
+        .h-item.h-lose { border-right-color: var(--danger); }
+        .h-amount { font-weight: 800; font-size: 15px; }
+        .h-amount.win { color: #2ecc71; }
+        .h-amount.lose { color: #e74c3c; }
+        .h-time { font-size: 10px; color: var(--muted); }
+
+        /* ========== TOAST ========== */
+        .toast {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2ecc71;
+            color: #fff;
+            padding: 13px 28px;
+            border-radius: 30px;
+            display: none;
+            z-index: 5000;
+            font-weight: 700;
+            font-size: 14px;
+            white-space: nowrap;
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            animation: toastIn 0.3s ease-out;
+        }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        .toast.error { background: #e74c3c; }
+
+        /* ========== LOADING ========== */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15,23,42,0.96);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .loading-overlay.hidden { display: none; }
+        .loading-spin {
+            width: 44px; height: 44px;
+            border: 3px solid rgba(255,255,255,0.08);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 14px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 500px) {
+            .slot-reel { width: 64px; height: 64px; font-size: 30px; }
+            .dice-cube { width: 75px; height: 75px; font-size: 38px; }
+            .playing-card { width: 70px; height: 100px; font-size: 36px; }
+            .wheel-frame { width: 165px; height: 165px; }
+            .game-title { font-size: 22px; }
+            .btn-play { font-size: 18px; padding: 14px 35px; }
+            .result-msg { font-size: 17px; }
+            .header h1 { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spin"></div>
+        <p style="color: var(--gold); font-weight: 600;">🎰 جاري تحميل الألعاب...</p>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-right"></i></a>
+        <h1>🎰 ألعاب الحظ</h1>
+        <div class="balance-badge" id="balanceDisplay">💰 0.00$</div>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+
+        <!-- ==================== GAMES LIST ==================== -->
+        <div id="gamesList">
+            <div class="games-grid">
+                <div class="game-card" onclick="openGame('slots')">
+                    <div class="game-icon">🎰</div>
+                    <div class="game-name">ماكينة السلوتس</div>
+                    <div class="game-desc">3 رموز متطابقة </div>
+                    <div class="game-odds">🏆   مضاعف x2</div>
+                </div>
+                <div class="game-card" onclick="openGame('dice')">
+                    <div class="game-icon">🎲</div>
+                    <div class="game-name">النرد</div>
+                    <div class="game-desc">الرقم 6 فقط </div>
+                    <div class="game-odds">🏆    مضاعف x2</div>
+                </div>
+                <div class="game-card" onclick="openGame('cards')">
+                    <div class="game-icon">🃏</div>
+                    <div class="game-name">ورق اللعب</div>
+                    <div class="game-desc">الآس (A) فقط </div>
+                    <div class="game-odds">🏆    مضاعف x2</div>
+                </div>
+                <div class="game-card" onclick="openGame('wheel')">
+                    <div class="game-icon">🎡</div>
+                    <div class="game-name">عجلة الحظ</div>
+                    <div class="game-desc">المنطقة الخضراء </div>
+                    <div class="game-odds">🏆   مضاعف x2</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SLOTS ==================== -->
+        <div class="game-section" id="slotsGame">
+            <h2 class="game-title">🎰 ماكينة السلوتس</h2>
+            <div class="result-area" id="slotsArea">
+                <div class="slot-row">
+                    <div class="slot-reel" id="s1">🍒</div>
+                    <div class="slot-reel" id="s2">🍒</div>
+                    <div class="slot-reel" id="s3">🍒</div>
+                </div>
+                <div class="result-msg" id="slotsMsg">3 رموز متطابقة </div>
+            </div>
+            <div class="bet-box">
+                <h4>💰 مبلغ الرهان</h4>
+                <div class="bet-chips" id="slotsChips">
+                    <span class="chip active" onclick="setBet('slots',1,this)">1$</span>
+                    <span class="chip" onclick="setBet('slots',5,this)">5$</span>
+                    <span class="chip" onclick="setBet('slots',10,this)">10$</span>
+                    <span class="chip" onclick="setBet('slots',25,this)">25$</span>
+                    <span class="chip" onclick="setBet('slots',50,this)">50$</span>
+                </div>
+                <div class="custom-row">
+                    <input type="number" id="slotsCustom" placeholder="مبلغ آخر..." min="1">
+                    <span class="chip" onclick="setCustomBet('slots')">✔</span>
+                </div>
+            </div>
+            <div style="text-align:center;">
+                <button class="btn btn-play" id="slotsBtn" onclick="playSlots()">🎰 العب الآن</button>
+            </div>
+            <button class="btn-back" onclick="backToGames()"><i class="fas fa-arrow-right"></i> رجوع للألعاب</button>
+        </div>
+
+        <!-- ==================== DICE ==================== -->
+        <div class="game-section" id="diceGame">
+            <h2 class="game-title">🎲 لعبة النرد</h2>
+            <div class="result-area" id="diceArea">
+                <div class="dice-wrap">
+                    <div class="dice-cube" id="diceDisplay">🎲</div>
+                </div>
+                <div class="result-msg" id="diceMsg">الرقم 6 فقط يفوز </div>
+            </div>
+            <div class="bet-box">
+                <h4>💰 مبلغ الرهان</h4>
+                <div class="bet-chips" id="diceChips">
+                    <span class="chip active" onclick="setBet('dice',1,this)">1$</span>
+                    <span class="chip" onclick="setBet('dice',5,this)">5$</span>
+                    <span class="chip" onclick="setBet('dice',10,this)">10$</span>
+                    <span class="chip" onclick="setBet('dice',25,this)">25$</span>
+                    <span class="chip" onclick="setBet('dice',50,this)">50$</span>
+                </div>
+                <div class="custom-row">
+                    <input type="number" id="diceCustom" placeholder="مبلغ آخر..." min="1">
+                    <span class="chip" onclick="setCustomBet('dice')">✔</span>
+                </div>
+            </div>
+            <div style="text-align:center;">
+                <button class="btn btn-play" id="diceBtn" onclick="playDice()">🎲 ارمِ النرد</button>
+            </div>
+            <button class="btn-back" onclick="backToGames()"><i class="fas fa-arrow-right"></i> رجوع للألعاب</button>
+        </div>
+
+        <!-- ==================== CARDS ==================== -->
+        <div class="game-section" id="cardsGame">
+            <h2 class="game-title">🃏 ورق اللعب</h2>
+            <div class="result-area" id="cardsArea">
+                <div class="card-stage">
+                    <div class="playing-card" id="cardDisplay">🂠</div>
+                </div>
+                <div class="result-msg" id="cardsMsg">الآس (A) فقط يفوز </div>
+            </div>
+            <div class="bet-box">
+                <h4>💰 مبلغ الرهان</h4>
+                <div class="bet-chips" id="cardsChips">
+                    <span class="chip active" onclick="setBet('cards',1,this)">1$</span>
+                    <span class="chip" onclick="setBet('cards',5,this)">5$</span>
+                    <span class="chip" onclick="setBet('cards',10,this)">10$</span>
+                    <span class="chip" onclick="setBet('cards',25,this)">25$</span>
+                    <span class="chip" onclick="setBet('cards',50,this)">50$</span>
+                </div>
+                <div class="custom-row">
+                    <input type="number" id="cardsCustom" placeholder="مبلغ آخر..." min="1">
+                    <span class="chip" onclick="setCustomBet('cards')">✔</span>
+                </div>
+            </div>
+            <div style="text-align:center;">
+                <button class="btn btn-play" id="cardsBtn" onclick="playCards()">🃏 اسحب بطاقة</button>
+            </div>
+            <button class="btn-back" onclick="backToGames()"><i class="fas fa-arrow-right"></i> رجوع للألعاب</button>
+        </div>
+
+        <!-- ==================== WHEEL ==================== -->
+        <div class="game-section" id="wheelGame">
+            <h2 class="game-title">🎡 عجلة الحظ</h2>
+            <div class="result-area" id="wheelArea">
+                <div class="wheel-frame">
+                    <div class="wheel-pointer">🔽</div>
+                    <div class="wheel-outer" id="wheelDisplay">
+                        <div class="wheel-center"></div>
+                    </div>
+                </div>
+                <div class="result-msg" id="wheelMsg">🟢 أخضر = فوز | 🔴 أحمر = خسارة </div>
+            </div>
+            <div class="bet-box">
+                <h4>💰 مبلغ الرهان</h4>
+                <div class="bet-chips" id="wheelChips">
+                    <span class="chip active" onclick="setBet('wheel',1,this)">1$</span>
+                    <span class="chip" onclick="setBet('wheel',5,this)">5$</span>
+                    <span class="chip" onclick="setBet('wheel',10,this)">10$</span>
+                    <span class="chip" onclick="setBet('wheel',25,this)">25$</span>
+                    <span class="chip" onclick="setBet('wheel',50,this)">50$</span>
+                </div>
+                <div class="custom-row">
+                    <input type="number" id="wheelCustom" placeholder="مبلغ آخر..." min="1">
+                    <span class="chip" onclick="setCustomBet('wheel')">✔</span>
+                </div>
+            </div>
+            <div style="text-align:center;">
+                <button class="btn btn-play" id="wheelBtn" onclick="playWheel()">🎡 دوّر العجلة</button>
+            </div>
+            <button class="btn-back" onclick="backToGames()"><i class="fas fa-arrow-right"></i> رجوع للألعاب</button>
+        </div>
+
+        <!-- ==================== HISTORY ==================== -->
+        <div class="history-card">
+            <h3><i class="fas fa-history"></i> سجل اللعب</h3>
+            <div class="history-list" id="gamesHistory">
+                <p style="color:var(--muted);text-align:center;padding:20px;">لا توجد ألعاب سابقة</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ==================== CONFIG ====================
+        const SUPABASE_URL = 'https://macbjaiunubocfyhvbvd.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hY2JqYWl1bnVib2NmeWh2YnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjc2OTcsImV4cCI6MjA4NzYwMzY5N30.s7s6xhgkbfLFubffKeilZwkAJuttu_GKPo8xJPNUe-M';
+
+        const WIN_RATE = 0.15;    // 15% نسبة الفوز
+        const MULTIPLIER = 2;     // مضاعف x2 فقط
+
+        let db = null;
+        let user = null;
+        let currentGame = null;
+        let busy = false;
+
+        const bets = { slots: 1, dice: 1, cards: 1, wheel: 1 };
+        const SLOTS = ['🍒','🍋','🍊','🍇','💎','7️⃣','⭐','🔔','🍀','🍉'];
+        const CARDS = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+        const SUITS = [
+            {s:'♥',c:'red'},{s:'♦',c:'red'},
+            {s:'♣',c:'black'},{s:'♠',c:'black'}
+        ];
+        const DICE_FACES = ['','⚀','⚁','⚂','⚃','⚄','⚅'];
+
+        // ==================== INIT ====================
+        async function init() {
+            console.log('🎰 جاري تهيئة الألعاب...');
+            
+            if (typeof supabase === 'undefined') {
+                document.getElementById('loadingOverlay').innerHTML = 
+                    '<p style="color:var(--danger);">❌ فشل تحميل المكتبات</p>';
+                return;
+            }
+            
+            db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            
+            const saved = localStorage.getItem('current_user');
+            if (!saved) { window.location.href = 'index.html'; return; }
+            
+            try {
+                user = JSON.parse(saved);
+                
+                // تحديث من قاعدة البيانات
+                const { data: fresh } = await db.from('users').select('*').eq('id', user.id).single();
+                if (fresh) {
+                    user = fresh;
+                    localStorage.setItem('current_user', JSON.stringify(user));
+                }
+                
+                updateBalance();
+                await loadHistory();
+                document.getElementById('loadingOverlay').classList.add('hidden');
+                console.log('✅ الألعاب جاهزة! نسبة الفوز: 15% | المضاعف: x2');
+            } catch(e) {
+                console.error('خطأ:', e);
+                document.getElementById('loadingOverlay').innerHTML = 
+                    '<p style="color:var(--danger);">❌ خطأ في تحميل البيانات</p>';
+            }
+        }
+
+        // ==================== BALANCE ====================
+        function updateBalance() {
+            document.getElementById('balanceDisplay').textContent = 
+                '💰 ' + (user?.balance || 0).toFixed(2) + '$';
+        }
+
+        // ==================== NAVIGATION ====================
+        function openGame(name) {
+            document.getElementById('gamesList').style.display = 'none';
+            document.querySelectorAll('.game-section').forEach(s => s.classList.remove('active'));
+            currentGame = name;
+            const sec = document.getElementById(name + 'Game');
+            if (sec) {
+                sec.classList.add('active');
+                resetGame(name);
+            }
+            window.scrollTo({ top: 80, behavior: 'smooth' });
+        }
+
+        function backToGames() {
+            document.getElementById('gamesList').style.display = 'block';
+            document.querySelectorAll('.game-section').forEach(s => s.classList.remove('active'));
+            currentGame = null;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetGame(name) {
+            const area = document.getElementById(name + 'Area');
+            const msg  = document.getElementById(name + 'Msg');
+            if (area) area.className = 'result-area';
+            if (msg)  { msg.className = 'result-msg'; msg.textContent = getDefaultMsg(name); }
+            
+            switch(name) {
+                case 'slots':
+                    ['s1','s2','s3'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) { el.textContent = '🍒'; el.className = 'slot-reel'; }
+                    });
+                    break;
+                case 'dice':
+                    const d = document.getElementById('diceDisplay');
+                    if (d) { d.textContent = '🎲'; d.className = 'dice-cube'; }
+                    break;
+                case 'cards':
+                    const c = document.getElementById('cardDisplay');
+                    if (c) { c.textContent = '🂠'; c.className = 'playing-card'; }
+                    break;
+                case 'wheel':
+                    const w = document.getElementById('wheelDisplay');
+                    if (w) w.style.transform = 'rotate(0deg)';
+                    break;
+            }
+        }
+
+        function getDefaultMsg(name) {
+            const map = {
+                slots: '3 رموز متطابقة = فوز (15%)',
+                dice: 'الرقم 6 فقط يفوز (15%)',
+                cards: 'الآس (A) فقط يفوز (15%)',
+                wheel: '🟢 أخضر = فوز | 🔴 أحمر = خسارة (15%)'
+            };
+            return map[name] || '';
+        }
+
+        // ==================== BETS ====================
+        function setBet(g, amount, el) {
+            bets[g] = amount;
+            const container = document.getElementById(g + 'Chips');
+            if (container) {
+                container.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                if (el) el.classList.add('active');
+            }
+        }
+
+        function setCustomBet(g) {
+            const input = document.getElementById(g + 'Custom');
+            const amount = parseFloat(input.value);
+            if (!amount || amount < 1) { showToast('❌ أقل مبلغ 1$', 'error'); return; }
+            if (amount > (user?.balance || 0)) { showToast('❌ رصيد غير كافي', 'error'); return; }
+            bets[g] = amount;
+            const container = document.getElementById(g + 'Chips');
+            if (container) container.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            input.value = '';
+            showToast('✅ تم تحديد ' + amount + '$');
+        }
+
+        // ==================== WIN CHECK (15%) ====================
+        function isWin() {
+            return Math.random() < WIN_RATE;
+        }
+
+        // ==================== DATABASE ====================
+        async function saveGame(gameName, betAmount, result, winAmount, details) {
+            try {
+                if (!db) return;
+                const { error } = await db.from('games_history').insert([{
+                    user_id: user.id,
+                    game_name: gameName,
+                    bet_amount: betAmount,
+                    result: result,
+                    win_amount: winAmount,
+                    details: details,
+                    played_at: new Date().toISOString()
+                }]);
+                if (error) console.warn('Save warning:', error.message);
+            } catch(e) { console.warn('Save error:', e); }
+        }
+
+        async function deductBalance(amount) {
+            user.balance = (user.balance || 0) - amount;
+            localStorage.setItem('current_user', JSON.stringify(user));
+            try {
+                if (db) await db.from('users').update({ balance: user.balance, updated_at: new Date().toISOString() }).eq('id', user.id);
+            } catch(e) {}
+            updateBalance();
+        }
+
+        async function addBalance(amount) {
+            user.balance = (user.balance || 0) + amount;
+            user.total_earned = (user.total_earned || 0) + amount;
+            localStorage.setItem('current_user', JSON.stringify(user));
+            try {
+                if (db) await db.from('users').update({ balance: user.balance, total_earned: user.total_earned, updated_at: new Date().toISOString() }).eq('id', user.id);
+            } catch(e) {}
+            updateBalance();
+        }
+
+        async function loadHistory() {
+            const container = document.getElementById('gamesHistory');
+            try {
+                if (!db) { container.innerHTML = '<p style="color:var(--muted);text-align:center;">جاري التحميل...</p>'; return; }
+                
+                const { data } = await db.from('games_history')
+                    .select('*').eq('user_id', user.id)
+                    .order('played_at', { ascending: false }).limit(20);
+                
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;">🎮 لا توجد ألعاب سابقة</p>';
+                    return;
+                }
+                
+                const icons = { 'ماكينة السلوتس':'🎰','النرد':'🎲','ورق اللعب':'🃏','عجلة الحظ':'🎡' };
+                let html = '';
+                data.forEach(g => {
+                    const d = new Date(g.played_at);
+                    const dateStr = d.toLocaleDateString('ar-SA') + ' ' + d.toLocaleTimeString('ar-SA', {hour:'2-digit',minute:'2-digit'});
+                    const win = g.result === 'win';
+                    html += `
+                    <div class="h-item ${win?'h-win':'h-lose'}">
+                        <div>
+                            <span style="font-size:18px;">${icons[g.game_name]||'🎮'}</span>
+                            <span style="font-weight:600;font-size:13px;">${g.game_name}</span>
+                            ${g.details ? `<span style="font-size:11px;color:var(--muted);display:block;">${g.details}</span>` : ''}
+                            <span class="h-time">${dateStr}</span>
+                        </div>
+                        <span class="h-amount ${win?'win':'lose'}">${win?'+'+g.win_amount+'$':'-'+g.bet_amount+'$'}</span>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            } catch(e) {
+                container.innerHTML = '<p style="color:var(--muted);text-align:center;">تعذر تحميل السجل</p>';
+            }
+        }
+
+        // ==================== SLOTS ====================
+        async function playSlots() {
+            if (busy) return;
+            const bet = bets.slots;
+            if (bet > (user?.balance||0)) { showToast('❌ رصيد غير كافي','error'); return; }
+            if (!user?.id) { showToast('❌ سجل دخول أولاً','error'); return; }
+
+            busy = true;
+            const btn = document.getElementById('slotsBtn');
+            btn.disabled = true; btn.textContent = '🎰 جاري الدوران...';
+            
+            await deductBalance(bet);
+            
+            const ids = ['s1','s2','s3'];
+            ids.forEach(id => document.getElementById(id).classList.add('spinning'));
+            
+            // تغيير سريع للرموز
+            const interval = setInterval(() => {
+                ids.forEach(id => {
+                    const el = document.getElementById(id);
+                    el.textContent = SLOTS[Math.floor(Math.random()*SLOTS.length)];
+                });
+            }, 60);
+            
+            // مدة الدوران
+            const spinDuration = 1800 + Math.random() * 800;
+            
+            setTimeout(async () => {
+                clearInterval(interval);
+                
+                const win = isWin();
+                let symbols;
+                
+                if (win) {
+                    const s = SLOTS[Math.floor(Math.random()*SLOTS.length)];
+                    symbols = [s, s, s];
+                } else {
+                    // ضمان عدم التطابق
+                    let s1, s2, s3;
+                    do {
+                        s1 = SLOTS[Math.floor(Math.random()*SLOTS.length)];
+                        s2 = SLOTS[Math.floor(Math.random()*SLOTS.length)];
+                        s3 = SLOTS[Math.floor(Math.random()*SLOTS.length)];
+                    } while (s1 === s2 && s2 === s3);
+                    symbols = [s1, s2, s3];
+                }
+                
+                // إيقاف البكرات واحدة تلو الأخرى
+                ids.forEach((id, i) => {
+                    setTimeout(() => {
+                        const el = document.getElementById(id);
+                        el.classList.remove('spinning');
+                        el.textContent = symbols[i];
+                        if (win) el.classList.add('win-reel');
+                    }, i * 300);
+                });
+                
+                const area = document.getElementById('slotsArea');
+                const msg  = document.getElementById('slotsMsg');
+                
+                setTimeout(async () => {
+                    if (win) {
+                        const w = bet * MULTIPLIER;
+                        await addBalance(w);
+                        msg.textContent = '🎉 فوز! +' + w.toFixed(2) + '$';
+                        msg.className = 'result-msg win-msg';
+                        area.className = 'result-area win-glow';
+                        await saveGame('ماكينة السلوتس', bet, 'win', w, symbols.join(' | '));
+                        showToast('🎉 ربحت ' + w.toFixed(2) + '$!');
+                        confetti();
+                    } else {
+                        msg.textContent = '😢 خسرت ' + bet.toFixed(2) + '$';
+                        msg.className = 'result-msg lose-msg';
+                        area.className = 'result-area lose-glow';
+                        await saveGame('ماكينة السلوتس', bet, 'lose', 0, symbols.join(' | '));
+                    }
+                    
+                    setTimeout(() => {
+                        area.className = 'result-area';
+                        ids.forEach(id => document.getElementById(id).classList.remove('win-reel'));
+                    }, 2000);
+                    
+                    btn.disabled = false; btn.textContent = '🎰 العب الآن';
+                    busy = false;
+                    loadHistory();
+                }, 700);
+                
+            }, spinDuration);
+        }
+
+        // ==================== DICE ====================
+        async function playDice() {
+            if (busy) return;
+            const bet = bets.dice;
+            if (bet > (user?.balance||0)) { showToast('❌ رصيد غير كافي','error'); return; }
+            if (!user?.id) { showToast('❌ سجل دخول أولاً','error'); return; }
+
+            busy = true;
+            const btn = document.getElementById('diceBtn');
+            btn.disabled = true; btn.textContent = '🎲 جاري الرمي...';
+            
+            await deductBalance(bet);
+            
+            const dice = document.getElementById('diceDisplay');
+            dice.classList.add('rolling');
+            
+            const rollDuration = 1400 + Math.random() * 600;
+            
+            setTimeout(async () => {
+                dice.classList.remove('rolling');
+                
+                const num = Math.floor(Math.random() * 6) + 1;
+                const win = num === 6;
+                dice.textContent = DICE_FACES[num];
+                
+                const area = document.getElementById('diceArea');
+                const msg  = document.getElementById('diceMsg');
+                
+                if (win) {
+                    const w = bet * MULTIPLIER;
+                    await addBalance(w);
+                    msg.textContent = '🎉 النرد ' + num + '! فوز! +' + w.toFixed(2) + '$';
+                    msg.className = 'result-msg win-msg';
+                    area.className = 'result-area win-glow';
+                    dice.classList.add('win-dice');
+                    await saveGame('النرد', bet, 'win', w, '🎲 ' + num);
+                    showToast('🎉 ربحت ' + w.toFixed(2) + '$!');
+                    confetti();
+                } else {
+                    msg.textContent = '😢 النرد ' + num + '! خسرت ' + bet.toFixed(2) + '$';
+                    msg.className = 'result-msg lose-msg';
+                    area.className = 'result-area lose-glow';
+                    await saveGame('النرد', bet, 'lose', 0, '🎲 ' + num);
+                }
+                
+                setTimeout(() => {
+                    area.className = 'result-area';
+                    dice.classList.remove('win-dice');
+                }, 2000);
+                
+                btn.disabled = false; btn.textContent = '🎲 ارمِ النرد';
+                busy = false;
+                loadHistory();
+            }, rollDuration);
+        }
+
+        // ==================== CARDS ====================
+        async function playCards() {
+            if (busy) return;
+            const bet = bets.cards;
+            if (bet > (user?.balance||0)) { showToast('❌ رصيد غير كافي','error'); return; }
+            if (!user?.id) { showToast('❌ سجل دخول أولاً','error'); return; }
+
+            busy = true;
+            const btn = document.getElementById('cardsBtn');
+            btn.disabled = true; btn.textContent = '🃏 جاري السحب...';
+            
+            await deductBalance(bet);
+            
+            const card = document.getElementById('cardDisplay');
+            card.classList.add('flipping');
+            
+            setTimeout(async () => {
+                card.classList.remove('flipping');
+                
+                const val = CARDS[Math.floor(Math.random() * CARDS.length)];
+                const suit = SUITS[Math.floor(Math.random() * SUITS.length)];
+                const win = val === 'A';
+                
+                card.textContent = val + suit.s;
+                card.className = 'playing-card';
+                if (suit.c === 'red') card.classList.add('red');
+                
+                const area = document.getElementById('cardsArea');
+                const msg  = document.getElementById('cardsMsg');
+                
+                if (win) {
+                    const w = bet * MULTIPLIER;
+                    await addBalance(w);
+                    msg.textContent = '🎉 الآس! فوز! +' + w.toFixed(2) + '$';
+                    msg.className = 'result-msg win-msg';
+                    area.className = 'result-area win-glow';
+                    card.classList.add('win-card');
+                    await saveGame('ورق اللعب', bet, 'win', w, val + suit.s);
+                    showToast('🎉 ربحت ' + w.toFixed(2) + '$!');
+                    confetti();
+                } else {
+                    msg.textContent = '😢 ' + val + suit.s + '! خسرت ' + bet.toFixed(2) + '$';
+                    msg.className = 'result-msg lose-msg';
+                    area.className = 'result-area lose-glow';
+                    await saveGame('ورق اللعب', bet, 'lose', 0, val + suit.s);
+                }
+                
+                setTimeout(() => {
+                    area.className = 'result-area';
+                    card.classList.remove('win-card');
+                }, 2000);
+                
+                btn.disabled = false; btn.textContent = '🃏 اسحب بطاقة';
+                busy = false;
+                loadHistory();
+            }, 800);
+        }
+
+        // ==================== WHEEL ====================
+        async function playWheel() {
+            if (busy) return;
+            const bet = bets.wheel;
+            if (bet > (user?.balance||0)) { showToast('❌ رصيد غير كافي','error'); return; }
+            if (!user?.id) { showToast('❌ سجل دخول أولاً','error'); return; }
+
+            busy = true;
+            const btn = document.getElementById('wheelBtn');
+            btn.disabled = true; btn.textContent = '🎡 جاري الدوران...';
+            
+            await deductBalance(bet);
+            
+            const wheel = document.getElementById('wheelDisplay');
+            const win = isWin();
+            
+            let rotation;
+            if (win) {
+                // التوقف على منطقة خضراء (15% = 54 درجة)
+                // 7 مناطق: 4 حمراء (54° لكل منها) و 3 خضراء (54° لكل منها)
+                // المناطق الخضراء: 0-54, 108-162, 216-270
+                const greenZones = [
+                    { start: 0, end: 54 },
+                    { start: 108, end: 162 },
+                    { start: 216, end: 270 }
+                ];
+                const zone = greenZones[Math.floor(Math.random() * greenZones.length)];
+                rotation = zone.start + Math.random() * (zone.end - zone.start);
+            } else {
+                // التوقف على منطقة حمراء
+                const redZones = [
+                    { start: 54, end: 108 },
+                    { start: 162, end: 216 },
+                    { start: 270, end: 324 },
+                    { start: 324, end: 360 }
+                ];
+                const zone = redZones[Math.floor(Math.random() * redZones.length)];
+                rotation = zone.start + Math.random() * (zone.end - zone.start);
+            }
+            
+            // إضافة دورات كاملة للحركة الواقعية
+            const fullSpins = 5 + Math.floor(Math.random() * 4);
+            rotation += 360 * fullSpins;
+            
+            wheel.style.transform = `rotate(${rotation}deg)`;
+            
+            setTimeout(async () => {
+                const area = document.getElementById('wheelArea');
+                const msg  = document.getElementById('wheelMsg');
+                
+                if (win) {
+                    const w = bet * MULTIPLIER;
+                    await addBalance(w);
+                    msg.textContent = '🎉 أخضر! فوز! +' + w.toFixed(2) + '$';
+                    msg.className = 'result-msg win-msg';
+                    area.className = 'result-area win-glow';
+                    await saveGame('عجلة الحظ', bet, 'win', w, '🟢 منطقة خضراء');
+                    showToast('🎉 ربحت ' + w.toFixed(2) + '$!');
+                    confetti();
+                } else {
+                    msg.textContent = '😢 أحمر! خسرت ' + bet.toFixed(2) + '$';
+                    msg.className = 'result-msg lose-msg';
+                    area.className = 'result-area lose-glow';
+                    await saveGame('عجلة الحظ', bet, 'lose', 0, '🔴 منطقة حمراء');
+                }
+                
+                setTimeout(() => { area.className = 'result-area'; }, 2000);
+                
+                btn.disabled = false; btn.textContent = '🎡 دوّر العجلة';
+                busy = false;
+                loadHistory();
+            }, 4200);
+        }
+
+        // ==================== CONFETTI ====================
+        function confetti() {
+            const holder = document.createElement('div');
+            holder.className = 'confetti-holder';
+            const colors = ['#c8a97e','#27ae60','#f39c12','#e74c3c','#3498db','#9b59b6','#1abc9c','#e67e22','#2ecc71'];
+            for (let i = 0; i < 60; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'confetti-dot';
+                dot.style.left = Math.random() * 100 + '%';
+                dot.style.top = -(Math.random() * 150 + 50) + 'px';
+                dot.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                dot.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
+                dot.style.animationDelay = Math.random() * 0.6 + 's';
+                dot.style.width = (Math.random() * 8 + 5) + 'px';
+                dot.style.height = (Math.random() * 8 + 5) + 'px';
+                dot.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                holder.appendChild(dot);
+            }
+            document.body.appendChild(holder);
+            setTimeout(() => holder.remove(), 3500);
+        }
+
+        // ==================== TOAST ====================
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast ' + (type === 'error' ? 'error' : '');
+            t.style.display = 'block';
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => t.style.display = 'none', 2500);
+        }
+
+        // ==================== START ====================
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
