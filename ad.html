@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>الدردشة - Elite Capital</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#c8a97e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Elite Capital">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: #0f172a;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* الهيدر */
+        .header {
+            background: #1e293b;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #c8a97e;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 60px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(200,169,126,0.1);
+            border: 2px solid #c8a97e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #c8a97e;
+            font-size: 18px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .back-btn:active {
+            background: #c8a97e;
+            color: #0f172a;
+        }
+
+        .header-info {
+            flex: 1;
+        }
+
+        .header-info h1 {
+            font-size: 17px;
+            color: #c8a97e;
+            margin-bottom: 2px;
+        }
+
+        .header-info p {
+            font-size: 11px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* أزرار التبديل */
+        .chat-tabs {
+            display: flex;
+            gap: 8px;
+            background: rgba(0,0,0,0.3);
+            padding: 4px;
+            border-radius: 40px;
+            margin: 0 8px;
+        }
+
+        .chat-tab {
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: transparent;
+            color: rgba(255,255,255,0.6);
+            border: none;
+            white-space: nowrap;
+        }
+
+        .chat-tab.active {
+            background: #c8a97e;
+            color: #0f172a;
+        }
+
+        /* قائمة الأعضاء المتصلين */
+        .members-list {
+            position: fixed;
+            top: 60px;
+            right: -280px;
+            width: 260px;
+            height: calc(100vh - 140px);
+            background: #1e293b;
+            border-left: 2px solid #c8a97e;
+            z-index: 50;
+            transition: right 0.3s ease;
+            padding: 12px;
+            overflow-y: auto;
+        }
+
+        .members-list.open {
+            right: 0;
+        }
+
+        .members-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(200,169,126,0.3);
+            margin-bottom: 12px;
+        }
+
+        .members-header h4 {
+            color: #c8a97e;
+            font-size: 14px;
+        }
+
+        .members-toggle {
+            position: fixed;
+            top: 70px;
+            left: 10px;
+            width: 40px;
+            height: 40px;
+            background: #c8a97e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 60;
+            color: #0f172a;
+            font-size: 18px;
+            box-shadow: 0 2px 10px rgba(200,169,126,0.3);
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            background: rgba(255,255,255,0.03);
+        }
+
+        .member-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #c8a97e, #b38b5b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #0f172a;
+            font-size: 14px;
+        }
+
+        .member-info {
+            flex: 1;
+        }
+
+        .member-name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .member-status {
+            font-size: 10px;
+            color: #27ae60;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .member-status.offline {
+            color: rgba(255,255,255,0.3);
+        }
+
+        .online-dot {
+            width: 6px;
+            height: 6px;
+            background: #27ae60;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* منطقة المحادثة */
+        .chat-area {
+            position: fixed;
+            top: 60px;
+            bottom: 70px;
+            left: 0;
+            right: 0;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: linear-gradient(135deg, #0f172a, #1a1f2e);
+        }
+
+        /* رسالة المستخدم */
+        .message-user {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 4px;
+        }
+
+        .message-user-content {
+            background: #c8a97e;
+            color: #0f172a;
+            padding: 10px 14px;
+            border-radius: 18px 18px 5px 18px;
+            max-width: 80%;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        /* رسالة الآخرين */
+        .message-other {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 4px;
+        }
+
+        .message-other-content {
+            background: #1e293b;
+            border: 1px solid rgba(200,169,126,0.3);
+            padding: 10px 14px;
+            border-radius: 18px 18px 18px 5px;
+            max-width: 80%;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        /* رسالة النظام */
+        .message-system {
+            text-align: center;
+            margin: 8px 0;
+        }
+
+        .message-system span {
+            background: rgba(200,169,126,0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* رسالة محذوفة */
+        .message-deleted {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px dashed #e74c3c;
+            color: rgba(255,255,255,0.4);
+            font-style: italic;
+            padding: 8px 12px;
+            border-radius: 18px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        /* الصور في الرسائل */
+        .chat-image {
+            max-width: 180px;
+            max-height: 180px;
+            border-radius: 10px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            border: 1px solid #c8a97e;
+        }
+
+        .image-loading {
+            padding: 8px;
+            background: rgba(200,169,126,0.1);
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #c8a97e;
+            font-size: 12px;
+        }
+
+        /* معلومات الرسالة */
+        .message-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            color: rgba(255,255,255,0.4);
+            margin-top: 3px;
+            padding: 0 4px;
+        }
+
+        .message-user .message-info {
+            justify-content: flex-end;
+        }
+
+        /* فاصل التاريخ */
+        .date-divider {
+            text-align: center;
+            margin: 12px 0;
+        }
+
+        .date-divider span {
+            background: rgba(255,255,255,0.05);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* منطقة الإدخال */
+        .input-area {
+            background: #1e293b;
+            padding: 10px 12px;
+            display: flex;
+            gap: 8px;
+            border-top: 2px solid #c8a97e;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            z-index: 100;
+        }
+
+        .input-area input {
+            flex: 1;
+            height: 50px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(200,169,126,0.3);
+            border-radius: 30px;
+            padding: 0 16px;
+            color: white;
+            font-size: 14px;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .input-area input:focus {
+            outline: none;
+            border-color: #c8a97e;
+        }
+
+        .input-area input:disabled {
+            opacity: 0.5;
+        }
+
+        .image-upload-btn {
+            width: 50px;
+            height: 50px;
+            background: rgba(200,169,126,0.2);
+            border: 1px solid #c8a97e;
+            border-radius: 50%;
+            color: #c8a97e;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .send-btn {
+            width: 50px;
+            height: 50px;
+            background: #c8a97e;
+            border: none;
+            border-radius: 50%;
+            color: #0f172a;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .send-btn:active, .image-upload-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* معاينة الصورة */
+        .image-preview {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            border: 2px solid #c8a97e;
+            border-radius: 16px;
+            padding: 12px;
+            display: none;
+            z-index: 200;
+            max-width: 90%;
+        }
+
+        .image-preview img {
+            max-height: 120px;
+            border-radius: 10px;
+        }
+
+        .image-preview-close {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 26px;
+            height: 26px;
+            background: #e74c3c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* صفحة بدء المحادثة */
+        .start-page {
+            position: fixed;
+            top: 60px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #0f172a, #1a1f2e);
+        }
+
+        .start-icon {
+            font-size: 70px;
+            color: #c8a97e;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .start-page h2 {
+            font-size: 24px;
+            color: #c8a97e;
+            margin-bottom: 10px;
+        }
+
+        .start-page p {
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .start-btn {
+            background: #c8a97e;
+            color: #0f172a;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 35px;
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        /* حالة عدم الاشتراك */
+        .no-subscription-page {
+            position: fixed;
+            top: 60px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .no-subscription-page.active {
+            display: flex;
+        }
+
+        .no-subscription-icon {
+            font-size: 70px;
+            color: #c8a97e;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .no-subscription-page h3 {
+            color: #c8a97e;
+            margin-bottom: 10px;
+        }
+
+        .no-subscription-page p {
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 20px;
+        }
+
+        /* نافذة عرض الصورة */
+        .image-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .image-modal.active {
+            display: flex;
+        }
+
+        .image-modal img {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 16px;
+            border: 3px solid #c8a97e;
+        }
+
+        .image-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            background: #e74c3c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        /* الإشعارات */
+        .toast {
+            position: fixed;
+            top: 70px;
+            left: 16px;
+            right: 16px;
+            background: #27ae60;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 40px;
+            text-align: center;
+            font-size: 13px;
+            display: none;
+            z-index: 9999;
+            z-index: 2000;
+        }
+
+        .toast.error {
+            background: #e74c3c;
+        }
+
+        .toast.warning {
+            background: #f39c12;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        @media (max-width: 400px) {
+            .chat-tab {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+            .member-item {
+                padding: 8px;
+            }
+            .member-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- نافذة عرض الصورة -->
+    <div class="image-modal" id="imageModal" onclick="closeImageModal()">
+        <img id="modalImage" src="" alt="">
+        <div class="image-modal-close" onclick="closeImageModal()">&times;</div>
+    </div>
+
+    <!-- الهيدر -->
+    <div class="header">
+        <a href="dashboard.html" class="back-btn" onclick="goBack()">
+            <i class="fas fa-arrow-right"></i>
+        </a>
+        <div class="header-info">
+            <h1 id="chatTitle">الدردشة</h1>
+            <p id="chatSubtitle">...</p>
+        </div>
+        <div class="chat-tabs" id="chatTabs">
+            <button class="chat-tab active" data-tab="private" onclick="switchChatType('private')">
+                <i class="fas fa-user"></i> خاص
+            </button>
+            <button class="chat-tab" data-tab="group" onclick="switchChatType('group')">
+                <i class="fas fa-users"></i> جماعي
+            </button>
+        </div>
+    </div>
+
+    <!-- زر عرض الأعضاء -->
+    <div class="members-toggle" id="membersToggle" onclick="toggleMembersList()">
+        <i class="fas fa-user-friends"></i>
+    </div>
+
+    <!-- قائمة الأعضاء المتصلين -->
+    <div class="members-list" id="membersList">
+        <div class="members-header">
+            <h4><i class="fas fa-users"></i> الأعضاء المتصلين</h4>
+            <i class="fas fa-times" style="cursor:pointer;" onclick="toggleMembersList()"></i>
+        </div>
+        <div id="onlineMembersList">
+            <div class="loading-spinner">جاري التحميل...</div>
+        </div>
+    </div>
+
+    <!-- معاينة الصورة -->
+    <div class="image-preview" id="imagePreview">
+        <img id="previewImage" src="" alt="">
+        <div class="image-preview-close" onclick="clearSelectedImage()">
+            <i class="fas fa-times"></i>
+        </div>
+    </div>
+
+    <!-- منطقة المحادثة -->
+    <div id="chatContainer" style="display: none;">
+        <div class="chat-area" id="messagesContainer">
+            <!-- الرسائل تظهر هنا -->
+        </div>
+
+        <div class="input-area">
+            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+            <div class="image-upload-btn" onclick="document.getElementById('imageInput').click()">
+                <i class="fas fa-image"></i>
+            </div>
+            <input type="text" id="messageInput" placeholder="اكتب رسالتك هنا..." disabled>
+            <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- صفحة بدء المحادثة الخاصة -->
+    <div id="startContainer" class="start-page">
+        <div class="start-icon">
+            <i class="fas fa-comments"></i>
+        </div>
+        <h2>مرحباً بك</h2>
+        <p>يمكنك التواصل مع فريق الدعم<br>نحن هنا لمساعدتك على مدار الساعة</p>
+        <button class="start-btn" onclick="startPrivateChat()">
+            <i class="fas fa-play"></i>
+            بدء المحادثة
+        </button>
+    </div>
+
+    <!-- صفحة عدم الاشتراك (للدردشة الجماعية) -->
+    <div id="noSubscriptionPage" class="no-subscription-page">
+        <div class="no-subscription-icon">
+            <i class="fas fa-lock"></i>
+        </div>
+        <h3>الدردشة الجماعية للأعضاء فقط</h3>
+        <p>للوصول إلى الدردشة الجماعية والتواصل مع المستثمرين الآخرين<br>يجب أن يكون لديك باقة استثمارية نشطة</p>
+        <a href="index.html#packages" class="start-btn" style="text-decoration: none;">
+            <i class="fas fa-crown"></i> اشترك الآن
+        </a>
+    </div>
+
+    <!-- الإشعارات -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let currentUser = null;
+        let currentChat = null;
+        let currentChatType = 'private'; // 'private' or 'group'
+        let messageInterval = null;
+        let selectedImage = null;
+        let isAdmin = false;
+        let hasActiveSubscription = false;
+        let groupMessagesInterval = null;
+        let onlineMembersInterval = null;
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('✅ تم تحميل الصفحة');
+            await checkUser();
+            await checkSubscription();
+            
+            // إضافة مستمع رفع الصور
+            document.getElementById('imageInput').addEventListener('change', function(e) {
+                if (e.target.files[0]) handleImageSelect(e.target.files[0]);
+            });
+            
+            // إرسال بالضغط على Enter
+            document.getElementById('messageInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') sendMessage();
+            });
+        });
+
+        // التحقق من المستخدم
+        async function checkUser() {
+            const savedUser = localStorage.getItem('current_user');
+            if (!savedUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            currentUser = JSON.parse(savedUser);
+            
+            if (window.supabaseHelpers) {
+                const result = await window.supabaseHelpers.getUserById(currentUser.id);
+                if (result.success && result.data) {
+                    currentUser = result.data;
+                    isAdmin = currentUser.is_admin || false;
+                    hasActiveSubscription = currentUser.has_active_subscription || false;
+                }
+            }
+            
+            // تحديث واجهة التبويبات حسب صلاحية الدردشة الجماعية
+            updateTabsVisibility();
+            
+            await checkExistingPrivateChat();
+        }
+
+        // التحقق من الاشتراك
+        async function checkSubscription() {
+            if (!currentUser) return;
+            
+            try {
+                const result = await window.supabaseHelpers.getUserSubscription(currentUser.id);
+                hasActiveSubscription = result.success && result.data !== null;
+                
+                if (currentUser.has_active_subscription !== hasActiveSubscription) {
+                    await window.supabaseHelpers.updateUser(currentUser.id, {
+                        has_active_subscription: hasActiveSubscription
+                    });
+                    currentUser.has_active_subscription = hasActiveSubscription;
+                }
+                
+                updateTabsVisibility();
+            } catch (error) {
+                console.error('خطأ في التحقق من الاشتراك:', error);
+            }
+        }
+
+        // تحديث ظهور التبويبات
+        function updateTabsVisibility() {
+            const groupTab = document.querySelector('.chat-tab[data-tab="group"]');
+            if (!hasActiveSubscription && !isAdmin) {
+                groupTab.style.opacity = '0.5';
+                groupTab.style.pointerEvents = 'none';
+            } else {
+                groupTab.style.opacity = '1';
+                groupTab.style.pointerEvents = 'auto';
+            }
+        }
+
+        // التحقق من المحادثة الخاصة النشطة
+        async function checkExistingPrivateChat() {
+            try {
+                const result = await window.supabaseHelpers.getUserActiveChat(currentUser.id);
+                
+                if (result.success && result.data) {
+                    currentChat = result.data;
+                    currentChatType = 'private';
+                    showChatInterface();
+                    await loadPrivateMessages();
+                    
+                    if (messageInterval) clearInterval(messageInterval);
+                    messageInterval = setInterval(loadPrivateMessages, 3000);
+                } else {
+                    showStartInterface();
+                }
+            } catch (error) {
+                console.error('خطأ:', error);
+                showStartInterface();
+            }
+        }
+
+        // بدء دردشة خاصة
+        async function startPrivateChat() {
+            try {
+                showToast('جاري بدء المحادثة...', 'info');
+                
+                const result = await window.supabaseHelpers.startLiveChat(currentUser.id);
+                
+                if (result.success) {
+                    currentChat = result.data;
+                    currentChatType = 'private';
+                    showChatInterface();
+                    await loadPrivateMessages();
+                    
+                    setTimeout(async () => {
+                        await sendWelcomeMessage();
+                    }, 1000);
+                    
+                    if (messageInterval) clearInterval(messageInterval);
+                    messageInterval = setInterval(loadPrivateMessages, 3000);
+                    
+                    showToast('✅ تم بدء المحادثة');
+                } else {
+                    showToast('❌ ' + result.error, 'error');
+                }
+            } catch (error) {
+                console.error('خطأ:', error);
+                showToast('❌ حدث خطأ', 'error');
+            }
+        }
+
+        // إرسال رسالة ترحيب
+        async function sendWelcomeMessage() {
+            if (!currentChat || currentChatType !== 'private') return;
+            
+            await window.supabaseHelpers.sendChatMessage(
+                currentChat.id,
+                currentUser.id,
+                'مرحباً، كيف يمكنني مساعدتك؟'
+            );
+            await loadPrivateMessages();
+        }
+
+        // التبديل بين أنواع الدردشة
+        async function switchChatType(type) {
+            if (type === currentChatType) return;
+            
+            // تحديث التبويب النشط
+            document.querySelectorAll('.chat-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`.chat-tab[data-tab="${type}"]`).classList.add('active');
+            
+            // إيقاف المؤقتات الحالية
+            if (messageInterval) clearInterval(messageInterval);
+            if (groupMessagesInterval) clearInterval(groupMessagesInterval);
+            if (onlineMembersInterval) clearInterval(onlineMembersInterval);
+            
+            currentChatType = type;
+            
+            if (type === 'private') {
+                // الدردشة الخاصة
+                document.getElementById('membersToggle').style.display = 'none';
+                document.getElementById('membersList').classList.remove('open');
+                document.getElementById('chatTitle').textContent = 'الدردشة الخاصة';
+                
+                if (currentChat) {
+                    showChatInterface();
+                    await loadPrivateMessages();
+                    messageInterval = setInterval(loadPrivateMessages, 3000);
+                } else {
+                    await checkExistingPrivateChat();
+                }
+            } else {
+                // الدردشة الجماعية
+                document.getElementById('membersToggle').style.display = 'flex';
+                document.getElementById('chatTitle').textContent = 'الدردشة الجماعية';
+                
+                if (!hasActiveSubscription && !isAdmin) {
+                    showNoSubscriptionMessage();
+                    return;
+                }
+                
+                showChatInterface();
+                await loadGroupMessages();
+                groupMessagesInterval = setInterval(loadGroupMessages, 2000);
+                onlineMembersInterval = setInterval(loadOnlineMembers, 5000);
+                await loadOnlineMembers();
+            }
+        }
+
+        // عرض واجهة عدم الاشتراك
+        function showNoSubscriptionMessage() {
+            document.getElementById('chatContainer').style.display = 'none';
+            document.getElementById('startContainer').style.display = 'none';
+            document.getElementById('noSubscriptionPage').classList.add('active');
+            document.getElementById('membersToggle').style.display = 'none';
+        }
+
+        // إظهار واجهة الدردشة
+        function showChatInterface() {
+            document.getElementById('startContainer').style.display = 'none';
+            document.getElementById('noSubscriptionPage').classList.remove('active');
+            document.getElementById('chatContainer').style.display = 'block';
+            
+            const messageInput = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            
+            messageInput.disabled = false;
+            sendBtn.disabled = false;
+            
+            document.getElementById('chatSubtitle').textContent = currentChatType === 'private' ? 'محادثة خاصة' : 'محادثة جماعية';
+            
+            setTimeout(() => {
+                messageInput.focus();
+            }, 300);
+        }
+
+        // إظهار واجهة البداية
+        function showStartInterface() {
+            document.getElementById('startContainer').style.display = 'flex';
+            document.getElementById('chatContainer').style.display = 'none';
+            document.getElementById('noSubscriptionPage').classList.remove('active');
+            document.getElementById('membersToggle').style.display = 'none';
+            document.getElementById('chatTitle').textContent = 'الدردشة الخاصة';
+        }
+
+        // تحميل رسائل الدردشة الخاصة
+        async function loadPrivateMessages() {
+            if (!currentChat || currentChatType !== 'private') return;
+
+            try {
+                const result = await window.supabaseHelpers.getChatMessages(currentChat.id);
+                
+                if (result.success && result.data) {
+                    displayMessages(result.data, true);
+                    await window.supabaseHelpers.markMessagesAsRead(currentChat.id, currentUser.id);
+                }
+            } catch (error) {
+                console.error('خطأ:', error);
+            }
+        }
+
+        // تحميل رسائل الدردشة الجماعية
+        async function loadGroupMessages() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('group_messages')
+                    .select(`
+                        *,
+                        users:user_id (id, name, is_admin)
+                    `)
+                    .order('created_at', { ascending: true })
+                    .limit(100);
+                
+                if (error) throw error;
+                
+                displayMessages(data || [], false);
+                
+                // تحديث حالة القراءة للرسائل الجماعية (اختياري)
+                if (data && data.length > 0) {
+                    const lastMessageId = data[data.length - 1]?.id;
+                    if (lastMessageId) {
+                        await supabaseClient
+                            .from('user_group_read_status')
+                            .upsert({
+                                user_id: currentUser.id,
+                                last_read_message_id: lastMessageId,
+                                updated_at: new Date().toISOString()
+                            });
+                    }
+                }
+            } catch (error) {
+                console.error('خطأ في تحميل الرسائل الجماعية:', error);
+            }
+        }
+
+        // تحميل الأعضاء المتصلين
+        async function loadOnlineMembers() {
+            try {
+                // جلب المستخدمين الذين لديهم اشتراك نشط
+                const { data: users, error } = await supabaseClient
+                    .from('users')
+                    .select('id, name, is_admin, has_active_subscription')
+                    .eq('has_active_subscription', true)
+                    .limit(50);
+                
+                if (error) throw error;
+                
+                // جلب الحضور (مؤقت - يمكن تحسينه باستخدام جدول presence)
+                const onlineUsers = users || [];
+                
+                displayOnlineMembers(onlineUsers);
+            } catch (error) {
+                console.error('خطأ في تحميل الأعضاء:', error);
+            }
+        }
+
+        // عرض الأعضاء المتصلين
+        function displayOnlineMembers(users) {
+            const container = document.getElementById('onlineMembersList');
+            
+            if (!users || users.length === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.4);">لا يوجد أعضاء متصلين</div>';
+                return;
+            }
+            
+            let html = '';
+            users.forEach(user => {
+                const isCurrentUser = user.id === currentUser.id;
+                const initial = (user.name || 'م').charAt(0).toUpperCase();
+                
+                html += `
+                    <div class="member-item">
+                        <div class="member-avatar">${initial}</div>
+                        <div class="member-info">
+                            <div class="member-name">
+                                ${user.name || 'مستخدم'} ${isCurrentUser ? '(أنت)' : ''}
+                                ${user.is_admin ? '<i class="fas fa-crown" style="color:#c8a97e;font-size:10px;"></i>' : ''}
+                            </div>
+                            <div class="member-status">
+                                <span class="online-dot"></span> متصل الآن
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // عرض الرسائل
+        async function loadAndDisplayImage(imageId, imgElement, loadingDiv) {
+            try {
+                const result = await window.supabaseHelpers.getChatImage(imageId);
+                
+                if (result.success) {
+                    imgElement.src = result.data;
+                    imgElement.style.display = 'block';
+                    if (loadingDiv) loadingDiv.style.display = 'none';
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('خطأ في تحميل الصورة:', error);
+                if (loadingDiv) {
+                    loadingDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> فشل التحميل';
+                }
+            }
+        }
+
+        function displayMessages(messages, isPrivate) {
+            const container = document.getElementById('messagesContainer');
+            
+            let html = '';
+            let lastDate = null;
+            
+            messages.forEach(msg => {
+                // تجاهل الرسائل المحذوفة للمستخدمين العاديين في الخاص
+                if (isPrivate && msg.is_deleted && !isAdmin) {
+                    return;
+                }
+                
+                const isUser = msg.user_id === currentUser.id;
+                const msgDate = new Date(msg.created_at);
+                const dateStr = msgDate.toLocaleDateString('ar-SA');
+                const timeStr = msgDate.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+                
+                if (lastDate !== dateStr) {
+                    html += `
+                        <div class="date-divider">
+                            <span>${dateStr}</span>
+                        </div>
+                    `;
+                    lastDate = dateStr;
+                }
+                
+                let messageContent = '';
+                
+                if (msg.is_deleted) {
+                    messageContent = `
+                        <div class="message-deleted">
+                            <i class="fas fa-trash"></i> تم حذف الرسالة
+                        </div>
+                    `;
+                } else {
+                    if (msg.image_url) {
+                        if (msg.image_url.startsWith('image:')) {
+                            const imageId = msg.image_url.replace('image:', '');
+                            messageContent += `
+                                <div style="margin-bottom: 4px;">
+                                    <img class="chat-image" data-image-id="${imageId}" 
+                                         style="display:none;" onclick="showFullImage(this)">
+                                    <div class="image-loading" data-image-id="${imageId}">
+                                        <i class="fas fa-spinner fa-spin"></i> جاري التحميل...
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            messageContent += `
+                                <img src="${msg.image_url}" class="chat-image" onclick="showFullImage(this)">
+                            `;
+                        }
+                    }
+                    if (msg.message) {
+                        messageContent += `<div>${escapeHtml(msg.message)}</div>`;
+                    }
+                }
+                
+                const senderName = msg.users?.is_admin ? 'الدعم' : (msg.users?.name || 'مستخدم');
+                
+                if (isUser) {
+                    html += `
+                        <div class="message-user">
+                            <div style="max-width: 80%;">
+                                <div class="message-user-content">
+                                    ${messageContent}
+                                </div>
+                                <div class="message-info">
+                                    <span>أنت</span>
+                                    <span>•</span>
+                                    <span>${timeStr}</span>
+                                    <span>${!isPrivate && !isUser ? '' : (msg.is_read ? '✓✓' : '✓')}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="message-other">
+                            <div style="max-width: 80%;">
+                                <div class="message-other-content">
+                                    ${messageContent}
+                                </div>
+                                <div class="message-info">
+                                    <span>${senderName}</span>
+                                    <span>•</span>
+                                    <span>${timeStr}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            if (messages.length === 0) {
+                html = '<div class="loading-spinner">لا توجد رسائل بعد</div>';
+            }
+            
+            container.innerHTML = html;
+            
+            // تحميل الصور
+            messages.forEach(msg => {
+                if (msg.image_url && msg.image_url.startsWith('image:')) {
+                    const imageId = msg.image_url.replace('image:', '');
+                    setTimeout(() => {
+                        const imgElement = document.querySelector(`img[data-image-id="${imageId}"]`);
+                        const loadingDiv = document.querySelector(`.image-loading[data-image-id="${imageId}"]`);
+                        if (imgElement && loadingDiv) {
+                            loadAndDisplayImage(imageId, imgElement, loadingDiv);
+                        }
+                    }, 100);
+                }
+            });
+            
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // إرسال رسالة
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if ((!message && !selectedImage)) return;
+            
+            if (selectedImage) {
+                await sendImageMessage(selectedImage);
+            }
+            
+            if (message) {
+                input.value = '';
+                
+                if (currentChatType === 'private' && currentChat) {
+                    const result = await window.supabaseHelpers.sendChatMessage(
+                        currentChat.id,
+                        currentUser.id,
+                        message
+                    );
+                    
+                    if (result.success) {
+                        await loadPrivateMessages();
+                    } else {
+                        showToast('❌ ' + result.error, 'error');
+                    }
+                } else if (currentChatType === 'group') {
+                    const { error } = await supabaseClient
+                        .from('group_messages')
+                        .insert({
+                            user_id: currentUser.id,
+                            message: message,
+                            created_at: new Date().toISOString()
+                        });
+                    
+                    if (!error) {
+                        await loadGroupMessages();
+                    } else {
+                        showToast('❌ فشل إرسال الرسالة', 'error');
+                    }
+                }
+            }
+            
+            clearSelectedImage();
+        }
+
+        // إرسال صورة
+        async function sendImageMessage(file) {
+            try {
+                // رفع الصورة
+                const result = await window.supabaseHelpers.uploadChatImage(file, currentUser.id);
+                
+                if (result.success) {
+                    if (currentChatType === 'private' && currentChat) {
+                        await window.supabaseHelpers.sendChatMessage(
+                            currentChat.id,
+                            currentUser.id,
+                            null,
+                            result.data.url
+                        );
+                        await loadPrivateMessages();
+                    } else if (currentChatType === 'group') {
+                        await supabaseClient
+                            .from('group_messages')
+                            .insert({
+                                user_id: currentUser.id,
+                                image_url: result.data.url,
+                                created_at: new Date().toISOString()
+                            });
+                        await loadGroupMessages();
+                    }
+                    showToast('✅ تم إرسال الصورة');
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('خطأ:', error);
+                showToast('❌ ' + error.message, 'error');
+            }
+        }
+
+        // معالجة اختيار الصورة
+        function handleImageSelect(file) {
+            if (!file.type.startsWith('image/')) {
+                showToast('❌ الرجاء اختيار صورة فقط', 'error');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('❌ حجم الصورة كبير جداً (الحد الأقصى 5MB)', 'error');
+                return;
+            }
+            
+            selectedImage = file;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('previewImage').src = event.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearSelectedImage() {
+            selectedImage = null;
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('imageInput').value = '';
+        }
+
+        // عرض الصورة بالحجم الكامل
+        function showFullImage(imgElement) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modalImg.src = imgElement.src;
+            modal.classList.add('active');
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.remove('active');
+        }
+
+        // قائمة الأعضاء
+        function toggleMembersList() {
+            const list = document.getElementById('membersList');
+            list.classList.toggle('open');
+        }
+
+        // العودة
+        function goBack() {
+            if (messageInterval) clearInterval(messageInterval);
+            if (groupMessagesInterval) clearInterval(groupMessagesInterval);
+            if (onlineMembersInterval) clearInterval(onlineMembersInterval);
+            window.location.href = 'dashboard.html';
+        }
+
+        // الإشعارات
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + (type === 'error' ? 'error' : type === 'warning' ? 'warning' : '');
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // تابع الـ HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // تنظيف
+        window.addEventListener('beforeunload', function() {
+            if (messageInterval) clearInterval(messageInterval);
+            if (groupMessagesInterval) clearInterval(groupMessagesInterval);
+            if (onlineMembersInterval) clearInterval(onlineMembersInterval);
+        });
+    </script>
+</body>
+</html>
