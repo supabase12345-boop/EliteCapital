@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELITE CAPITAL | لوحة الإدارة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: #0f172a;
+            color: white;
+        }
+        /* التوب بار */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #0f172a;
+            border-bottom: 1px solid #c8a97e;
+            padding: 12px 25px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 100;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: #c8a97e;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #0f172a;
+        }
+        .logo-text {
+            font-size: 20px;
+            font-weight: 900;
+            color: #c8a97e;
+        }
+        .logo-text span {
+            display: block;
+            font-size: 10px;
+            color: rgba(255,255,255,0.5);
+        }
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: #c8a97e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: #0f172a;
+        }
+        /* السايدبار */
+        .sidebar {
+            position: fixed;
+            top: 69px;
+            right: 0;
+            width: 260px;
+            height: calc(100vh - 69px);
+            background: #0f172a;
+            border-left: 1px solid #c8a97e;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 99;
+            transition: 0.3s;
+        }
+        .sidebar.collapsed { right: -260px; }
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 20px;
+            color: rgba(255,255,255,0.7);
+            border-radius: 15px;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+        .menu-link:hover, .menu-link.active {
+            background: rgba(200,169,126,0.2);
+            color: #c8a97e;
+            border: 1px solid #c8a97e;
+        }
+        /* المحتوى الرئيسي */
+        .main-content {
+            margin-top: 69px;
+            margin-right: 260px;
+            padding: 25px;
+            transition: 0.3s;
+        }
+        .main-content.expanded { margin-right: 0; }
+        /* البطاقات */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: rgba(30,41,59,0.7);
+            border: 1px solid rgba(200,169,126,0.2);
+            border-radius: 25px;
+            padding: 20px;
+            transition: 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-5px); border-color: #c8a97e; }
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(200,169,126,0.1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #c8a97e;
+            margin-bottom: 15px;
+        }
+        .stat-label { color: rgba(255,255,255,0.7); font-size: 13px; }
+        .stat-value { font-size: 28px; font-weight: 900; color: #c8a97e; }
+        /* الكروت */
+        .glass-card {
+            background: rgba(30,41,59,0.7);
+            border: 1px solid rgba(200,169,126,0.2);
+            border-radius: 30px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #c8a97e;
+        }
+        /* الجدول */
+        .table-responsive { overflow-x: auto; }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .admin-table th {
+            text-align: right;
+            padding: 15px;
+            background: rgba(200,169,126,0.1);
+            color: #c8a97e;
+            border-bottom: 2px solid #c8a97e;
+        }
+        .admin-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .admin-table tr:hover { background: rgba(200,169,126,0.05); }
+        /* الأزرار */
+        .btn {
+            padding: 8px 18px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+        .btn-sm { padding: 5px 12px; font-size: 12px; }
+        .btn-primary { background: #c8a97e; color: #0f172a; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-warning { background: #f39c12; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-outline { background: transparent; border: 1px solid #c8a97e; color: white; }
+        .btn-info { background: #3498db; color: white; }
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        /* حالة المستخدم */
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            display: inline-block;
+        }
+        .status-active { background: rgba(39,174,96,0.2); color: #27ae60; }
+        .status-suspended { background: rgba(243,156,18,0.2); color: #f39c12; }
+        /* النوافذ المنبثقة */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: #1e293b;
+            border-radius: 30px;
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 2px solid #c8a97e;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .modal-title { font-size: 24px; font-weight: 900; color: #c8a97e; }
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+        }
+        .modal-close:hover { color: #e74c3c; }
+        /* الفورم */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: rgba(255,255,255,0.7); }
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(200,169,126,0.3);
+            border-radius: 15px;
+            color: white;
+        }
+        .form-control:focus { outline: none; border-color: #c8a97e; }
+        /* تفاصيل المستخدم */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .detail-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(200,169,126,0.2);
+            border-radius: 15px;
+            padding: 15px;
+        }
+        .detail-item label { font-size: 11px; color: rgba(255,255,255,0.5); display: block; }
+        .detail-item .value { font-size: 16px; font-weight: 700; color: #c8a97e; }
+        /* الإشعارات */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            display: none;
+            z-index: 2000;
+        }
+        .toast.error { background: #e74c3c; }
+        /* الترقيم */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .page-btn {
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(200,169,126,0.3);
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+        }
+        .page-btn.active { background: #c8a97e; color: #0f172a; }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(200,169,126,0.3);
+        }
+        .menu-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: #c8a97e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            color: #0f172a;
+            font-size: 22px;
+        }
+        .filter-chip {
+            padding: 8px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(200,169,126,0.3);
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+        }
+        .filter-chip:hover { background: #c8a97e; color: #0f172a; }
+        @media (max-width: 768px) {
+            .main-content { margin-right: 0; }
+            .detail-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="logo">
+        <div class="logo-icon"><i class="fas fa-crown"></i></div>
+        <div class="logo-text">ELITE CAPITAL<br><span>نظام الإدارة</span></div>
+    </div>
+    <div class="user-avatar" id="userAvatar">أ</div>
+</div>
+
+<div class="sidebar" id="sidebar">
+    <div class="menu-link active" onclick="showSection('dashboard')">
+        <i class="fas fa-chart-pie"></i> <span>لوحة التحكم</span>
+    </div>
+    <div class="menu-link" onclick="showSection('users')">
+        <i class="fas fa-users"></i> <span>المستخدمين</span>
+    </div>
+    <div class="menu-link" onclick="showSection('team')">
+        <i class="fas fa-user-friends"></i> <span>الفريق (الإحالات)</span>
+    </div>
+    <div class="menu-link" onclick="showSection('activities')">
+        <i class="fas fa-history"></i> <span>سجل العمليات</span>
+    </div>
+    <div class="menu-link" onclick="showSection('advanced_stats')">
+        <i class="fas fa-chart-line"></i> <span>إحصائيات متقدمة</span>
+    </div>
+</div>
+
+<div class="menu-toggle" onclick="toggleSidebar()">
+    <i class="fas fa-bars"></i>
+</div>
+
+<div class="main-content" id="mainContent">
+    <!-- لوحة التحكم -->
+    <div id="dashboard-section" class="section">
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-label">إجمالي المشتركين</div><div class="stat-value" id="totalUsers">0</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-label">باقات فعالة</div><div class="stat-value" id="activeSubscriptions">0</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-label">باقات منتهية</div><div class="stat-value" id="expiredSubscriptions">0</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div><div class="stat-label">إجمالي الإيداعات</div><div class="stat-value" id="totalDeposits">0$</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-hand-holding-usd"></i></div><div class="stat-label">إجمالي السحوبات</div><div class="stat-value" id="totalWithdrawals">0$</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-chart-line"></i></div><div class="stat-label">إجمالي الأرباح المدفوعة</div><div class="stat-value" id="totalProfits">0$</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-user-plus"></i></div><div class="stat-label">مستخدمين جدد اليوم</div><div class="stat-value" id="newToday">0</div></div>
+        </div>
+    </div>
+
+    <!-- المستخدمين -->
+    <div id="users-section" class="section" style="display: none;">
+        <div class="glass-card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-users"></i> قائمة المستخدمين</h3>
+                <div style="display: flex; gap: 10px;">
+                    <button class="filter-chip" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> تصدير Excel</button>
+                    <button class="filter-chip" onclick="loadUsers()"><i class="fas fa-sync-alt"></i> تحديث</button>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead><tr><th>#</th><th>الاسم</th><th>البريد</th><th>الرصيد</th><th>الباقة</th><th>الحالة</th><th>تاريخ التسجيل</th><th>الإجراءات</th></tr></thead>
+                    <tbody id="usersTable"></tbody>
+                </table>
+            </div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+    <!-- الفريق -->
+    <div id="team-section" class="section" style="display: none;">
+        <div class="glass-card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-user-friends"></i> الفريق (الإحالات)</h3>
+                <button class="filter-chip" onclick="loadTeamStats()"><i class="fas fa-sync-alt"></i> تحديث</button>
+            </div>
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead><tr><th>اسم العضو</th><th>رقم الهاتف</th><th>تاريخ التسجيل</th><th>الباقة</th><th>الرصيد</th><th>إجمالي الإيداعات</th><th>إجمالي الأرباح</th><th>عدد الإحالات</th></tr></thead>
+                    <tbody id="teamTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- سجل العمليات -->
+    <div id="activities-section" class="section" style="display: none;">
+        <div class="glass-card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-history"></i> سجل العمليات</h3>
+                <button class="filter-chip" onclick="loadActivities()"><i class="fas fa-sync-alt"></i> تحديث</button>
+            </div>
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead><tr><th>المستخدم</th><th>نوع العملية</th><th>المبلغ</th><th>التفاصيل</th><th>التاريخ</th></tr></thead>
+                    <tbody id="activitiesTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- إحصائيات متقدمة -->
+    <div id="advanced_stats-section" class="section" style="display: none;">
+        <div class="glass-card">
+            <h3 class="card-title">🏆 أكثر المستخدمين ربحًا</h3>
+            <table class="admin-table"><thead><tr><th>#</th><th>الاسم</th><th>الأرباح</th></tr></thead><tbody id="topEarnersTable"></tbody></table>
+        </div>
+        <div class="glass-card">
+            <h3 class="card-title">👥 أكثر المستخدمين إحالة</h3>
+            <table class="admin-table"><thead><tr><th>#</th><th>الاسم</th><th>عدد الإحالات</th></tr></thead><tbody id="topReferrersTable"></tbody></table>
+        </div>
+        <div class="glass-card">
+            <h3 class="card-title">👑 أكثر الباقات اشتراكًا</h3>
+            <table class="admin-table"><thead><tr><th>#</th><th>الباقة</th><th>عدد المشتركين</th></tr></thead><tbody id="topPackagesTable"></tbody></table>
+        </div>
+    </div>
+</div>
+
+<!-- نافذة تفاصيل المستخدم -->
+<div class="modal" id="userDetailModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">📋 تفاصيل المستخدم</h3>
+            <button class="modal-close" onclick="closeUserDetailModal()">&times;</button>
+        </div>
+        <div id="userDetailContent"></div>
+        <div class="action-buttons">
+            <button class="btn btn-warning" id="suspendBtn" onclick="toggleUserSuspend()"><i class="fas fa-pause-circle"></i> تجميد</button>
+            <button class="btn btn-success" id="activateBtn" onclick="toggleUserActivate()" style="display:none"><i class="fas fa-play-circle"></i> تفعيل</button>
+            <button class="btn btn-primary" onclick="showChangePackage()"><i class="fas fa-exchange-alt"></i> تغيير الباقة</button>
+            <button class="btn btn-info" onclick="showAdjustBalance()"><i class="fas fa-plus-minus"></i> تعديل الرصيد</button>
+            <button class="btn btn-outline" onclick="viewUserActivities()"><i class="fas fa-history"></i> سجل العمليات</button>
+        </div>
+    </div>
+</div>
+
+<!-- نافذة تغيير الباقة -->
+<div class="modal" id="changePackageModal">
+    <div class="modal-content">
+        <div class="modal-header"><h3 class="modal-title">تغيير الباقة</h3><button class="modal-close" onclick="closeChangePackageModal()">&times;</button></div>
+        <div class="form-group"><label>اختر الباقة</label><select id="newPackageSelect" class="form-control"></select></div>
+        <button class="btn btn-success" onclick="changeUserPackage()" style="width:100%">تغيير الباقة</button>
+    </div>
+</div>
+
+<!-- نافذة تعديل الرصيد -->
+<div class="modal" id="adjustBalanceModal">
+    <div class="modal-content">
+        <div class="modal-header"><h3 class="modal-title">تعديل الرصيد</h3><button class="modal-close" onclick="closeAdjustBalanceModal()">&times;</button></div>
+        <div class="form-group"><label>المبلغ ($)</label><input type="number" id="adjustAmount" class="form-control"></div>
+        <div class="form-group"><label>النوع</label><select id="adjustType" class="form-control"><option value="add">➕ إضافة</option><option value="subtract">➖ خصم</option></select></div>
+        <div class="form-group"><label>السبب</label><input type="text" id="adjustReason" class="form-control"></div>
+        <button class="btn btn-success" onclick="adjustBalance()" style="width:100%">تأكيد</button>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    // ========== بيانات تجريبية ==========
+    let usersData = [
+        { id: 1, name: 'أحمد محمد', username: 'ahmed_m', email: 'ahmed@example.com', phone: '0500000001', country: 'السعودية', balance: 12500, total_earned: 3200, deposits: 15000, withdrawals: 2500, package: 'الباقة VIP', package_end: '2025-12-31', status: 'active', created_at: '2024-01-15', last_login: '2024-12-20', referral_code: 'AHMED123', referral_count: 5 },
+        { id: 2, name: 'سارة علي', username: 'sara_a', email: 'sara@example.com', phone: '0500000002', country: 'الإمارات', balance: 8700, total_earned: 2100, deposits: 10000, withdrawals: 1300, package: 'الباقة المتقدمة', package_end: '2025-11-30', status: 'active', created_at: '2024-02-20', last_login: '2024-12-19', referral_code: 'SARA456', referral_count: 8 },
+        { id: 3, name: 'محمد خالد', username: 'mohamed_k', email: 'mohamed@example.com', phone: '0500000003', country: 'مصر', balance: 3400, total_earned: 850, deposits: 5000, withdrawals: 1600, package: 'الباقة الأساسية', package_end: '2025-10-15', status: 'suspended', created_at: '2024-03-10', last_login: '2024-12-18', referral_code: 'MOHAMED789', referral_count: 2 },
+        { id: 4, name: 'نورة عبدالله', username: 'noura_a', email: 'noura@example.com', phone: '0500000004', country: 'الكويت', balance: 5600, total_earned: 1400, deposits: 7000, withdrawals: 1400, package: 'الباقة المتقدمة', package_end: '2025-12-20', status: 'active', created_at: '2024-04-05', last_login: '2024-12-21', referral_code: 'NOURA101', referral_count: 4 },
+        { id: 5, name: 'خالد ابراهيم', username: 'khalid_i', email: 'khalid@example.com', phone: '0500000005', country: 'قطر', balance: 9200, total_earned: 2800, deposits: 12000, withdrawals: 2800, package: 'الباقة VIP', package_end: '2025-12-25', status: 'active', created_at: '2024-01-28', last_login: '2024-12-20', referral_code: 'KHALID202', referral_count: 6 }
+    ];
+
+    let activitiesData = [
+        { user_name: 'أحمد محمد', type: 'إيداع', amount: 5000, description: 'إيداع عبر البنك', date: '2024-12-20' },
+        { user_name: 'سارة علي', type: 'سحب', amount: 1000, description: 'سحب إلى محفظة', date: '2024-12-20' },
+        { user_name: 'محمد خالد', type: 'اشتراك', amount: 500, description: 'شراء باقة', date: '2024-12-19' },
+        { user_name: 'نورة عبدالله', type: 'أرباح', amount: 250, description: 'أرباح يومية', date: '2024-12-19' }
+    ];
+
+    let currentUserId = null;
+    let currentPage = 1;
+    let itemsPerPage = 5;
+
+    // ========== تحميل البيانات ==========
+    function loadDashboardStats() {
+        document.getElementById('totalUsers').innerHTML = usersData.length;
+        document.getElementById('activeSubscriptions').innerHTML = usersData.filter(u => u.status === 'active').length;
+        document.getElementById('expiredSubscriptions').innerHTML = usersData.filter(u => u.status !== 'active').length;
+        document.getElementById('totalDeposits').innerHTML = usersData.reduce((s,u) => s + u.deposits, 0).toFixed(2) + '$';
+        document.getElementById('totalWithdrawals').innerHTML = usersData.reduce((s,u) => s + u.withdrawals, 0).toFixed(2) + '$';
+        document.getElementById('totalProfits').innerHTML = usersData.reduce((s,u) => s + u.total_earned, 0).toFixed(2) + '$';
+        document.getElementById('newToday').innerHTML = usersData.filter(u => u.created_at === new Date().toISOString().split('T')[0]).length;
+    }
+
+    function loadUsers() {
+        displayUsersPage(1);
+        setupPagination();
+    }
+
+    function displayUsersPage(page) {
+        let start = (page - 1) * itemsPerPage;
+        let pageUsers = usersData.slice(start, start + itemsPerPage);
+        let html = '';
+        for (let i = 0; i < pageUsers.length; i++) {
+            let u = pageUsers[i];
+            let statusClass = u.status === 'active' ? 'status-active' : 'status-suspended';
+            let statusText = u.status === 'active' ? 'نشط' : 'موقوف';
+            html += `<tr>
+                <td>${start + i + 1}</td>
+                <td>${u.name}</td>
+                <td>${u.email}</td>
+                <td style="color:#c8a97e;">${u.balance}$</td>
+                <td>${u.package}</td>
+                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                <td>${u.created_at}</td>
+                <td><button class="btn btn-sm btn-primary" onclick="openUserDetail(${u.id})"><i class="fas fa-eye"></i> تفاصيل</button></td>
+            </tr>`;
+        }
+        document.getElementById('usersTable').innerHTML = html;
+    }
+
+    function setupPagination() {
+        let totalPages = Math.ceil(usersData.length / itemsPerPage);
+        let html = '';
+        for (let i = 1; i <= totalPages; i++) {
+            html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+        }
+        document.getElementById('pagination').innerHTML = html;
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        displayUsersPage(page);
+        setupPagination();
+    }
+
+    function openUserDetail(id) {
+        currentUserId = id;
+        let user = usersData.find(u => u.id == id);
+        let html = `<div class="detail-grid">
+            <div class="detail-item"><label>الاسم الكامل</label><div class="value">${user.name}</div></div>
+            <div class="detail-item"><label>اسم المستخدم</label><div class="value">${user.username}</div></div>
+            <div class="detail-item"><label>رقم الهاتف</label><div class="value">${user.phone}</div></div>
+            <div class="detail-item"><label>البريد الإلكتروني</label><div class="value">${user.email}</div></div>
+            <div class="detail-item"><label>الدولة</label><div class="value">${user.country}</div></div>
+            <div class="detail-item"><label>تاريخ التسجيل</label><div class="value">${user.created_at}</div></div>
+            <div class="detail-item"><label>آخر تسجيل دخول</label><div class="value">${user.last_login}</div></div>
+            <div class="detail-item"><label>الرصيد الحالي</label><div class="value" style="color:#27ae60;">${user.balance}$</div></div>
+            <div class="detail-item"><label>الأرباح الكلية</label><div class="value" style="color:#c8a97e;">${user.total_earned}$</div></div>
+            <div class="detail-item"><label>الإيداعات الكلية</label><div class="value">${user.deposits}$</div></div>
+            <div class="detail-item"><label>السحوبات الكلية</label><div class="value">${user.withdrawals}$</div></div>
+            <div class="detail-item"><label>الباقة الحالية</label><div class="value">${user.package}</div></div>
+            <div class="detail-item"><label>تاريخ انتهاء الباقة</label><div class="value">${user.package_end}</div></div>
+            <div class="detail-item"><label>كود الإحالة</label><div class="value">${user.referral_code}</div></div>
+            <div class="detail-item"><label>عدد الإحالات</label><div class="value">${user.referral_count}</div></div>
+        </div>`;
+        document.getElementById('userDetailContent').innerHTML = html;
+        
+        if (user.status === 'active') {
+            document.getElementById('suspendBtn').style.display = 'inline-flex';
+            document.getElementById('activateBtn').style.display = 'none';
+        } else {
+            document.getElementById('suspendBtn').style.display = 'none';
+            document.getElementById('activateBtn').style.display = 'inline-flex';
+        }
+        document.getElementById('userDetailModal').classList.add('active');
+    }
+
+    function closeUserDetailModal() {
+        document.getElementById('userDetailModal').classList.remove('active');
+        currentUserId = null;
+    }
+
+    function toggleUserSuspend() {
+        let idx = usersData.findIndex(u => u.id == currentUserId);
+        if (idx !== -1) usersData[idx].status = 'suspended';
+        showToast('✅ تم تجميد الحساب');
+        closeUserDetailModal();
+        loadUsers();
+        loadDashboardStats();
+    }
+
+    function toggleUserActivate() {
+        let idx = usersData.findIndex(u => u.id == currentUserId);
+        if (idx !== -1) usersData[idx].status = 'active';
+        showToast('✅ تم تفعيل الحساب');
+        closeUserDetailModal();
+        loadUsers();
+        loadDashboardStats();
+    }
+
+    function showChangePackage() {
+        let select = document.getElementById('newPackageSelect');
+        select.innerHTML = `<option>الباقة الأساسية - 100$</option>
+                           <option>الباقة المتقدمة - 250$</option>
+                           <option>الباقة VIP - 500$</option>`;
+        document.getElementById('changePackageModal').classList.add('active');
+    }
+
+    function closeChangePackageModal() {
+        document.getElementById('changePackageModal').classList.remove('active');
+    }
+
+    function changeUserPackage() {
+        let newPackage = document.getElementById('newPackageSelect').value.split(' - ')[0];
+        let idx = usersData.findIndex(u => u.id == currentUserId);
+        if (idx !== -1) usersData[idx].package = newPackage;
+        showToast(`✅ تم تغيير الباقة إلى ${newPackage}`);
+        closeChangePackageModal();
+        closeUserDetailModal();
+        loadUsers();
+    }
+
+    function showAdjustBalance() {
+        document.getElementById('adjustBalanceModal').classList.add('active');
+    }
+
+    function closeAdjustBalanceModal() {
+        document.getElementById('adjustBalanceModal').classList.remove('active');
+    }
+
+    function adjustBalance() {
+        let amount = parseFloat(document.getElementById('adjustAmount').value);
+        let type = document.getElementById('adjustType').value;
+        let reason = document.getElementById('adjustReason').value;
+        if (isNaN(amount) || amount <= 0) { showToast('❌ أدخل مبلغ صحيح', 'error'); return; }
+        
+        let idx = usersData.findIndex(u => u.id == currentUserId);
+        if (idx !== -1) {
+            if (type === 'add') {
+                usersData[idx].balance += amount;
+                showToast(`✅ تم إضافة ${amount}$`);
+            } else {
+                if (usersData[idx].balance >= amount) {
+                    usersData[idx].balance -= amount;
+                    showToast(`✅ تم خصم ${amount}$`);
+                } else {
+                    showToast('❌ الرصيد غير كافي', 'error');
+                    return;
+                }
+            }
+            activitiesData.unshift({
+                user_name: usersData[idx].name,
+                type: type === 'add' ? 'إضافة رصيد' : 'خصم رصيد',
+                amount: amount,
+                description: reason || 'تعديل يدوي',
+                date: new Date().toLocaleDateString('ar-SA')
+            });
+        }
+        closeAdjustBalanceModal();
+        closeUserDetailModal();
+        loadUsers();
+        loadDashboardStats();
+    }
+
+    function viewUserActivities() {
+        let user = usersData.find(u => u.id == currentUserId);
+        let userActivities = activitiesData.filter(a => a.user_name === user.name);
+        let html = '<div style="max-height:400px;overflow:auto;"><table class="admin-table"><thead><tr><th>النوع</th><th>الوصف</th><th>المبلغ</th><th>التاريخ</th></tr></thead><tbody>';
+        if (userActivities.length) {
+            userActivities.forEach(a => {
+                html += `<tr><td>${a.type}</td><td>${a.description}</td><td>${a.amount ? a.amount + '$' : '-'}</td><td>${a.date}</td></tr>`;
+            });
+        } else {
+            html += '<tr><td colspan="4">لا توجد نشاطات</td></td>';
+        }
+        html += '</tbody></table></div>';
+        document.getElementById('userDetailContent').innerHTML = html;
+        document.querySelector('#userDetailModal .modal-title').innerHTML = '<i class="fas fa-history"></i> سجل العمليات';
+        setTimeout(() => {
+            document.querySelector('#userDetailModal .modal-title').innerHTML = '<i class="fas fa-user-circle"></i> تفاصيل المستخدم';
+        }, 4000);
+    }
+
+    function loadTeamStats() {
+        let html = '';
+        for (let u of usersData) {
+            html += `<tr>
+                <td>${u.name}</td>
+                <td>${u.phone}</td>
+                <td>${u.created_at}</td>
+                <td>${u.package}</td>
+                <td>${u.balance}$</td>
+                <td>${u.deposits}$</td>
+                <td>${u.total_earned}$</td>
+                <td>${u.referral_count}</td>
+            </tr>`;
+        }
+        document.getElementById('teamTable').innerHTML = html || '<tr><td colspan="8">لا توجد بيانات</td></tr>';
+    }
+
+    function loadActivities() {
+        let html = '';
+        for (let a of activitiesData) {
+            html += `<tr>
+                <td>${a.user_name}</td>
+                <td>${a.type}</td>
+                <td>${a.amount ? a.amount + '$' : '-'}</td>
+                <td>${a.description}</td>
+                <td>${a.date}</td>
+            </tr>`;
+        }
+        document.getElementById('activitiesTable').innerHTML = html || '<tr><td colspan="5">لا توجد نشاطات</td></tr>';
+    }
+
+    function loadAdvancedStats() {
+        let topEarners = [...usersData].sort((a,b) => b.total_earned - a.total_earned).slice(0,5);
+        document.getElementById('topEarnersTable').innerHTML = topEarners.map((u,i) => `<tr><td>${i+1}</td><td>${u.name}</td><td>${u.total_earned}$</td></tr>`).join('');
+        
+        let topReferrers = [...usersData].sort((a,b) => b.referral_count - a.referral_count).slice(0,5);
+        document.getElementById('topReferrersTable').innerHTML = topReferrers.map((u,i) => `<tr><td>${i+1}</td><td>${u.name}</td><td>${u.referral_count}</td></tr>`).join('');
+        
+        let packageCount = {};
+        usersData.forEach(u => { packageCount[u.package] = (packageCount[u.package] || 0) + 1; });
+        let topPackages = Object.entries(packageCount).sort((a,b) => b[1] - a[1]);
+        document.getElementById('topPackagesTable').innerHTML = topPackages.map(([name,count],i) => `<tr><td>${i+1}</td><td>${name}</td><td>${count}</td></tr>`).join('');
+    }
+
+    function exportToExcel() {
+        let csv = "الاسم,البريد,الهاتف,الرصيد,الأرباح,الباقة,الحالة\n";
+        usersData.forEach(u => {
+            csv += `"${u.name}","${u.email}","${u.phone}",${u.balance},${u.total_earned},"${u.package}","${u.status === 'active' ? 'نشط' : 'موقوف'}"\n`;
+        });
+        let blob = new Blob(["\uFEFF" + csv], {type: "text/csv"});
+        let link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `users_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        showToast('✅ تم تصدير البيانات');
+    }
+
+    function showSection(section) {
+        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+        document.getElementById(`${section}-section`).style.display = 'block';
+        document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
+        if (event && event.currentTarget) event.currentTarget.classList.add('active');
+        
+        if (section === 'users') loadUsers();
+        if (section === 'team') loadTeamStats();
+        if (section === 'activities') loadActivities();
+        if (section === 'advanced_stats') loadAdvancedStats();
+        if (section === 'dashboard') loadDashboardStats();
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+        document.getElementById('mainContent').classList.toggle('expanded');
+    }
+
+    function showToast(msg, type = 'success') {
+        let toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.className = 'toast ' + type;
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 3000);
+    }
+
+    // تشغيل التحميل الأولي
+    loadDashboardStats();
+    loadUsers();
+    loadTeamStats();
+    loadActivities();
+    loadAdvancedStats();
+</script>
+</body>
+</html>
