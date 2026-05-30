@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Users Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{font-family:Tahoma;background:#0f172a;color:#fff;margin:0}
+header{padding:20px;background:#111827}
+.container{padding:20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
+.card{background:#1e293b;padding:20px;border-radius:12px}
+table{width:100%;border-collapse:collapse;margin-top:20px}
+th,td{padding:12px;border:1px solid #334155}
+th{background:#1e293b}
+tr:hover{background:#172554;cursor:pointer}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8)}
+.modal-content{background:#111827;margin:3% auto;padding:20px;width:90%;max-width:1200px;border-radius:12px}
+.close{float:left;font-size:28px;cursor:pointer}
+input{padding:10px;width:100%;margin:10px 0;border-radius:8px}
+</style>
+</head>
+<body>
+
+<header>
+<h2>لوحة إدارة المشتركين</h2>
+</header>
+
+<div class="container">
+
+<div class="cards">
+<div class="card"><h3>إجمالي المشتركين</h3><h1 id="totalUsers">0</h1></div>
+<div class="card"><h3>الباقات الفعالة</h3><h1 id="activeUsers">0</h1></div>
+<div class="card"><h3>إجمالي الإيداعات</h3><h1 id="totalDeposits">$0</h1></div>
+<div class="card"><h3>إجمالي الأرباح</h3><h1 id="totalProfit">$0</h1></div>
+</div>
+
+<input id="search" placeholder="بحث بالاسم أو الهاتف">
+
+<table>
+<thead>
+<tr>
+<th>الاسم</th>
+<th>الهاتف</th>
+<th>الباقة</th>
+<th>الرصيد</th>
+<th>الفريق</th>
+</tr>
+</thead>
+<tbody id="usersTable"></tbody>
+</table>
+
+</div>
+
+<div id="userModal" class="modal">
+<div class="modal-content">
+<span class="close" onclick="closeModal()">&times;</span>
+<div id="userDetails"></div>
+
+<h3>فريق الإحالات</h3>
+<table>
+<thead>
+<tr>
+<th>الاسم</th>
+<th>الهاتف</th>
+<th>الباقة</th>
+<th>الرصيد</th>
+</tr>
+</thead>
+<tbody id="teamTable"></tbody>
+</table>
+</div>
+</div>
+
+<script>
+
+
+const SUPABASE_URL = "https://macbjaiunubocfyhvbvd.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hY2JqYWl1bnVib2NmeWh2YnZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwMjc2OTcsImV4cCI6MjA4NzYwMzY5N30.s7s6xhgkbfLFubffKeilZwkAJuttu_GKPo8xJPNUe-M";
+
+const supabase = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+async function loadStats(){
+
+const {data:users} = await supabase
+.from("users")
+.select("*");
+
+document.getElementById("totalUsers").innerText = users?.length || 0;
+
+const active = users?.filter(x=>x.package_active===true).length || 0;
+document.getElementById("activeUsers").innerText = active;
+
+const deposits = users?.reduce((a,b)=>a+(b.total_deposits||0),0) || 0;
+document.getElementById("totalDeposits").innerText = "$"+deposits;
+
+const profits = users?.reduce((a,b)=>a+(b.total_profit||0),0) || 0;
+document.getElementById("totalProfit").innerText = "$"+profits;
+
+renderUsers(users || []);
+}
+
+function renderUsers(users){
+
+const tbody = document.getElementById("usersTable");
+tbody.innerHTML = "";
+
+users.forEach(user=>{
+
+tbody.innerHTML += `
+<tr onclick="showUser(${user.id})">
+<td>${user.full_name || ""}</td>
+<td>${user.phone || ""}</td>
+<td>${user.package_name || "-"}</td>
+<td>$${user.balance || 0}</td>
+<td>${user.team_count || 0}</td>
+</tr>`;
+
+});
+
+}
+
+async function showUser(id){
+
+const {data:user} = await supabase
+.from("users")
+.select("*")
+.eq("id",id)
+.single();
+
+document.getElementById("userModal").style.display="block";
+
+document.getElementById("userDetails").innerHTML = `
+<h2>${user.full_name}</h2>
+<p>اسم المستخدم: ${user.username || ""}</p>
+<p>الهاتف: ${user.phone || ""}</p>
+<p>البريد: ${user.email || ""}</p>
+<p>الرصيد: $${user.balance || 0}</p>
+<p>الأرباح: $${user.total_profit || 0}</p>
+<p>الإيداعات: $${user.total_deposits || 0}</p>
+<p>السحوبات: $${user.total_withdrawals || 0}</p>
+<p>الباقة: ${user.package_name || "-"}</p>
+<p>كود الإحالة: ${user.referral_code || ""}</p>
+`;
+
+loadTeam(user.referral_code);
+}
+
+async function loadTeam(referralCode){
+
+const {data:team} = await supabase
+.from("users")
+.select("*")
+.eq("referred_by", referralCode);
+
+const tbody = document.getElementById("teamTable");
+tbody.innerHTML = "";
+
+(team || []).forEach(member=>{
+
+tbody.innerHTML += `
+<tr>
+<td>${member.full_name}</td>
+<td>${member.phone}</td>
+<td>${member.package_name || "-"}</td>
+<td>$${member.balance || 0}</td>
+</tr>`;
+
+});
+
+}
+
+function closeModal(){
+document.getElementById("userModal").style.display="none";
+}
+
+loadStats();
+
+</script>
+
+</body>
+</html>
