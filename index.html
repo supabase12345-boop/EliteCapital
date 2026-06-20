@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Finzo | منصة استثمار VIP</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="main-content" id="mainContent">
+        
+        <!-- ====== صفحة تسجيل الدخول ====== -->
+        <div class="page active" id="loginPage">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-logo">
+                        <div class="logo-icon">
+                            <i class="fas fa-chart-line"></i>
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <h2>Finzo</h2>
+                        <p>منصة الاستثمار الذكية</p>
+                    </div>
+                    
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" data-tab="login">تسجيل دخول</button>
+                        <button class="auth-tab" data-tab="register">حساب جديد</button>
+                    </div>
+
+                    <div id="loginForm" class="auth-form active">
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="loginUsername" placeholder="اسم المستخدم" class="auth-input">
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="loginPassword" placeholder="كلمة المرور" class="auth-input">
+                        </div>
+                        <button id="doLogin" class="auth-btn"><i class="fas fa-arrow-left"></i> دخول</button>
+                      
+                    </div>
+
+                    <div id="registerForm" class="auth-form">
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="regFullname" placeholder="الاسم الكامل" class="auth-input">
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-user-tag"></i>
+                            <input type="text" id="regUsername" placeholder="اسم المستخدم (إنجليزي فقط)" class="auth-input" oninput="validateEnglish(this)">
+                            <span id="usernameError" style="color:#ef4444;font-size:0.7rem;display:none;">⚠️ أحرف إنجليزية فقط</span>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="regEmail" placeholder="البريد الإلكتروني" class="auth-input">
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-link"></i>
+                            <input type="text" id="regReferralCode" placeholder="كود الإحالة (اختياري)" class="auth-input">
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="regPassword" placeholder="كلمة المرور" class="auth-input">
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="regConfirmPassword" placeholder="تأكيد كلمة المرور" class="auth-input">
+                        </div>
+                        <button id="doRegister" class="auth-btn"><i class="fas fa-user-plus"></i> إنشاء حساب</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== صفحات المستخدم ====== -->
+        <div id="userPages" style="display: none;">
+            
+            <!-- التنبيه العالمي -->
+            <div id="globalAlert" class="global-alert" style="display: none; margin-bottom: 1rem;">
+                <div class="alert-content">
+                    <i class="fas fa-info-circle"></i>
+                    <span id="alertMessage"></span>
+                </div>
+                <a id="alertButton" href="#" target="_blank" class="alert-btn" style="display: none;"></a>
+                <button class="alert-close" onclick="closeGlobalAlert()">&times;</button>
+            </div>
+
+            <!-- صفحة الرئيسية -->
+            <div class="page" id="homePage">
+                <div class="container">
+                    <div class="user-mini-card">
+                        <div class="user-mini-avatar">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="username"></span>
+                        </div>
+                        <div class="user-mini-balance">
+                            <i class="fas fa-wallet"></i>
+                            <span id="balance">0</span>
+                            <small>$</small>
+                        </div>
+                    </div>
+
+                    <div id="restrictionAlert" style="display: none; background: #fef2f2; border: 2px solid #ef4444; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; text-align: center;">
+                        <p style="color: #dc2626; font-weight: 600;"><i class="fas fa-exclamation-triangle"></i> <span id="restrictionMessage"></span></p>
+                    </div>
+
+                    <div class="referral-card">
+                        <div class="referral-header">
+                            <i class="fas fa-gift"></i>
+                            <span>كود الإحالة الخاص بك</span>
+                        </div>
+                        <div class="referral-code-box">
+                            <span id="myReferralCode">loading...</span>
+                            <button id="copyReferralCode" class="copy-btn"><i class="fas fa-copy"></i> نسخ</button>
+                        </div>
+                        <p class="referral-note">كل صديق يسجل باستخدام كودك ويتم تفعيل حسابه، تحصل على <span id="referralBonusAmount">25</span>$!</p>
+                    </div>
+
+                    <div class="section-header">
+                        <h2><i class="fas fa-crown"></i> باقات VIP</h2>
+                        <p>اختر باقاتك وابدأ الربح اليومي</p>
+                    </div>
+
+                    <div class="plans-grid" id="plansContainer"></div>
+                </div>
+            </div>
+
+            <!-- صفحة الاشتراكي -->
+            <div class="page" id="subscriptionPage">
+                <div class="container">
+                    <div class="page-header"><h2><i class="fas fa-ticket-alt"></i> اشتراكي</h2></div>
+                    <div class="subscription-card" id="subscriptionCard"></div>
+                    <div class="history-card"><h3>سجل الاشتراكات</h3><div id="subscriptionHistory"></div></div>
+                </div>
+            </div>
+
+            <!-- صفحة الأرباح -->
+            <div class="page" id="profitPage">
+                <div class="container">
+                    <div class="page-header"><h2><i class="fas fa-chart-line"></i> أرباحي</h2></div>
+                    <div class="profit-stats-card">
+                        <div class="profit-total"><span>إجمالي الأرباح</span><strong id="totalProfitAmount">0</strong><small>$</small></div>
+                        <div class="profit-today"><span>ربح اليوم</span><strong id="todayProfit">0</strong><small>$</small></div>
+                    </div>
+                    <div class="profit-collect-card">
+                        <div class="collect-info">
+                            <div class="next-profit"><i class="fas fa-clock"></i><span>الربح القادم:</span><strong id="nextProfitAmount">0</strong><span>$</span></div>
+                            <div class="countdown-timer"><i class="fas fa-hourglass-half"></i><span id="nextProfitInfo">-- : -- : --</span></div>
+                        </div>
+                        <button id="collectProfitBtn" class="btn-collect-full"><i class="fas fa-hand-holding-usd"></i> جني الربح الآن</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- صفحة حسابي -->
+            <div class="page" id="accountPage">
+                <div class="container">
+                    <div class="page-header"><h2><i class="fas fa-user"></i> حسابي</h2></div>
+                    <div class="account-card">
+                        <div class="account-avatar"><i class="fas fa-user-circle"></i><h3 id="accountName"></h3></div>
+                        <div class="account-info">
+                            <div class="info-row"><span><i class="fas fa-user"></i> اسم المستخدم</span><strong id="accountUsername"></strong></div>
+                            <div class="info-row"><span><i class="fas fa-envelope"></i> البريد الإلكتروني</span><strong id="accountEmail"></strong></div>
+                            <div class="info-row"><span><i class="fas fa-wallet"></i> الرصيد</span><strong id="accountBalance">0</strong><span>$</span></div>
+                            <div class="info-row"><span><i class="fas fa-chart-line"></i> إجمالي الأرباح</span><strong id="accountTotalProfit">0</strong><span>$</span></div>
+                            <div class="info-row"><span><i class="fas fa-gem"></i> الباقة الحالية</span><strong id="accountCurrentPlan"></strong></div>
+                            <div class="info-row"><span><i class="fas fa-gift"></i> مكافآت الإحالة</span><strong id="referralBonus">0</strong><span>$</span></div>
+                            <div class="info-row"><span><i class="fas fa-user-plus"></i> تمت الإضافة بواسطة</span><strong id="referredByDisplay">--</strong></div>
+                        </div>
+                        <div class="account-actions">
+                            <button id="depositBtn" class="btn-deposit"><i class="fas fa-plus-circle"></i> إيداع</button>
+                            <button id="withdrawBtn" class="btn-withdraw"><i class="fas fa-arrow-down"></i> سحب</button>
+                            <button id="logoutBtn" class="btn-logout-account"><i class="fas fa-sign-out-alt"></i> خروج</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- صفحة طلب إيداع -->
+            <div class="page" id="depositRequestPage">
+                <div class="container">
+                    <div class="page-header"><h2><i class="fas fa-money-bill-wave"></i> طلب إيداع</h2></div>
+                    <div class="deposit-card">
+                        <div class="trc20-info">
+                            <img src="https://cryptologos.cc/logos/tron-trx-logo.png" alt="TRC20" class="trc20-logo">
+                            <h3>شبكة TRC20</h3>
+                            <div class="wallet-address-box">
+                                <span id="trc20Address">TFScDRAPHVfPdrbnvVmro2pmTkbAgCgNz6</span>
+                                <button id="copyWalletAddress" class="copy-btn"><i class="fas fa-copy"></i> نسخ</button>
+                            </div>
+                            <p class="warning-text">⚠️ أرسل فقط عبر شبكة TRC20</p>
+                        </div>
+                        <div class="deposit-form">
+                            <label>المبلغ المراد إيداعه ($)</label>
+                            <input type="number" id="depositAmountRequest" placeholder="أدخل المبلغ" min="10">
+                            <label>معرف المعاملة (TXID)</label>
+                            <input type="text" id="depositTxid" placeholder="أدخل معرف المعاملة">
+                            <button id="submitDepositRequest" class="btn-submit-deposit">تقديم طلب الإيداع</button>
+                        </div>
+                        <div class="history-card"><h3>طلبات الإيداع السابقة</h3><div id="depositHistoryList"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- صفحة طلب سحب -->
+            <div class="page" id="withdrawRequestPage">
+                <div class="container">
+                    <div class="page-header"><h2><i class="fas fa-arrow-down"></i> طلب سحب</h2></div>
+                    <div class="withdraw-card">
+                        <div class="available-balance"><span>الرصيد المتاح</span><strong id="withdrawBalance">0</strong><span>$</span></div>
+                        <div class="withdraw-form">
+                            <label>المبلغ المراد سحبه ($)</label>
+                            <input type="number" id="withdrawAmountRequest" placeholder="أدخل المبلغ" min="10">
+                            <label>عنوان محفظة TRC20</label>
+                            <input type="text" id="withdrawWalletAddress" placeholder="عنوان محفظة TRC20">
+                            <div id="taxInfo" class="tax-info" style="display: none; margin-top: 0.5rem; font-size: 0.8rem; color: #f59e0b;"></div>
+                            <button id="submitWithdrawRequest" class="btn-submit-withdraw">تقديم طلب السحب</button>
+                        </div>
+                        <div class="history-card"><h3>طلبات السحب السابقة</h3><div id="withdrawHistoryList"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== لوحة تحكم الادمن ====== -->
+        <div class="page" id="adminPage">
+            <div class="container">
+                <div class="admin-header">
+                    <div class="admin-title">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>لوحة تحكم المدير</h3>
+                        <p id="adminName"></p>
+                    </div>
+                    <button id="adminLogoutBtn" class="admin-logout-btn"><i class="fas fa-sign-out-alt"></i> خروج</button>
+                </div>
+
+                <div class="admin-stats-grid">
+                    <div class="admin-stat-card"><i class="fas fa-users"></i><div><h4>المستخدمين</h4><p id="adminTotalUsers">0</p></div></div>
+                    <div class="admin-stat-card"><i class="fas fa-dollar-sign"></i><div><h4>إجمالي الاستثمار</h4><p id="adminTotalInvested">0</p><span>$</span></div></div>
+                    <div class="admin-stat-card"><i class="fas fa-hand-holding-usd"></i><div><h4>الأرباح الموزعة</h4><p id="adminTotalProfit">0</p><span>$</span></div></div>
+                    <div class="admin-stat-card"><i class="fas fa-clock"></i><div><h4>طلبات معلقة</h4><p id="adminPendingRequests">0</p></div></div>
+                </div>
+
+                <div class="admin-nav">
+                    <button class="admin-nav-btn active" data-admin-section="users"><i class="fas fa-users"></i> المستخدمين</button>
+                    <button class="admin-nav-btn" data-admin-section="deposits"><i class="fas fa-plus-circle"></i> الإيداعات</button>
+                    <button class="admin-nav-btn" data-admin-section="withdrawals"><i class="fas fa-arrow-down"></i> السحوبات</button>
+                    <button class="admin-nav-btn" data-admin-section="plans"><i class="fas fa-crown"></i> الباقات</button>
+                    <button class="admin-nav-btn" data-admin-section="settings"><i class="fas fa-cog"></i> الإعدادات</button>
+                </div>
+
+                <!-- قسم المستخدمين -->
+                <div id="adminUsersSection" class="admin-section active">
+                    <div class="admin-card">
+                        <div class="admin-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchUserInput" placeholder="بحث عن مستخدم (بالاسم أو البريد)...">
+                        </div>
+                        <div class="users-list" id="usersList"></div>
+                    </div>
+                </div>
+
+                <!-- قسم طلبات الإيداع -->
+                <div id="adminDepositsSection" class="admin-section">
+                    <div class="admin-card">
+                        <h3><i class="fas fa-clock"></i> طلبات الإيداع قيد المراجعة</h3>
+                        <div id="depositsRequestsList"></div>
+                    </div>
+                    <div class="admin-card">
+                        <h3><i class="fas fa-check-circle"></i> طلبات الإيداع المنتهية</h3>
+                        <div id="depositsCompletedList"></div>
+                    </div>
+                </div>
+
+                <!-- قسم طلبات السحب -->
+                <div id="adminWithdrawalsSection" class="admin-section">
+                    <div class="admin-card">
+                        <h3><i class="fas fa-clock"></i> طلبات السحب قيد المراجعة</h3>
+                        <div id="withdrawalsRequestsList"></div>
+                    </div>
+                    <div class="admin-card">
+                        <h3><i class="fas fa-check-circle"></i> طلبات السحب المنتهية</h3>
+                        <div id="withdrawalsCompletedList"></div>
+                    </div>
+                </div>
+
+                <!-- قسم إدارة الباقات -->
+                <div id="adminPlansSection" class="admin-section">
+                    <div class="admin-card">
+                        <div class="add-plan-btn"><button id="showAddPlanModal" class="btn-add-plan"><i class="fas fa-plus"></i> إضافة باقة جديدة</button></div>
+                        <div id="plansSettingsContainer" class="plans-settings-list"></div>
+                    </div>
+                </div>
+
+                <!-- قسم الإعدادات -->
+                <div id="adminSettingsSection" class="admin-section">
+                    <div class="admin-card">
+                        <h3><i class="fas fa-gift"></i> إعدادات مكافأة الإحالة</h3>
+                        <div class="form-group">
+                            <label>قيمة مكافأة الإحالة ($)</label>
+                            <input type="number" id="adminReferralBonus" class="admin-input" step="1" min="0">
+                            <button id="saveReferralBonus" class="admin-save-btn" style="margin-top: 10px;">حفظ المكافأة</button>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-card">
+                        <h3><i class="fas fa-percent"></i> إعدادات ضريبة السحب حسب الباقة</h3>
+                        <div id="taxSettingsContainer"></div>
+                        <button id="saveTaxSettings" class="admin-save-btn">حفظ إعدادات الضريبة</button>
+                    </div>
+
+                    <div class="admin-card">
+                        <h3><i class="fas fa-bullhorn"></i> إعدادات التنبيه العام</h3>
+                        <div class="form-group">
+                            <label>نص التنبيه (يدعم HTML)</label>
+                            <textarea id="adminAlertText" rows="3" class="admin-input" placeholder="مثال: مرحباً بك في منصتنا"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>رابط الزر (اختياري)</label>
+                            <input type="text" id="adminAlertLink" class="admin-input" placeholder="https://t.me/yourchannel">
+                        </div>
+                        <div class="form-group">
+                            <label>نص الزر (اختياري)</label>
+                            <input type="text" id="adminAlertButtonText" class="admin-input" placeholder="تواصل معنا عبر تلگرام">
+                        </div>
+                        <div class="form-group">
+                            <label>لون خلفية التنبيه</label>
+                            <input type="color" id="adminAlertBgColor" value="#fef3c7" class="admin-input">
+                        </div>
+                        <div class="form-group">
+                            <label>تمكين التنبيه</label>
+                            <select id="adminAlertEnabled" class="admin-input">
+                                <option value="true">مفعل</option>
+                                <option value="false">معطل</option>
+                            </select>
+                        </div>
+                        <button id="saveAlertSettings" class="admin-save-btn">حفظ إعدادات التنبيه</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== الشريط السفلي ====== -->
+    <nav class="bottom-nav" id="bottomNav" style="display: none;">
+        <div class="nav-item" data-page="home"><i class="fas fa-home"></i><span>الرئيسية</span></div>
+        <div class="nav-item" data-page="depositRequest"><i class="fas fa-plus-circle"></i><span>إيداع</span></div>
+        <div class="nav-item" data-page="withdrawRequest"><i class="fas fa-arrow-down"></i><span>سحب</span></div>
+        <div class="nav-item" data-page="account"><i class="fas fa-user"></i><span>حسابي</span></div>
+        <div class="nav-item" data-page="subscription"><i class="fas fa-ticket-alt"></i><span>اشتراكي</span></div>
+        <div class="nav-item" data-page="profit"><i class="fas fa-chart-line"></i><span>ربح</span></div>
+    </nav>
+
+    <!-- ====== مودالات ====== -->
+    <!-- مودال إضافة باقة -->
+    <div id="addPlanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-plus-circle"></i> إضافة باقة جديدة</h3><span class="close-modal">&times;</span></div>
+            <div class="modal-body">
+                <div class="form-group"><label>اسم الباقة</label><input type="text" id="newPlanName" placeholder="مثال: VIP 5" class="admin-input"></div>
+                <div class="form-group"><label>السعر ($)</label><input type="number" id="newPlanPrice" placeholder="السعر" class="admin-input" min="1"></div>
+                <div class="form-group"><label>الربح اليومي ($)</label><input type="number" id="newPlanProfit" placeholder="الربح اليومي" class="admin-input" min="0.5" step="0.5"></div>
+                <div class="form-group"><label>نسبة الضريبة على السحب (%)</label><input type="number" id="newPlanTax" placeholder="الضريبة" class="admin-input" min="0" max="100" step="0.5"></div>
+                <div class="form-group"><label>اللون</label><input type="color" id="newPlanColor" value="#667eea" class="admin-input"></div>
+                <div class="form-group"><label>الأيقونة</label>
+                    <select id="newPlanIcon" class="admin-input">
+                        <option value="fas fa-star">⭐ نجمة</option>
+                        <option value="fas fa-gem">💎 ماسة</option>
+                        <option value="fas fa-crown">👑 تاج</option>
+                        <option value="fas fa-star-of-life">✨ نجمة الحياة</option>
+                        <option value="fas fa-fire">🔥 نار</option>
+                        <option value="fas fa-bolt">⚡ صاعقة</option>
+                    </select>
+                </div>
+                <button id="confirmAddPlan" class="btn-confirm">إضافة الباقة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال تعديل باقة -->
+    <div id="editPlanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-edit"></i> تعديل الباقة</h3><span class="close-modal">&times;</span></div>
+            <div class="modal-body">
+                <input type="hidden" id="editPlanKey">
+                <div class="form-group"><label>اسم الباقة</label><input type="text" id="editPlanName" class="admin-input"></div>
+                <div class="form-group"><label>السعر ($)</label><input type="number" id="editPlanPrice" class="admin-input" min="1"></div>
+                <div class="form-group"><label>الربح اليومي ($)</label><input type="number" id="editPlanProfit" class="admin-input" min="0.5" step="0.5"></div>
+                <div class="form-group"><label>نسبة الضريبة على السحب (%)</label><input type="number" id="editPlanTax" class="admin-input" min="0" max="100" step="0.5"></div>
+                <div class="form-group"><label>اللون</label><input type="color" id="editPlanColor" class="admin-input"></div>
+                <div class="form-group"><label>الأيقونة</label>
+                    <select id="editPlanIcon" class="admin-input">
+                        <option value="fas fa-star">⭐ نجمة</option>
+                        <option value="fas fa-gem">💎 ماسة</option>
+                        <option value="fas fa-crown">👑 تاج</option>
+                        <option value="fas fa-star-of-life">✨ نجمة الحياة</option>
+                        <option value="fas fa-fire">🔥 نار</option>
+                        <option value="fas fa-bolt">⚡ صاعقة</option>
+                    </select>
+                </div>
+                <div class="modal-buttons">
+                    <button id="confirmEditPlan" class="btn-confirm">حفظ التعديلات</button>
+                    <button id="deletePlanBtn" class="btn-delete">حذف الباقة</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال تعديل رصيد المستخدم -->
+    <div id="editBalanceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-dollar-sign"></i> تعديل رصيد المستخدم</h3><span class="close-modal">&times;</span></div>
+            <div class="modal-body">
+                <input type="hidden" id="editBalanceUsername">
+                <div class="form-group"><label>الرصيد الجديد ($)</label><input type="number" id="editBalanceAmount" class="admin-input" step="0.01"></div>
+                <button id="confirmEditBalance" class="btn-confirm">تحديث الرصيد</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال ترقية باقة المستخدم -->
+    <div id="upgradePlanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-arrow-up"></i> ترقية باقة المستخدم</h3><span class="close-modal">&times;</span></div>
+            <div class="modal-body">
+                <input type="hidden" id="upgradeUsername">
+                <div class="form-group"><label>اختر الباقة الجديدة</label>
+                    <select id="upgradePlanSelect" class="admin-input"></select>
+                </div>
+                <button id="confirmUpgradePlan" class="btn-confirm">ترقية الباقة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال تقييد المستخدم -->
+    <div id="restrictUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-ban"></i> تقييد المستخدم</h3><span class="close-modal">&times;</span></div>
+            <div class="modal-body">
+                <input type="hidden" id="restrictUsername">
+                <div class="form-group">
+                    <label><i class="fas fa-arrow-down"></i> تقييد السحب</label>
+                    <select id="restrictWithdraw" class="admin-input">
+                        <option value="0">غير مقيد</option>
+                        <option value="1">مقيد (لا يمكن السحب)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-chart-line"></i> تقييد الربح</label>
+                    <select id="restrictProfit" class="admin-input">
+                        <option value="0">غير مقيد</option>
+                        <option value="1">مقيد (لا يمكن جني الربح)</option>
+                    </select>
+                </div>
+                <button id="confirmRestrict" class="btn-confirm">تطبيق التقييد</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال عرض تفاصيل المستخدم -->
+    <div id="userDetailsModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header"><h3><i class="fas fa-user-circle"></i> تفاصيل المستخدم</h3><span class="close-modal">&times;</span></div>
+            <div class="modal-body" id="userDetailsBody"></div>
+        </div>
+    </div>
+
+    <!-- ====== توست التنبيهات ====== -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage"></span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
