@@ -1743,6 +1743,144 @@ textarea.admin-input {
     font-size: 1.1rem;
 }
 
+/* ========== Transfer Page ========== */
+.transfer-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.transfer-info {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    background: #f7fafc;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.transfer-info .info-item {
+    text-align: center;
+}
+
+.transfer-info .info-item span {
+    display: block;
+    font-size: 0.8rem;
+    color: #718096;
+}
+
+.transfer-info .info-item strong {
+    font-size: 1.5rem;
+    color: #2d3748;
+}
+
+.transfer-form label {
+    display: block;
+    margin: 1rem 0 0.5rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.transfer-form input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.3s;
+}
+
+.transfer-form input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.transfer-details {
+    background: #f0fdf4;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-top: 1rem;
+    border: 1px solid #10b981;
+}
+
+.transfer-details .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.transfer-details .detail-row:last-child {
+    border-bottom: none;
+}
+
+.transfer-details .detail-row.highlight {
+    background: #fef3c7;
+    padding: 0.6rem;
+    border-radius: 8px;
+    margin-top: 0.3rem;
+    font-weight: 700;
+    color: #92400e;
+}
+
+.btn-submit-transfer {
+    width: 100%;
+    padding: 0.9rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    margin-top: 1rem;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.btn-submit-transfer:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.transfer-item {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem;
+    border-bottom: 1px solid #edf2f7;
+    gap: 0.8rem;
+}
+
+.transfer-item .transfer-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    text-align: center;
+}
+
+.transfer-item .transfer-info {
+    flex: 1;
+    padding: 0;
+    background: transparent;
+    margin: 0;
+}
+
+.transfer-item .transfer-info strong {
+    display: block;
+    font-size: 0.9rem;
+}
+
+.transfer-item .transfer-info small {
+    font-size: 0.7rem;
+    color: #718096;
+}
+
+.transfer-item .transfer-amount {
+    font-weight: 700;
+    font-size: 1rem;
+}
+
 /* ========== Responsive ========== */
 @media (max-width: 500px) {
     .main-content {
@@ -1858,6 +1996,11 @@ textarea.admin-input {
     .auth-tab {
         font-size: 0.85rem;
         padding: 0.6rem;
+    }
+
+    .transfer-info {
+        flex-direction: column;
+        gap: 0.5rem;
     }
 }
 

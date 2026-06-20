@@ -39,7 +39,6 @@
                             <input type="password" id="loginPassword" placeholder="كلمة المرور" class="auth-input">
                         </div>
                         <button id="doLogin" class="auth-btn"><i class="fas fa-arrow-left"></i> دخول</button>
-                      
                     </div>
 
                     <div id="registerForm" class="auth-form">
@@ -222,6 +221,61 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ====== صفحة تحويل الرصيد ====== -->
+            <div class="page" id="transferPage">
+                <div class="container">
+                    <div class="page-header">
+                        <h2><i class="fas fa-exchange-alt"></i> تحويل الرصيد</h2>
+                    </div>
+                    <div class="transfer-card">
+                        <div class="transfer-info">
+                            <div class="info-item">
+                                <span>رصيدك الحالي</span>
+                                <strong id="transferBalance">0</strong>
+                                <span>$</span>
+                            </div>
+                            <div class="info-item">
+                                <span>ضريبة التحويل</span>
+                                <strong>10%</strong>
+                            </div>
+                        </div>
+                        <div class="transfer-form">
+                            <label>رقم تعريف المستخدم (كود الإحالة)</label>
+                            <input type="text" id="transferRecipientCode" placeholder="أدخل كود الإحالة للمستلم">
+                            <label>المبلغ المراد تحويله ($)</label>
+                            <input type="number" id="transferAmount" placeholder="أدخل المبلغ" min="1">
+                            <div id="transferDetails" class="transfer-details" style="display:none;">
+                                <div class="detail-row">
+                                    <span>المبلغ:</span>
+                                    <span id="transferAmountDisplay">0</span>
+                                    <span>$</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>الضريبة (10%):</span>
+                                    <span id="transferTaxDisplay">0</span>
+                                    <span>$</span>
+                                </div>
+                                <div class="detail-row highlight">
+                                    <span>سيتم خصم:</span>
+                                    <span id="transferTotalDisplay">0</span>
+                                    <span>$</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>سيستلم المستلم:</span>
+                                    <span id="transferRecipientDisplay">0</span>
+                                    <span>$</span>
+                                </div>
+                            </div>
+                            <button id="submitTransfer" class="btn-submit-transfer">تأكيد التحويل</button>
+                        </div>
+                        <div class="history-card">
+                            <h3>سجل التحويلات</h3>
+                            <div id="transferHistoryList"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- ====== لوحة تحكم الادمن ====== -->
@@ -346,6 +400,7 @@
     <!-- ====== الشريط السفلي ====== -->
     <nav class="bottom-nav" id="bottomNav" style="display: none;">
         <div class="nav-item" data-page="home"><i class="fas fa-home"></i><span>الرئيسية</span></div>
+        <div class="nav-item" data-page="transfer"><i class="fas fa-exchange-alt"></i><span>تحويل</span></div>
         <div class="nav-item" data-page="depositRequest"><i class="fas fa-plus-circle"></i><span>إيداع</span></div>
         <div class="nav-item" data-page="withdrawRequest"><i class="fas fa-arrow-down"></i><span>سحب</span></div>
         <div class="nav-item" data-page="account"><i class="fas fa-user"></i><span>حسابي</span></div>

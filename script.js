@@ -47,7 +47,6 @@ let globalAlert = { text: '', link: '', buttonText: '', bgColor: '#fef3c7', enab
 // ========== تحميل البيانات من Supabase ==========
 async function loadAllData() {
     try {
-        // تحميل المستخدمين
         const users = await supabaseRequest('users');
         if (users && users.length > 0) {
             const usersObj = {};
@@ -57,7 +56,6 @@ async function loadAllData() {
             localStorage.setItem('investUsers', JSON.stringify(usersObj));
         }
         
-        // تحميل الباقات
         const plansData = await supabaseRequest('plans');
         if (plansData && plansData.length > 0) {
             const plansObj = {};
@@ -68,7 +66,6 @@ async function loadAllData() {
             localStorage.setItem('plansSettings', JSON.stringify(plans));
         }
         
-        // تحميل الإعدادات
         const settings = await supabaseRequest('settings');
         if (settings && settings.length > 0) {
             const s = settings[0];
@@ -86,7 +83,6 @@ async function loadAllData() {
             }));
         }
         
-        // تحميل ضرائب الباقات
         const taxes = await supabaseRequest('plan_taxes');
         if (taxes && taxes.length > 0) {
             taxes.forEach(t => {
@@ -390,6 +386,169 @@ function checkUserRestrictions() {
     }
 }
 
+// ========== دوال التحويل ==========
+function calculateTransferDetails() {
+    const amount = parseFloat(document.getElementById('transferAmount').value);
+    const recipientCode = document.getElementById('transferRecipientCode').value.trim();
+    const detailsDiv = document.getElementById('transferDetails');
+    
+    if (!amount || amount < 1 || !recipientCode) {
+        detailsDiv.style.display = 'none';
+        return;
+    }
+    
+    const taxPercent = 0.10;
+    const taxAmount = amount * taxPercent;
+    const totalDeduction = amount + taxAmount;
+    
+    document.getElementById('transferAmountDisplay').innerText = amount.toFixed(2);
+    document.getElementById('transferTaxDisplay').innerText = taxAmount.toFixed(2);
+    document.getElementById('transferTotalDisplay').innerText = totalDeduction.toFixed(2);
+    document.getElementById('transferRecipientDisplay').innerText = amount.toFixed(2);
+    detailsDiv.style.display = 'block';
+}
+
+async function transferBalance() {
+    if (!currentUser) {
+        showToast('الرجاء تسجيل الدخول أولاً', true);
+        return;
+    }
+    
+    const recipientCode = document.getElementById('transferRecipientCode').value.trim();
+    const amount = parseFloat(document.getElementById('transferAmount').value);
+    
+    if (!recipientCode) {
+        showToast('الرجاء إدخال كود الإحالة للمستلم', true);
+        return;
+    }
+    
+    if (!amount || amount < 1) {
+        showToast('الرجاء إدخال مبلغ صحيح (1$ كحد أدنى)', true);
+        return;
+    }
+    
+    if (recipientCode === currentUser.referralCode) {
+        showToast('لا يمكن التحويل لنفس المستخدم', true);
+        return;
+    }
+    
+    const users = loadUsers();
+    
+    let recipient = null;
+    let recipientUsername = null;
+    for (let [username, user] of Object.entries(users)) {
+        if (user.referralCode === recipientCode) {
+            recipient = user;
+            recipientUsername = username;
+            break;
+        }
+    }
+    
+    if (!recipient) {
+        showToast('المستخدم غير موجود. تأكد من كود الإحالة', true);
+        return;
+    }
+    
+    const taxPercent = 0.10;
+    const taxAmount = amount * taxPercent;
+    const totalDeduction = amount + taxAmount;
+    
+    if (currentUser.balance < totalDeduction) {
+        showToast(`رصيد غير كافٍ! تحتاج ${totalDeduction.toFixed(2)}$`, true);
+        return;
+    }
+    
+    if (!confirm(`تأكيد تحويل ${amount}$ إلى المستخدم ${recipient.fullname}؟
+    
+📌 تفاصيل العملية:
+• المبلغ: ${amount}$
+• الضريبة (10%): ${taxAmount.toFixed(2)}$
+• إجمالي الخصم: ${totalDeduction.toFixed(2)}$
+• سيستلم المستلم: ${amount}$
+    
+هل أنت متأكد؟`)) {
+        return;
+    }
+    
+    // تنفيذ التحويل
+    currentUser.balance -= totalDeduction;
+    recipient.balance += amount;
+    
+    // تسجيل التحويل للمرسل
+    if (!currentUser.transferHistory) currentUser.transferHistory = [];
+    currentUser.transferHistory.unshift({
+        type: 'outgoing',
+        amount: amount,
+        tax: taxAmount,
+        total: totalDeduction,
+        recipient: recipient.fullname,
+        recipientCode: recipient.referralCode,
+        recipientUsername: recipientUsername,
+        date: Date.now(),
+        status: 'مكتمل'
+    });
+    
+    // تسجيل التحويل للمستلم
+    if (!recipient.transferHistory) recipient.transferHistory = [];
+    recipient.transferHistory.unshift({
+        type: 'incoming',
+        amount: amount,
+        sender: currentUser.fullname,
+        senderCode: currentUser.referralCode,
+        senderUsername: currentUser.username,
+        date: Date.now(),
+        status: 'مكتمل'
+    });
+    
+    // حفظ التغييرات
+    users[currentUser.username] = currentUser;
+    users[recipientUsername] = recipient;
+    saveUsers(users);
+    
+    setCurrentUser(currentUser.username);
+    showToast(`✅ تم تحويل ${amount}$ إلى ${recipient.fullname} بنجاح`);
+    loadUserPanel();
+    updateTransferPage();
+    document.getElementById('transferRecipientCode').value = '';
+    document.getElementById('transferAmount').value = '';
+    document.getElementById('transferDetails').style.display = 'none';
+}
+
+function updateTransferPage() {
+    if (!currentUser) {
+        document.getElementById('transferBalance').innerText = '0';
+        document.getElementById('transferHistoryList').innerHTML = '<div style="padding:1rem;text-align:center;color:#718096;">الرجاء تسجيل الدخول</div>';
+        return;
+    }
+    
+    document.getElementById('transferBalance').innerText = currentUser.balance.toFixed(2);
+    
+    const history = currentUser.transferHistory || [];
+    if (history.length === 0) {
+        document.getElementById('transferHistoryList').innerHTML = '<div style="padding:1rem;text-align:center;color:#718096;">لا توجد تحويلات</div>';
+    } else {
+        document.getElementById('transferHistoryList').innerHTML = history.slice(0, 10).map(t => {
+            const isOutgoing = t.type === 'outgoing';
+            const icon = isOutgoing ? '📤' : '📥';
+            const color = isOutgoing ? '#dc2626' : '#10b981';
+            const label = isOutgoing ? `إلى ${t.recipient}` : `من ${t.sender}`;
+            const amount = isOutgoing ? `-${t.total}` : `+${t.amount}`;
+            const taxInfo = isOutgoing && t.tax ? ` (ضريبة ${t.tax.toFixed(2)}$)` : '';
+            
+            return `<div class="transfer-item">
+                <div class="transfer-icon" style="color:${color}">${icon}</div>
+                <div class="transfer-info">
+                    <strong>${label}</strong>
+                    <small>${new Date(t.date).toLocaleString()}</small>
+                </div>
+                <div class="transfer-amount" style="color:${color}">
+                    ${amount}$ ${taxInfo}
+                </div>
+            </div>`;
+        }).join('');
+    }
+}
+
 // ========== واجهة المصادقة ==========
 function initAuth() {
     document.querySelectorAll('.auth-tab').forEach(tab => {
@@ -449,7 +608,8 @@ function initAuth() {
             balance: 0, totalProfit: 0, totalInvested: 0, activePlan: null, lastProfitClaim: 0, 
             subscriptionDate: null, subscriptionHistory: [], depositRequests: [], withdrawRequests: [], 
             referralCode: generateReferralCode(), referredBy: null, referralBonus: 0, referredUsers: [], 
-            referralBonusGiven: false, restrictWithdraw: false, restrictProfit: false, createdAt: Date.now()
+            referralBonusGiven: false, restrictWithdraw: false, restrictProfit: false, createdAt: Date.now(),
+            transferHistory: []
         };
         saveUsers(users);
         processReferral(username, referralCode);
@@ -498,7 +658,7 @@ function loadMainApp() {
 
 // ========== صفحات المستخدم ==========
 function loadUserPanel() {
-    updateUserUI(); renderPlans(); updateSubscriptionPage(); updateProfitPage(); updateAccountPage(); updateDepositPage(); updateWithdrawPage();
+    updateUserUI(); renderPlans(); updateSubscriptionPage(); updateProfitPage(); updateAccountPage(); updateDepositPage(); updateWithdrawPage(); updateTransferPage();
     
     document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', () => {
@@ -507,6 +667,9 @@ function loadUserPanel() {
             document.getElementById(pageId + 'Page').classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             item.classList.add('active');
+            if (pageId === 'transfer') {
+                updateTransferPage();
+            }
         });
     });
     
@@ -528,6 +691,9 @@ function loadUserPanel() {
     document.getElementById('copyWalletAddress')?.addEventListener('click', () => { navigator.clipboard.writeText(TRC20_WALLET); showToast('تم نسخ عنوان المحفظة'); });
     document.getElementById('submitDepositRequest')?.addEventListener('click', submitDepositRequest);
     document.getElementById('submitWithdrawRequest')?.addEventListener('click', submitWithdrawRequest);
+    document.getElementById('submitTransfer')?.addEventListener('click', transferBalance);
+    document.getElementById('transferAmount')?.addEventListener('input', calculateTransferDetails);
+    document.getElementById('transferRecipientCode')?.addEventListener('input', calculateTransferDetails);
 }
 
 function updateUserUI() { 
@@ -835,6 +1001,7 @@ function showUserDetails(username) {
         <div class="detail-row"><span class="label">📅 تاريخ التسجيل</span><span class="value">${new Date(user.createdAt).toLocaleDateString()}</span></div>
         <div class="detail-row"><span class="label">📊 عدد طلبات الإيداع</span><span class="value">${(user.depositRequests || []).length}</span></div>
         <div class="detail-row"><span class="label">📊 عدد طلبات السحب</span><span class="value">${(user.withdrawRequests || []).length}</span></div>
+        <div class="detail-row"><span class="label">📊 عدد التحويلات</span><span class="value">${(user.transferHistory || []).length}</span></div>
     `;
     
     document.getElementById('userDetailsModal').style.display = 'flex';
