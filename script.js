@@ -341,9 +341,13 @@ function initAuth() {
                 const user = users[username];
                 
                 if (user && user.password === password) {
+                    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الدخول...';
+                    loginBtn.disabled = true;
                     await setCurrentUser(username);
-                    showToast(`مرحباً ${user.fullname || username}`);
-                    loadMainApp();
+                    setTimeout(() => {
+                        showToast(`مرحباً ${user.fullname || username}`);
+                        loadMainApp();
+                    }, 800);
                 } else {
                     showToast('بيانات الدخول غير صحيحة', true);
                 }
@@ -1880,25 +1884,28 @@ async function saveSettingsToSupabase() {
         globalAlert: globalAlert
     }));
     try {
-        await supabaseRequest('settings', 'PATCH', {
+        // نتحقق أولاً من وجود إعدادات
+        const existing = await supabaseRequest('settings');
+        const data = {
             referral_bonus: referralBonusAmount,
             alert_text: globalAlert.text,
             alert_link: globalAlert.link,
             alert_button_text: globalAlert.buttonText,
             alert_bg_color: globalAlert.bgColor,
             alert_enabled: globalAlert.enabled
-        });
+        };
+
+        if (existing && existing.length > 0) {
+            // تحديث الصف الأول الموجود - نستخدم الفلترة المناسبة حسب هيكل الجدول
+            const idField = existing[0].id ? `id=eq.${existing[0].id}` : `referral_bonus=neq.-1`; 
+            await supabaseRequest(`settings?${idField}`, 'PATCH', data);
+        } else {
+            // إنشاء صف جديد إذا لم يوجد
+            await supabaseRequest('settings', 'POST', { ...data });
+        }
+        console.log('✅ تم حفظ الإعدادات في Supabase');
     } catch (e) {
-        // إذا فشل PATCH، نحاول POST
-        await supabaseRequest('settings', 'POST', {
-            id: 1,
-            referral_bonus: referralBonusAmount,
-            alert_text: globalAlert.text,
-            alert_link: globalAlert.link,
-            alert_button_text: globalAlert.buttonText,
-            alert_bg_color: globalAlert.bgColor,
-            alert_enabled: globalAlert.enabled
-        }).catch(() => {});
+        console.error('❌ فشل حفظ الإعدادات:', e);
     }
 }
 
