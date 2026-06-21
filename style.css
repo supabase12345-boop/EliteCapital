@@ -4,12 +4,45 @@
     box-sizing: border-box;
 }
 
+:root {
+    /* الألوان الأساسية - نظام Fintech الراقي */
+    --primary: #0066ff;           /* أزرق عميق احترافي */
+    --primary-dark: #0052cc;      /* أزرق أغمق للـ Hover */
+    --primary-light: #3d8eff;     /* أزرق فاتح للتأثيرات */
+    --secondary: #00d4ff;         /* سماوي حي للتمييز */
+    --accent: #ffd700;            /* ذهبي فاخر للـ VIP */
+    --accent-dark: #ffb800;       /* ذهبي أغمق */
+    --success: #00c853;           /* أخضر للنجاح */
+    --warning: #ff9800;           /* برتقالي للتنبيهات */
+    --danger: #ff3d3d;            /* أحمر للأخطاء */
+    
+    /* الخلفيات - تدرجات عميقة */
+    --bg-dark: #0a1628;           /* أسود أزرق عميق جداً */
+    --bg-darker: #050d1a;         /* أسود أزرق أعمق */
+    --bg-card: rgba(15, 30, 55, 0.8);  /* بطاقات شفافة */
+    --bg-card-hover: rgba(20, 40, 70, 0.9);
+    
+    /* النصوص */
+    --text-main: #ffffff;         /* أبيض نقي */
+    --text-secondary: #e0e7ff;    /* أبيض مع لمسة أزرق */
+    --text-muted: #94a3b8;        /* رمادي فاتح */
+    --text-muted-dark: #64748b;   /* رمادي أغمق */
+    
+    /* الحدود والظلال */
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-border-light: rgba(0, 102, 255, 0.2);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+    --glass-shadow-light: 0 4px 16px 0 rgba(0, 102, 255, 0.15);
+}
+
 body {
     font-family: 'Cairo', sans-serif;
-    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    background: linear-gradient(135deg, #050d1a 0%, #0a1628 50%, #0f2847 100%);
+    color: var(--text-main);
     min-height: 100vh;
     direction: rtl;
-    padding-bottom: 75px;
+    padding-bottom: 90px;
+    overflow-x: hidden;
 }
 
 .main-content {
@@ -28,15 +61,45 @@ body {
 }
 
 .auth-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 30px;
-    padding: 2rem;
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    border-radius: 32px;
+    padding: 2.5rem;
     width: 100%;
     max-width: 400px;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-    animation: fadeInUp 0.5s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--glass-shadow);
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid var(--glass-border);
+}
+
+.auth-logo h2 {
+    color: var(--text-main);
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.auth-tab {
+    color: var(--text-muted);
+}
+
+.auth-tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.input-group {
+    background: rgba(15, 23, 42, 0.5);
+    border-color: var(--glass-border);
+}
+
+.input-group:focus-within {
+    border-color: var(--primary);
+    background: rgba(15, 23, 42, 0.8);
+}
+
+.auth-input {
+    color: var(--text-main);
 }
 
 @keyframes fadeInUp {
@@ -76,7 +139,7 @@ body {
 
 .auth-logo .logo-icon i {
     font-size: 2.5rem;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -89,7 +152,7 @@ body {
 .auth-logo h2 {
     font-size: 2.2rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -122,8 +185,8 @@ body {
 }
 
 .auth-tab.active {
-    color: #667eea;
-    border-bottom: 2px solid #667eea;
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
     margin-bottom: -2px;
 }
 
@@ -159,7 +222,7 @@ body {
 }
 
 .input-group:focus-within {
-    border-color: #667eea;
+    border-color: var(--primary);
     background: white;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
@@ -171,7 +234,7 @@ body {
 }
 
 .input-group:focus-within i {
-    color: #667eea;
+    color: var(--primary);
 }
 
 .auth-input {
@@ -184,13 +247,13 @@ body {
     outline: none;
 }
 
-.auth-btn {
+.auth-btn, .btn-deposit, .btn-withdraw, .btn-collect-full, .btn-submit-deposit, .btn-submit-withdraw, .btn-submit-transfer, .admin-save-btn {
     width: 100%;
-    padding: 0.9rem;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 16px;
     font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
@@ -198,7 +261,14 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    transition: all 0.3s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.auth-btn:hover, .btn-deposit:hover, .btn-withdraw:hover, .btn-collect-full:hover, .btn-submit-deposit:hover, .btn-submit-withdraw:hover, .btn-submit-transfer:hover, .admin-save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+    filter: brightness(1.1);
 }
 
 .auth-btn:hover {
@@ -245,7 +315,7 @@ body {
 }
 
 .page-header h2 i {
-    color: #fbbf24;
+    color: var(--accent);
 }
 
 .section-header {
@@ -255,13 +325,13 @@ body {
 
 .section-header h2 {
     font-size: 1.8rem;
-    color: white;
+    color: var(--text-main);
     margin-bottom: 0.3rem;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .section-header h2 i {
-    color: #fbbf24;
+    color: var(--accent);
 }
 
 .section-header p {
@@ -271,15 +341,21 @@ body {
 
 /* ========== User Mini Card ========== */
 .user-mini-card {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 60px;
-    padding: 0.75rem 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 1rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
+    margin-bottom: 1.5rem;
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(12px);
+}
+
+.user-mini-avatar span {
+    font-weight: 600;
+    color: var(--text-main);
 }
 
 .user-mini-avatar {
@@ -290,16 +366,16 @@ body {
 
 .user-mini-avatar i {
     font-size: 1.8rem;
-    color: #667eea;
+    color: var(--primary);
 }
 
 .user-mini-avatar span {
     font-weight: 600;
-    color: #2d3748;
+    color: var(--text-main);
 }
 
 .user-mini-balance {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     padding: 0.4rem 1rem;
     border-radius: 50px;
     color: white;
@@ -314,12 +390,42 @@ body {
 
 /* ========== Referral Card ========== */
 .referral-card {
-    background: linear-gradient(135deg, #fef3c7, #fde68a);
-    border-radius: 20px;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, rgba(0, 102, 255, 0.1), rgba(0, 212, 255, 0.05));
+    border: 1px solid var(--glass-border-light);
+    border-radius: 24px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
     text-align: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--glass-shadow-light);
+    backdrop-filter: blur(12px);
+}
+
+.referral-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+}
+
+.referral-code-box span {
+    background: rgba(0, 102, 255, 0.1);
+    padding: 0.9rem 1.8rem;
+    border-radius: 14px;
+    font-weight: 800;
+    font-family: 'Cairo', monospace;
+    font-size: 1.3rem;
+    color: var(--secondary);
+    border: 2px solid var(--primary);
+    letter-spacing: 2px;
+}
+
+.referral-note {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
 }
 
 .referral-header {
@@ -345,26 +451,29 @@ body {
     font-weight: bold;
     font-family: monospace;
     font-size: 1.1rem;
-    color: #2d3748;
+    color: var(--text-main);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .copy-btn {
-    background: #667eea;
-    color: white;
-    border: none;
-    padding: 0.3rem 0.8rem;
-    border-radius: 8px;
+    background: rgba(0, 102, 255, 0.2);
+    color: var(--primary-light);
+    border: 1px solid var(--primary);
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.4rem;
+    font-weight: 600;
 }
 
 .copy-btn:hover {
-    background: #5a67d8;
-    transform: scale(1.05);
+    background: rgba(0, 102, 255, 0.3);
+    border-color: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.2);
 }
 
 .referral-note {
@@ -380,16 +489,31 @@ body {
 }
 
 .plan-card {
-    background: white;
-    border-radius: 20px;
-    padding: 1rem 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    box-shadow: var(--glass-shadow);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(12px);
+}
+
+.plan-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--primary);
+    box-shadow: 0 15px 35px rgba(99, 102, 241, 0.2);
+}
+
+.plan-info h3 {
+    font-size: 1.2rem;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+    font-weight: 700;
 }
 
 .plan-card:hover {
@@ -404,7 +528,7 @@ body {
     right: 0;
     width: 5px;
     height: 100%;
-    background: linear-gradient(180deg, #667eea, #764ba2);
+    background: linear-gradient(180deg, var(--primary), var(--primary-dark));
 }
 
 .plan-info {
@@ -413,7 +537,7 @@ body {
 
 .plan-info h3 {
     font-size: 1.1rem;
-    color: #2d3748;
+    color: var(--text-main);
     margin-bottom: 0.2rem;
 }
 
@@ -422,60 +546,95 @@ body {
 }
 
 .plan-price .price-value {
-    color: #dc2626;
+    color: var(--danger);
     font-weight: 800;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
 }
 
 .plan-profit .profit-value {
-    color: #10b981;
+    color: var(--success);
     font-weight: 700;
+    font-size: 1rem;
 }
 
 .plan-roi {
-    font-size: 0.7rem;
-    color: #8b5cf6;
-    margin-top: 0.2rem;
+    font-size: 0.75rem;
+    color: var(--secondary);
+    margin-top: 0.3rem;
+    font-weight: 600;
 }
 
 .plan-tax {
-    font-size: 0.7rem;
-    color: #f59e0b;
-    margin-top: 0.2rem;
+    font-size: 0.75rem;
+    color: var(--warning);
+    margin-top: 0.3rem;
+    font-weight: 600;
 }
 
 .plan-card button {
-    padding: 0.5rem 1.2rem;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    padding: 0.7rem 1.5rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
     border: none;
-    border-radius: 30px;
+    border-radius: 12px;
     cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
 }
 
 .plan-card button:hover:not(:disabled) {
-    transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 102, 255, 0.4);
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+}
+
+.plan-card button:active:not(:disabled) {
+    transform: scale(0.98);
 }
 
 .plan-card button:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
 }
 
 /* ========== Deposit/Withdraw Cards ========== */
 .deposit-card,
-.withdraw-card {
-    background: white;
-    border-radius: 20px;
+.withdraw-card,
+.account-card,
+.transfer-card,
+.profit-stats-card,
+.profit-collect-card,
+.subscription-card,
+.history-card,
+.admin-card {
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
     padding: 1.5rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(12px);
+}
+
+.account-info .info-row,
+.transfer-details .detail-row,
+.history-card .info-row {
+    border-bottom: 1px solid var(--glass-border);
+    padding: 0.75rem 0;
+}
+
+.account-info .info-row span,
+.transfer-details .detail-row span {
+    color: var(--text-muted);
+}
+
+.account-info .info-row strong,
+.transfer-details .detail-row strong {
+    color: var(--text-main);
 }
 
 .trc20-info {
@@ -490,7 +649,7 @@ body {
 
 .trc20-info h3 {
     font-size: 1.3rem;
-    color: #2d3748;
+    color: var(--text-main);
     margin-bottom: 0.5rem;
 }
 
@@ -509,7 +668,7 @@ body {
 }
 
 .wallet-address-box:hover {
-    border-color: #667eea;
+    border-color: var(--primary);
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
 }
 
@@ -533,14 +692,14 @@ body {
 
 .wallet-address-box span:hover {
     background: #f0f4ff;
-    border-color: #667eea;
+    border-color: var(--primary);
 }
 
 .wallet-address-box .copy-btn {
     font-size: 0.95rem;
     padding: 0.6rem 1.5rem;
     white-space: nowrap;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
     border: none;
     border-radius: 10px;
@@ -616,7 +775,7 @@ body {
     display: block;
     margin: 1rem 0 0.5rem;
     font-weight: 600;
-    color: #2d3748;
+    color: var(--text-main);
 }
 
 .deposit-form input,
@@ -633,7 +792,7 @@ body {
 .deposit-form input:focus,
 .withdraw-form input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
@@ -690,7 +849,7 @@ body {
 
 /* ========== Profit ========== */
 .profit-stats-card {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     border-radius: 20px;
     padding: 1.5rem;
     display: flex;
@@ -743,7 +902,7 @@ body {
 }
 
 .next-profit i {
-    color: #667eea;
+    color: var(--primary);
 }
 
 .next-profit strong {
@@ -758,14 +917,14 @@ body {
 }
 
 .countdown-timer i {
-    color: #667eea;
+    color: var(--primary);
 }
 
 .countdown-timer span {
     font-family: monospace;
     font-size: 1rem;
     font-weight: 700;
-    color: #2d3748;
+    color: var(--text-main);
 }
 
 .btn-collect-full {
@@ -806,12 +965,12 @@ body {
 
 .account-avatar i {
     font-size: 4rem;
-    color: #667eea;
+    color: var(--primary);
 }
 
 .account-avatar h3 {
     margin-top: 0.5rem;
-    color: #2d3748;
+    color: var(--text-main);
 }
 
 .account-info {
@@ -829,11 +988,11 @@ body {
 
 .info-row span i {
     margin-left: 0.5rem;
-    color: #667eea;
+    color: var(--primary);
 }
 
 .info-row strong {
-    color: #2d3748;
+    color: var(--text-main);
 }
 
 .account-actions {
@@ -927,7 +1086,7 @@ body {
 }
 
 .admin-title h3 {
-    color: #2d3748;
+    color: var(--text-main);
 }
 
 .admin-title p {
@@ -970,7 +1129,7 @@ body {
 
 .admin-stat-card i {
     font-size: 2rem;
-    color: #667eea;
+    color: var(--primary);
 }
 
 .admin-stat-card h4 {
@@ -981,7 +1140,7 @@ body {
 .admin-stat-card p {
     font-size: 1.3rem;
     font-weight: 700;
-    color: #2d3748;
+    color: var(--text-main);
 }
 
 .admin-nav {
@@ -1012,7 +1171,7 @@ body {
 
 .admin-nav-btn.active {
     background: white;
-    color: #667eea;
+    color: var(--primary);
 }
 
 .admin-nav-btn i {
@@ -1042,7 +1201,7 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #2d3748;
+    color: var(--text-main);
 }
 
 .admin-search {
@@ -1057,7 +1216,7 @@ body {
 }
 
 .admin-search:focus-within {
-    border-color: #667eea;
+    border-color: var(--primary);
     background: white;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
@@ -1106,7 +1265,7 @@ body {
 
 .user-info strong {
     font-size: 1rem;
-    color: #2d3748;
+    color: var(--text-main);
 }
 
 .user-info small {
@@ -1257,7 +1416,7 @@ body {
 
 .request-item strong {
     font-size: 0.9rem;
-    color: #2d3748;
+    color: var(--text-main);
 }
 
 .request-item small {
@@ -1401,7 +1560,7 @@ body {
 
 .tax-setting-item span {
     font-weight: 600;
-    color: #2d3748;
+    color: var(--text-main);
 }
 
 .tax-setting-item input {
@@ -1492,29 +1651,38 @@ body {
     display: block;
     margin-bottom: 0.3rem;
     font-weight: 600;
-    color: #2d3748;
+    color: var(--text-main);
 }
 
-.admin-input {
+.admin-input, .transfer-form input, .deposit-form input, .withdraw-form input {
     width: 100%;
-    padding: 0.7rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 10px;
+    padding: 0.9rem;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    color: var(--text-main);
     font-family: inherit;
-    font-size: 0.9rem;
-    transition: border-color 0.3s;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.admin-input:focus, .transfer-form input:focus, .deposit-form input:focus, .withdraw-form input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(15, 23, 42, 0.8);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
 }
 
 .admin-input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .admin-save-btn {
     width: 100%;
     padding: 0.8rem;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
     border: none;
     border-radius: 12px;
@@ -1550,14 +1718,30 @@ textarea.admin-input {
 }
 
 .modal-content {
-    background: white;
-    border-radius: 20px;
+    background: #1e293b;
+    border: 1px solid var(--glass-border);
+    border-radius: 28px;
     width: 90%;
     max-width: 450px;
-    max-height: 90vh;
+    max-height: 85vh;
     overflow-y: auto;
-    animation: slideUp 0.3s ease;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    animation: modalFadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    color: var(--text-main);
+}
+
+@keyframes modalFadeUp {
+    from { transform: translateY(30px) scale(0.95); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.modal-header {
+    background: #1e293b;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.modal-header h3 {
+    color: var(--text-main);
 }
 
 @keyframes slideUp {
@@ -1588,7 +1772,7 @@ textarea.admin-input {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #2d3748;
+    color: var(--text-main);
 }
 
 .modal-header .close-modal {
@@ -1615,36 +1799,38 @@ textarea.admin-input {
 
 .btn-confirm {
     flex: 1;
-    padding: 0.7rem;
-    background: linear-gradient(135deg, #10b981, #059669);
+    padding: 0.8rem;
+    background: linear-gradient(135deg, var(--success), #00a83a);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 200, 83, 0.2);
 }
 
 .btn-confirm:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 200, 83, 0.3);
 }
 
 .btn-delete {
     flex: 1;
-    padding: 0.7rem;
-    background: #ef4444;
+    padding: 0.8rem;
+    background: linear-gradient(135deg, var(--danger), #ff1a1a);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(255, 61, 61, 0.2);
 }
 
 .btn-delete:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 61, 61, 0.3);
 }
 
 /* ========== User Details Modal ========== */
@@ -1681,17 +1867,34 @@ textarea.admin-input {
 /* ========== Bottom Nav ========== */
 .bottom-nav {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(10px);
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
+    background: rgba(10, 22, 40, 0.95);
+    backdrop-filter: blur(20px);
     display: flex;
     justify-content: space-around;
-    padding: 0.8rem 1rem;
-    box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+    padding: 0.75rem 0.5rem;
+    border-radius: 24px;
+    box-shadow: 0 15px 40px rgba(0, 102, 255, 0.2);
     z-index: 1000;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--glass-border-light);
+}
+
+.nav-item {
+    color: var(--text-muted-dark);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-item:hover {
+    color: var(--primary-light);
+}
+
+.nav-item.active {
+    color: var(--primary);
+    background: rgba(0, 102, 255, 0.15);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.2);
 }
 
 .nav-item {
@@ -1707,7 +1910,7 @@ textarea.admin-input {
 }
 
 .nav-item.active {
-    color: #667eea;
+    color: var(--primary);
     transform: translateY(-3px);
 }
 
@@ -1773,14 +1976,14 @@ textarea.admin-input {
 
 .transfer-info .info-item strong {
     font-size: 1.5rem;
-    color: #2d3748;
+    color: var(--text-main);
 }
 
 .transfer-form label {
     display: block;
     margin: 1rem 0 0.5rem;
     font-weight: 600;
-    color: #2d3748;
+    color: var(--text-main);
 }
 
 .transfer-form input {
@@ -1795,7 +1998,7 @@ textarea.admin-input {
 
 .transfer-form input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: var(--primary);
 }
 
 .transfer-details {
@@ -1829,7 +2032,7 @@ textarea.admin-input {
 .btn-submit-transfer {
     width: 100%;
     padding: 0.9rem;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
     border: none;
     border-radius: 12px;
@@ -2054,7 +2257,7 @@ textarea.admin-input {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     border-radius: 10px;
 }
 
