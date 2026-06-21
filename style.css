@@ -5,39 +5,39 @@
 }
 
 :root {
-    /* الألوان الأساسية - نظام Fintech الراقي */
-    --primary: #0066ff;           /* أزرق عميق احترافي */
-    --primary-dark: #0052cc;      /* أزرق أغمق للـ Hover */
-    --primary-light: #3d8eff;     /* أزرق فاتح للتأثيرات */
-    --secondary: #00d4ff;         /* سماوي حي للتمييز */
-    --accent: #ffd700;            /* ذهبي فاخر للـ VIP */
-    --accent-dark: #ffb800;       /* ذهبي أغمق */
-    --success: #00c853;           /* أخضر للنجاح */
-    --warning: #ff9800;           /* برتقالي للتنبيهات */
-    --danger: #ff3d3d;            /* أحمر للأخطاء */
+    /* الألوان الأساسية - Minimalist Dark Investment App */
+    --primary: #d4a574;           /* ذهبي/بيج فاتح - الأزرار الأساسية */
+    --primary-dark: #c49464;      /* ذهبي أغمق للـ Hover */
+    --primary-light: #e8c9a0;     /* ذهبي فاتح جداً للتأثيرات */
+    --secondary: #a0a0a0;         /* رمادي فاتح - النصوص الثانوية */
+    --accent: #d4a574;            /* ذهبي - نفس الأساسي */
+    --accent-dark: #c49464;       /* ذهبي أغمق */
+    --success: #4ade80;           /* أخضر فاتح للأرباح */
+    --warning: #fbbf24;           /* ذهبي/برتقالي للتنبيهات */
+    --danger: #ef4444;            /* أحمر للخسائر والأخطاء */
     
-    /* الخلفيات - تدرجات عميقة */
-    --bg-dark: #0a1628;           /* أسود أزرق عميق جداً */
-    --bg-darker: #050d1a;         /* أسود أزرق أعمق */
-    --bg-card: rgba(15, 30, 55, 0.8);  /* بطاقات شفافة */
-    --bg-card-hover: rgba(20, 40, 70, 0.9);
+    /* الخلفيات - أسود مطفي عميق */
+    --bg-dark: #0a0a0a;           /* أسود مطفي عميق جداً */
+    --bg-darker: #050505;         /* أسود مطفي أعمق */
+    --bg-card: rgba(26, 26, 26, 0.95);  /* رمادي داكن جداً */
+    --bg-card-hover: rgba(35, 35, 35, 1);
     
     /* النصوص */
-    --text-main: #ffffff;         /* أبيض نقي */
-    --text-secondary: #e0e7ff;    /* أبيض مع لمسة أزرق */
-    --text-muted: #94a3b8;        /* رمادي فاتح */
-    --text-muted-dark: #64748b;   /* رمادي أغمق */
+    --text-main: #f5f5f5;         /* أبيض كريمي */
+    --text-secondary: #e8e8e8;    /* أبيض فاتح */
+    --text-muted: #a0a0a0;        /* رمادي فاتح */
+    --text-muted-dark: #808080;   /* رمادي أغمق */
     
     /* الحدود والظلال */
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-border-light: rgba(0, 102, 255, 0.2);
-    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-    --glass-shadow-light: 0 4px 16px 0 rgba(0, 102, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --glass-border-light: rgba(212, 165, 116, 0.15);
+    --glass-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.4);
+    --glass-shadow-light: 0 2px 8px 0 rgba(0, 0, 0, 0.3);
 }
 
 body {
     font-family: 'Cairo', sans-serif;
-    background: linear-gradient(135deg, #050d1a 0%, #0a1628 50%, #0f2847 100%);
+    background: linear-gradient(135deg, #050505 0%, #0a0a0a 50%, #0f0f0f 100%);
     color: var(--text-main);
     min-height: 100vh;
     direction: rtl;
@@ -251,9 +251,9 @@ body {
     width: 100%;
     padding: 1rem;
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: white;
+    color: #0a0a0a;
     border: none;
-    border-radius: 16px;
+    border-radius: 14px;
     font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
@@ -262,13 +262,13 @@ body {
     justify-content: center;
     gap: 0.5rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 12px rgba(212, 165, 116, 0.2);
 }
 
 .auth-btn:hover, .btn-deposit:hover, .btn-withdraw:hover, .btn-collect-full:hover, .btn-submit-deposit:hover, .btn-submit-withdraw:hover, .btn-submit-transfer:hover, .admin-save-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
-    filter: brightness(1.1);
+    box-shadow: 0 8px 20px rgba(212, 165, 116, 0.3);
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
 }
 
 .auth-btn:hover {
@@ -343,14 +343,14 @@ body {
 .user-mini-card {
     background: var(--bg-card);
     border: 1px solid var(--glass-border);
-    border-radius: 24px;
+    border-radius: 20px;
     padding: 1rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
     box-shadow: var(--glass-shadow);
-    backdrop-filter: blur(12px);
+    backdrop-filter: none;
 }
 
 .user-mini-avatar span {
@@ -390,14 +390,14 @@ body {
 
 /* ========== Referral Card ========== */
 .referral-card {
-    background: linear-gradient(135deg, rgba(0, 102, 255, 0.1), rgba(0, 212, 255, 0.05));
-    border: 1px solid var(--glass-border-light);
-    border-radius: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
     padding: 1.5rem;
     margin-bottom: 2rem;
     text-align: center;
-    box-shadow: var(--glass-shadow-light);
-    backdrop-filter: blur(12px);
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: none;
 }
 
 .referral-header {
@@ -456,10 +456,10 @@ body {
 }
 
 .copy-btn {
-    background: rgba(0, 102, 255, 0.2);
-    color: var(--primary-light);
+    background: rgba(212, 165, 116, 0.15);
+    color: var(--primary);
     border: 1px solid var(--primary);
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1.2rem;
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -470,10 +470,10 @@ body {
 }
 
 .copy-btn:hover {
-    background: rgba(0, 102, 255, 0.3);
+    background: rgba(212, 165, 116, 0.25);
     border-color: var(--primary-light);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(212, 165, 116, 0.2);
 }
 
 .referral-note {
@@ -1718,15 +1718,15 @@ textarea.admin-input {
 }
 
 .modal-content {
-    background: #1e293b;
+    background: var(--bg-card);
     border: 1px solid var(--glass-border);
-    border-radius: 28px;
+    border-radius: 24px;
     width: 90%;
     max-width: 450px;
     max-height: 85vh;
     overflow-y: auto;
     animation: modalFadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
     color: var(--text-main);
 }
 
@@ -1736,7 +1736,7 @@ textarea.admin-input {
 }
 
 .modal-header {
-    background: #1e293b;
+    background: var(--bg-card);
     border-bottom: 1px solid var(--glass-border);
 }
 
@@ -1800,37 +1800,37 @@ textarea.admin-input {
 .btn-confirm {
     flex: 1;
     padding: 0.8rem;
-    background: linear-gradient(135deg, var(--success), #00a83a);
+    background: linear-gradient(135deg, var(--success), #22c55e);
     color: white;
     border: none;
     border-radius: 12px;
     cursor: pointer;
     font-weight: 700;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 12px rgba(0, 200, 83, 0.2);
+    box-shadow: 0 4px 12px rgba(74, 222, 128, 0.2);
 }
 
 .btn-confirm:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 200, 83, 0.3);
+    box-shadow: 0 8px 20px rgba(74, 222, 128, 0.3);
 }
 
 .btn-delete {
     flex: 1;
     padding: 0.8rem;
-    background: linear-gradient(135deg, var(--danger), #ff1a1a);
+    background: linear-gradient(135deg, var(--danger), #f87171);
     color: white;
     border: none;
     border-radius: 12px;
     cursor: pointer;
     font-weight: 700;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 12px rgba(255, 61, 61, 0.2);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
 }
 
 .btn-delete:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(255, 61, 61, 0.3);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
 }
 
 /* ========== User Details Modal ========== */
@@ -1870,31 +1870,31 @@ textarea.admin-input {
     bottom: 15px;
     left: 15px;
     right: 15px;
-    background: rgba(10, 22, 40, 0.95);
-    backdrop-filter: blur(20px);
+    background: rgba(26, 26, 26, 0.98);
+    backdrop-filter: none;
     display: flex;
     justify-content: space-around;
-    padding: 0.75rem 0.5rem;
-    border-radius: 24px;
-    box-shadow: 0 15px 40px rgba(0, 102, 255, 0.2);
+    padding: 0.8rem 0.5rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     z-index: 1000;
-    border: 1px solid var(--glass-border-light);
+    border: 1px solid var(--glass-border);
 }
 
 .nav-item {
-    color: var(--text-muted-dark);
+    color: var(--text-muted);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav-item:hover {
-    color: var(--primary-light);
+    color: var(--primary);
 }
 
 .nav-item.active {
     color: var(--primary);
-    background: rgba(0, 102, 255, 0.15);
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.2);
+    background: rgba(212, 165, 116, 0.1);
+    border-radius: 14px;
+    box-shadow: none;
 }
 
 .nav-item {
