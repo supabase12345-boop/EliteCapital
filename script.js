@@ -38,6 +38,7 @@ async function supabaseRequest(endpoint, method = 'GET', body = null) {
         }
         if (method === 'DELETE') return { success: true };
         
+        // التحقق مما إذا كانت الاستجابة فارغة (مثل POST بدون return=representation)
         const text = await response.text();
         return text ? JSON.parse(text) : { success: true };
     } catch (error) {
@@ -107,6 +108,7 @@ async function loadAllData() {
                 try { u.referredusers = JSON.parse(u.referredusers || '[]'); } catch(e) { u.referredusers = []; }
                 try { u.transferhistory = JSON.parse(u.transferhistory || '[]'); } catch(e) { u.transferhistory = []; }
                 
+                // توحيد مسميات الحقول (camelCase) للاستخدام في الواجهة
                 usersObj[u.username] = {
                     ...u,
                     fullname: u.fullname,
@@ -133,25 +135,10 @@ async function loadAllData() {
             console.log('✅ تم تحميل المستخدمين:', Object.keys(usersObj).length);
         }
 
-        // تحميل الإعدادات المحلية
-        loadLocalSettings();
-        
         return true;
     } catch (error) {
         console.error('❌ فشل تحميل البيانات:', error);
-        loadLocalSettings();
         return false;
-    }
-}
-
-function loadLocalSettings() {
-    const saved = localStorage.getItem('systemSettings');
-    if (saved) {
-        try {
-            const settings = JSON.parse(saved);
-            referralBonusAmount = settings.referralBonusAmount || 25;
-            globalAlert = settings.globalAlert || { text: '', link: '', buttonText: '', bgColor: '#fef3c7', enabled: false };
-        } catch (e) {}
     }
 }
 
@@ -210,6 +197,7 @@ async function saveUser(user) {
 
 async function saveUsers(users) {
     localStorage.setItem('investUsers', JSON.stringify(users));
+    // ملاحظة: حفظ جميع المستخدمين في حلقة قد يكون بطيئاً، يفضل حفظ المستخدم المتأثر فقط
     for (let [username, user] of Object.entries(users)) {
         await saveUser(user);
     }
@@ -217,6 +205,7 @@ async function saveUsers(users) {
 }
 
 async function getUsers() {
+    // الأفضل دائماً جلب أحدث البيانات من localStorage أو السيرفر
     const users = localStorage.getItem('investUsers');
     if (users) {
         try {
@@ -422,6 +411,7 @@ function initAuth() {
                     transferHistory: []
                 };
 
+                // حفظ المستخدم في قاعدة البيانات أولاً لضمان النجاح
                 const saved = await saveUser(newUser);
                 if (saved) {
                     users[username] = newUser;
@@ -530,6 +520,7 @@ function loadUserPanel() {
     updateTransferPage();
     
     document.querySelectorAll('.nav-item').forEach(item => {
+        // إزالة المستمعين القدامى لتجنب التكرار
         const newItem = item.cloneNode(true);
         item.parentNode.replaceChild(newItem, item);
         
@@ -694,6 +685,7 @@ async function buyPlan(planKey) {
             await saveUsers(users);
             await setCurrentUser(currentUser.username);
             
+            // منح مكافأة الإحالة للمُحيل عند أول اشتراك
             await checkAndGiveReferralBonus(currentUser.username);
             
             showToast(`تم الاشتراك في ${plan.name}`);
@@ -738,6 +730,7 @@ async function checkAndGiveReferralBonus(username) {
         if (referrer) {
             referrer.balance += referralBonusAmount;
             referrer.referralBonus = (referrer.referralBonus || 0) + referralBonusAmount;
+            // حفظ التغييرات للمُحيل
             await saveUser(referrer);
             console.log(`✅ تم منح مكافأة إحالة للمستخدم ${user.referredBy}`);
         }
@@ -745,6 +738,7 @@ async function checkAndGiveReferralBonus(username) {
     
     user.referralBonusGiven = true;
     await saveUser(user);
+    // تحديث البيانات المحلية
     localStorage.setItem('investUsers', JSON.stringify(users));
 }
 
@@ -1090,7 +1084,8 @@ function renderWithdrawalsList() {
             const div = document.createElement('div');
             div.className = 'request-item';
             const taxInfo = req.taxPercent > 0 ? ` (ضريبة ${req.taxPercent}% = ${req.taxAmount.toFixed(2)}$)` : '';
-            const walletShort = req.walletAddress ? req.walletAddress.substring(0,20) + '...' : '--';
+            const walletAddress = req.walletAddress || '--';
+            const walletShort = walletAddress.length > 20 ? walletAddress.substring(0,20) + '...' : walletAddress;
             
             div.innerHTML = `
                 <div>
@@ -1098,7 +1093,7 @@ function renderWithdrawalsList() {
                     <br><small>@${username}</small>
                     <br><small>📧 ${user.email || '--'}</small>
                     <br>💰 ${req.amount}$ ${taxInfo}
-                    <br>🏦 ${walletShort}
+                    <br>🏦 <span class="wallet-copy" onclick="copyToClipboard('${walletAddress}'); showToast('تم نسخ العنوان')" style="cursor:pointer; color:#667eea; text-decoration:underline;" title="اضغط للنسخ">${walletShort}</span>
                     <br>📅 ${new Date(req.date).toLocaleString()}
                     <br><span style="color:${req.status === 'قيد المراجعة' ? '#f59e0b' : req.status === 'مكتمل' ? '#10b981' : '#ef4444'}">الحالة: ${req.status}</span>
                 </div>
@@ -1435,6 +1430,7 @@ function loadAdminPanel() {
     loadSettingsToAdmin();
     
     document.querySelectorAll('.admin-nav-btn').forEach(btn => {
+        // إزالة المستمعين القدامى
         const newBtn = btn.cloneNode(true);
         btn.parentNode.replaceChild(newBtn, btn);
         
@@ -1746,6 +1742,7 @@ async function deletePlan(key) {
         return showToast('لا يمكن حذف الباقات الأساسية', true);
     }
     if (confirm('هل أنت متأكد من حذف هذه الباقة؟')) {
+        // حذف من قاعدة البيانات أولاً
         try {
             await supabaseRequest(`plans?id=eq.${key}`, 'DELETE');
             await supabaseRequest(`plan_taxes?plan_id=eq.${key}`, 'DELETE');
@@ -1765,6 +1762,7 @@ async function savePlansToSupabase() {
     localStorage.setItem('plansSettings', JSON.stringify(plans));
     for (let [key, plan] of Object.entries(plans)) {
         try {
+            // استخدام PATCH للتحديث أو POST للإدراج
             const existing = await supabaseRequest(`plans?id=eq.${plan.id}`);
             const planData = {
                 id: plan.id,
@@ -1781,6 +1779,7 @@ async function savePlansToSupabase() {
                 await supabaseRequest('plans', 'POST', planData);
             }
 
+            // تحديث الضرائب
             const taxData = {
                 plan_id: key,
                 tax_percent: plan.withdrawTax || 0
@@ -1798,16 +1797,12 @@ async function savePlansToSupabase() {
 }
 
 // ============================================
-// إعدادات الادمن - النسخة المعدلة
+// إعدادات الادمن
 // ============================================
 function loadSettingsToAdmin() {
-    // تحميل قيمة مكافأة الإحالة
     const bonusInput = document.getElementById('adminReferralBonus');
-    if (bonusInput) {
-        bonusInput.value = referralBonusAmount;
-    }
+    if (bonusInput) bonusInput.value = referralBonusAmount;
     
-    // تحميل إعدادات التنبيه
     const alertText = document.getElementById('adminAlertText');
     if (alertText) alertText.value = globalAlert.text || '';
     
@@ -1823,125 +1818,33 @@ function loadSettingsToAdmin() {
     const alertEnabled = document.getElementById('adminAlertEnabled');
     if (alertEnabled) alertEnabled.value = globalAlert.enabled ? 'true' : 'false';
     
-    // تحميل إعدادات الضرائب
     const taxContainer = document.getElementById('taxSettingsContainer');
     if (!taxContainer) return;
-    
     taxContainer.innerHTML = '';
     for (let [key, plan] of Object.entries(plans)) {
         const div = document.createElement('div');
         div.className = 'tax-setting-item';
-        div.innerHTML = `
-            <span><i class="${plan.icon}" style="color:${plan.color}"></i> ${plan.name}</span>
-            <input type="number" id="tax-${key}" value="${plan.withdrawTax || 0}" min="0" max="100" step="0.5"> 
-            <span>%</span>
-        `;
+        div.innerHTML = `<span><i class="${plan.icon}" style="color:${plan.color}"></i> ${plan.name}</span><input type="number" id="tax-${key}" value="${plan.withdrawTax || 0}" min="0" max="100" step="0.5"> <span>%</span>`;
         taxContainer.appendChild(div);
     }
-    
-    // تحديث العرض في صفحة المستخدم
-    const displayElement = document.getElementById('referralBonusAmount');
-    if (displayElement) {
-        displayElement.innerText = referralBonusAmount;
-    }
-    
-    console.log('✅ تم تحميل الإعدادات في لوحة الأدمن');
 }
 
-// ============================================
-// حفظ إعدادات مكافأة الإحالة - النسخة المعدلة
-// ============================================
 function saveReferralBonusSettings() {
     const input = document.getElementById('adminReferralBonus');
-    if (!input) {
-        showToast('❌ عنصر الإدخال غير موجود', true);
-        return;
-    }
-    
+    if (!input) return;
     const value = parseFloat(input.value);
-    
-    if (isNaN(value) || value < 0) {
-        showToast('⚠️ الرجاء إدخال قيمة صحيحة (0 أو أكثر)', true);
-        return;
-    }
-    
-    // تحديث المتغير العام
-    referralBonusAmount = value;
-    
-    // حفظ في localStorage
-    localStorage.setItem('systemSettings', JSON.stringify({
-        referralBonusAmount: referralBonusAmount,
-        globalAlert: globalAlert
-    }));
-    
-    // حفظ في Supabase
-    saveSettingsToSupabase();
-    
-    // تحديث العرض في واجهة المستخدم
-    const displayElement = document.getElementById('referralBonusAmount');
-    if (displayElement) {
-        displayElement.innerText = value;
-    }
-    
-    showToast(`✅ تم حفظ مكافأة الإحالة: ${value}$`);
-}
-
-// ============================================
-// حفظ الإعدادات في Supabase - النسخة المعدلة
-// ============================================
-async function saveSettingsToSupabase() {
-    try {
-        // حفظ في localStorage
-        localStorage.setItem('systemSettings', JSON.stringify({
-            referralBonusAmount: referralBonusAmount,
-            globalAlert: globalAlert
-        }));
+    if (!isNaN(value) && value >= 0) {
+        referralBonusAmount = value;
+        saveSettingsToSupabase();
+        showToast(`تم حفظ مكافأة الإحالة: ${value}$`);
         
-        const settingsData = {
-            referral_bonus: referralBonusAmount,
-            alert_text: globalAlert.text || '',
-            alert_link: globalAlert.link || '',
-            alert_button_text: globalAlert.buttonText || '',
-            alert_bg_color: globalAlert.bgColor || '#fef3c7',
-            alert_enabled: globalAlert.enabled || false
-        };
-        
-        // التحقق من وجود الإعدادات
-        const existing = await supabaseRequest('settings');
-        
-        if (existing && existing.length > 0) {
-            // تحديث الإعدادات الموجودة
-            await supabaseRequest('settings?id=eq.1', 'PATCH', settingsData);
-            console.log('✅ تم تحديث الإعدادات في Supabase');
-        } else {
-            // إنشاء إعدادات جديدة
-            await supabaseRequest('settings', 'POST', { id: 1, ...settingsData });
-            console.log('✅ تم إنشاء الإعدادات في Supabase');
-        }
-        
-        return true;
-    } catch (error) {
-        console.error('❌ فشل حفظ الإعدادات في Supabase:', error);
-        
-        // محاولة طريقة بديلة
-        try {
-            const settingsData = {
-                id: 1,
-                referral_bonus: referralBonusAmount,
-                alert_text: globalAlert.text || '',
-                alert_link: globalAlert.link || '',
-                alert_button_text: globalAlert.buttonText || '',
-                alert_bg_color: globalAlert.bgColor || '#fef3c7',
-                alert_enabled: globalAlert.enabled || false
-            };
-            
-            await supabaseRequest('settings', 'UPSERT', settingsData);
-            console.log('✅ تم حفظ الإعدادات باستخدام UPSERT');
-        } catch (e) {
-            console.error('❌ فشل حفظ الإعدادات:', e);
-        }
-        
-        return false;
+        // تحديث جميع العناصر التي تعرض مبلغ الإحالة في الواجهة
+        const displays = document.querySelectorAll('#referralBonusAmount, .referral-bonus-val');
+        displays.forEach(el => {
+            el.innerText = value;
+        });
+    } else {
+        showToast('قيمة غير صالحة', true);
     }
 }
 
@@ -1969,6 +1872,34 @@ function saveAlertSettings() {
     saveSettingsToSupabase();
     showToast('تم حفظ إعدادات التنبيه');
     if (currentUser && currentUser.role !== 'admin') showGlobalAlert();
+}
+
+async function saveSettingsToSupabase() {
+    localStorage.setItem('systemSettings', JSON.stringify({
+        referralBonusAmount: referralBonusAmount,
+        globalAlert: globalAlert
+    }));
+    try {
+        await supabaseRequest('settings', 'PATCH', {
+            referral_bonus: referralBonusAmount,
+            alert_text: globalAlert.text,
+            alert_link: globalAlert.link,
+            alert_button_text: globalAlert.buttonText,
+            alert_bg_color: globalAlert.bgColor,
+            alert_enabled: globalAlert.enabled
+        });
+    } catch (e) {
+        // إذا فشل PATCH، نحاول POST
+        await supabaseRequest('settings', 'POST', {
+            id: 1,
+            referral_bonus: referralBonusAmount,
+            alert_text: globalAlert.text,
+            alert_link: globalAlert.link,
+            alert_button_text: globalAlert.buttonText,
+            alert_bg_color: globalAlert.bgColor,
+            alert_enabled: globalAlert.enabled
+        }).catch(() => {});
+    }
 }
 
 function openUpgradePlanModal(username) {
@@ -2061,36 +1992,6 @@ function logout() {
         location.reload();
     }
 }
-
-// ============================================
-// اختبار تغيير مبلغ الإحالة من Console
-// ============================================
-window.testReferralBonus = async function(newAmount) {
-    if (!newAmount || isNaN(newAmount) || newAmount < 0) {
-        console.log('⚠️ الرجاء إدخال قيمة صحيحة');
-        return;
-    }
-    
-    console.log(`📝 تغيير مبلغ الإحالة إلى: ${newAmount}$`);
-    
-    referralBonusAmount = newAmount;
-    
-    localStorage.setItem('systemSettings', JSON.stringify({
-        referralBonusAmount: referralBonusAmount,
-        globalAlert: globalAlert
-    }));
-    
-    await saveSettingsToSupabase();
-    
-    const input = document.getElementById('adminReferralBonus');
-    if (input) input.value = newAmount;
-    
-    const display = document.getElementById('referralBonusAmount');
-    if (display) display.innerText = newAmount;
-    
-    console.log(`✅ تم تغيير مبلغ الإحالة إلى: ${newAmount}$`);
-    showToast(`✅ تم تغيير مبلغ الإحالة إلى ${newAmount}$`);
-};
 
 // ============================================
 // تشغيل التطبيق
